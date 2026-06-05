@@ -1,0 +1,1136 @@
+{
+  "meta": {
+    "title": "Competitor 360 — Master Data",
+    "baseline": "Meydan",
+    "zones": [
+      "Meydan",
+      "IFZA",
+      "RAKEZ",
+      "Ajman",
+      "DWTC"
+    ],
+    "currency": "AED (VAT-incl)",
+    "generated_from": "Competitor360_Master.xlsx",
+    "note": "Single source of truth. Edit the XLSX, re-export. Do not hand-edit this file."
+  },
+  "confidence_legend": {
+    "confirmed": {
+      "label": "✅ Confirmed",
+      "meaning": "official source"
+    },
+    "assumed": {
+      "label": "🟡 Assumed",
+      "meaning": "estimate / placeholder — overwrite when real data lands"
+    },
+    "missing": {
+      "label": "⬜ Missing",
+      "meaning": "no data yet"
+    },
+    "na": {
+      "label": "—  N/A",
+      "meaning": "not applicable for this zone"
+    }
+  },
+  "b2c": {
+    "components": [
+      {
+        "component": "Licence (0-visa, 3 activities)",
+        "zones": {
+          "Meydan": {
+            "kind": "num",
+            "value": 12125,
+            "numeric": 12125,
+            "display": "12,125",
+            "confidence": "confirmed",
+            "note": null
+          },
+          "IFZA": {
+            "kind": "num",
+            "value": 12900,
+            "numeric": 12900,
+            "display": "12,900",
+            "confidence": "assumed",
+            "note": "Contact says 11,900 — confirm IFZA 11,900 vs 12,900"
+          },
+          "RAKEZ": {
+            "kind": "num",
+            "value": 6010,
+            "numeric": 6010,
+            "display": "6,010",
+            "confidence": "confirmed",
+            "note": null
+          },
+          "Ajman": {
+            "kind": "num",
+            "value": 4888,
+            "numeric": 4888,
+            "display": "4,888",
+            "confidence": "confirmed",
+            "note": null
+          },
+          "DWTC": {
+            "kind": "num",
+            "value": 12000,
+            "numeric": 12000,
+            "display": "12,000",
+            "confidence": "assumed",
+            "note": null
+          }
+        }
+      },
+      {
+        "component": "Registration / admin",
+        "zones": {
+          "Meydan": {
+            "kind": "incl",
+            "value": null,
+            "numeric": 0,
+            "display": "incl",
+            "confidence": "confirmed",
+            "note": null
+          },
+          "IFZA": {
+            "kind": "incl",
+            "value": null,
+            "numeric": 0,
+            "display": "incl",
+            "confidence": "confirmed",
+            "note": null
+          },
+          "RAKEZ": {
+            "kind": "incl",
+            "value": null,
+            "numeric": 0,
+            "display": "incl",
+            "confidence": "confirmed",
+            "note": null
+          },
+          "Ajman": {
+            "kind": "incl",
+            "value": null,
+            "numeric": 0,
+            "display": "incl",
+            "confidence": "confirmed",
+            "note": null
+          },
+          "DWTC": {
+            "kind": "num",
+            "value": 500,
+            "numeric": 500,
+            "display": "500",
+            "confidence": "assumed",
+            "note": null
+          }
+        }
+      },
+      {
+        "component": "Shared desk / co-working",
+        "zones": {
+          "Meydan": {
+            "kind": "num",
+            "value": 375,
+            "numeric": 375,
+            "display": "375",
+            "confidence": "confirmed",
+            "note": null
+          },
+          "IFZA": {
+            "kind": "incl",
+            "value": null,
+            "numeric": 0,
+            "display": "incl",
+            "confidence": "assumed",
+            "note": null
+          },
+          "RAKEZ": {
+            "kind": "incl",
+            "value": null,
+            "numeric": 0,
+            "display": "incl",
+            "confidence": "confirmed",
+            "note": null
+          },
+          "Ajman": {
+            "kind": "incl",
+            "value": null,
+            "numeric": 0,
+            "display": "incl",
+            "confidence": "confirmed",
+            "note": "included via lease"
+          },
+          "DWTC": {
+            "kind": "incl",
+            "value": null,
+            "numeric": 0,
+            "display": "incl",
+            "confidence": "missing",
+            "note": "desk cost unknown — confirm DWTC desk"
+          }
+        }
+      },
+      {
+        "component": "Establishment card",
+        "zones": {
+          "Meydan": {
+            "kind": "num",
+            "value": 2000,
+            "numeric": 2000,
+            "display": "2,000",
+            "confidence": "confirmed",
+            "note": null
+          },
+          "IFZA": {
+            "kind": "num",
+            "value": 2000,
+            "numeric": 2000,
+            "display": "2,000",
+            "confidence": "confirmed",
+            "note": null
+          },
+          "RAKEZ": {
+            "kind": "incl",
+            "value": null,
+            "numeric": 0,
+            "display": "incl",
+            "confidence": "confirmed",
+            "note": null
+          },
+          "Ajman": {
+            "kind": "incl",
+            "value": null,
+            "numeric": 0,
+            "display": "incl",
+            "confidence": "confirmed",
+            "note": null
+          },
+          "DWTC": {
+            "kind": "num",
+            "value": 2300,
+            "numeric": 2300,
+            "display": "2,300",
+            "confidence": "assumed",
+            "note": null
+          }
+        }
+      },
+      {
+        "component": "Visa allocation (per visa)",
+        "zones": {
+          "Meydan": {
+            "kind": "num",
+            "value": 1850,
+            "numeric": 1850,
+            "display": "1,850",
+            "confidence": "confirmed",
+            "note": null
+          },
+          "IFZA": {
+            "kind": "num",
+            "value": 2000,
+            "numeric": 2000,
+            "display": "2,000",
+            "confidence": "confirmed",
+            "note": "licence-tier step"
+          },
+          "RAKEZ": {
+            "kind": "incl",
+            "value": null,
+            "numeric": 0,
+            "display": "incl",
+            "confidence": "confirmed",
+            "note": null
+          },
+          "Ajman": {
+            "kind": "incl",
+            "value": null,
+            "numeric": 0,
+            "display": "incl",
+            "confidence": "confirmed",
+            "note": null
+          },
+          "DWTC": {
+            "kind": "num",
+            "value": 2000,
+            "numeric": 2000,
+            "display": "2,000",
+            "confidence": "assumed",
+            "note": "tier step"
+          }
+        }
+      },
+      {
+        "component": "Residence visa – investor (per visa)",
+        "zones": {
+          "Meydan": {
+            "kind": "num",
+            "value": 4000,
+            "numeric": 4000,
+            "display": "4,000",
+            "confidence": "confirmed",
+            "note": null
+          },
+          "IFZA": {
+            "kind": "num",
+            "value": 1000,
+            "numeric": 1000,
+            "display": "1,000",
+            "confidence": "confirmed",
+            "note": "Visa FREE-for-life (0) + 1,000 title deed"
+          },
+          "RAKEZ": {
+            "kind": "incl",
+            "value": null,
+            "numeric": 0,
+            "display": "incl",
+            "confidence": "confirmed",
+            "note": null
+          },
+          "Ajman": {
+            "kind": "incl",
+            "value": null,
+            "numeric": 0,
+            "display": "incl",
+            "confidence": "confirmed",
+            "note": null
+          },
+          "DWTC": {
+            "kind": "num",
+            "value": 3020,
+            "numeric": 3020,
+            "display": "3,020",
+            "confidence": "assumed",
+            "note": null
+          }
+        }
+      },
+      {
+        "component": "Medical (per visa)",
+        "zones": {
+          "Meydan": {
+            "kind": "num",
+            "value": 2000,
+            "numeric": 2000,
+            "display": "2,000",
+            "confidence": "assumed",
+            "note": null
+          },
+          "IFZA": {
+            "kind": "num",
+            "value": 700,
+            "numeric": 700,
+            "display": "700",
+            "confidence": "assumed",
+            "note": "~700 estimate"
+          },
+          "RAKEZ": {
+            "kind": "incl",
+            "value": null,
+            "numeric": 0,
+            "display": "incl",
+            "confidence": "confirmed",
+            "note": "+40 allocation fee"
+          },
+          "Ajman": {
+            "kind": "incl",
+            "value": null,
+            "numeric": 0,
+            "display": "incl",
+            "confidence": "confirmed",
+            "note": null
+          },
+          "DWTC": {
+            "kind": "missing",
+            "value": null,
+            "numeric": 0,
+            "display": "",
+            "confidence": "missing",
+            "note": "DWTC medical cost unknown"
+          }
+        }
+      },
+      {
+        "component": "Emirates ID (per visa)",
+        "zones": {
+          "Meydan": {
+            "kind": "num",
+            "value": 750,
+            "numeric": 750,
+            "display": "750",
+            "confidence": "assumed",
+            "note": null
+          },
+          "IFZA": {
+            "kind": "num",
+            "value": 400,
+            "numeric": 400,
+            "display": "400",
+            "confidence": "assumed",
+            "note": "~400 estimate"
+          },
+          "RAKEZ": {
+            "kind": "incl",
+            "value": null,
+            "numeric": 0,
+            "display": "incl",
+            "confidence": "confirmed",
+            "note": "+30 delivery fee"
+          },
+          "Ajman": {
+            "kind": "incl",
+            "value": null,
+            "numeric": 0,
+            "display": "incl",
+            "confidence": "confirmed",
+            "note": null
+          },
+          "DWTC": {
+            "kind": "missing",
+            "value": null,
+            "numeric": 0,
+            "display": "",
+            "confidence": "missing",
+            "note": "DWTC Emirates ID cost unknown"
+          }
+        }
+      },
+      {
+        "component": "Status change (inside UAE)",
+        "zones": {
+          "Meydan": {
+            "kind": "num",
+            "value": 1500,
+            "numeric": 1500,
+            "display": "1,500",
+            "confidence": "confirmed",
+            "note": null
+          },
+          "IFZA": {
+            "kind": "num",
+            "value": 1600,
+            "numeric": 1600,
+            "display": "1,600",
+            "confidence": "confirmed",
+            "note": null
+          },
+          "RAKEZ": {
+            "kind": "incl",
+            "value": null,
+            "numeric": 0,
+            "display": "incl",
+            "confidence": "confirmed",
+            "note": null
+          },
+          "Ajman": {
+            "kind": "incl",
+            "value": null,
+            "numeric": 0,
+            "display": "incl",
+            "confidence": "confirmed",
+            "note": null
+          },
+          "DWTC": {
+            "kind": "missing",
+            "value": 0,
+            "numeric": 0,
+            "display": "0",
+            "confidence": "missing",
+            "note": "assumed 0 — confirm DWTC status change"
+          }
+        }
+      },
+      {
+        "component": "Visa bundle increment (bundled zones)",
+        "zones": {
+          "Meydan": {
+            "kind": "na",
+            "value": null,
+            "numeric": 0,
+            "display": "—",
+            "confidence": "na",
+            "note": null
+          },
+          "IFZA": {
+            "kind": "na",
+            "value": null,
+            "numeric": 0,
+            "display": "—",
+            "confidence": "na",
+            "note": null
+          },
+          "RAKEZ": {
+            "kind": "num",
+            "value": 8000,
+            "numeric": 8000,
+            "display": "8,000",
+            "confidence": "confirmed",
+            "note": "RAKEZ bundles all visa components into this increment"
+          },
+          "Ajman": {
+            "kind": "num",
+            "value": 5912,
+            "numeric": 5912,
+            "display": "5,912",
+            "confidence": "confirmed",
+            "note": "Ajman bundles all visa components into this increment"
+          },
+          "DWTC": {
+            "kind": "na",
+            "value": null,
+            "numeric": 0,
+            "display": "—",
+            "confidence": "na",
+            "note": null
+          }
+        }
+      }
+    ],
+    "base": {
+      "Meydan": 12500,
+      "IFZA": 12900,
+      "RAKEZ": 6010,
+      "Ajman": 4888,
+      "DWTC": 12500
+    },
+    "all_in": {
+      "Meydan": 24600,
+      "IFZA": 20600,
+      "RAKEZ": 14010,
+      "Ajman": 10800,
+      "DWTC": 19820
+    },
+    "base_formula": "Licence + Registration + Shared Desk",
+    "all_in_formula": "SUM of all components (incl/—/blank = 0)",
+    "note": "BASE = Licence + Registration + Shared Desk (0 visa). ALL-IN = sum of all components for 1 investor visa, Year 1. 'incl' / '—' / blank cells contribute 0 to the sums. Meydan ALL-IN = 24,100 if the bundled Medical+EID Assistance (2,250) is taken instead of itemised Medical 2,000 + EID 750 (2,750)."
+  },
+  "b2b": {
+    "rows": {
+      "model": {
+        "Meydan": {
+          "kind": "text",
+          "value": "5 tiers (quarterly); CP picks one-time OR recurring",
+          "numeric": null,
+          "display": "5 tiers (quarterly); CP picks one-time OR recurring",
+          "confidence": "confirmed",
+          "note": null
+        },
+        "IFZA": {
+          "kind": "text",
+          "value": "Plan A (%) or Plan B (one-time)",
+          "numeric": null,
+          "display": "Plan A (%) or Plan B (one-time)",
+          "confidence": "confirmed",
+          "note": null
+        },
+        "RAKEZ": {
+          "kind": "text",
+          "value": "Flat",
+          "numeric": null,
+          "display": "Flat",
+          "confidence": "confirmed",
+          "note": null
+        },
+        "Ajman": {
+          "kind": "text",
+          "value": "Tiered (yearly companies)",
+          "numeric": null,
+          "display": "Tiered (yearly companies)",
+          "confidence": "confirmed",
+          "note": null
+        },
+        "DWTC": {
+          "kind": "text",
+          "value": "Flat",
+          "numeric": null,
+          "display": "Flat",
+          "confidence": "confirmed",
+          "note": null
+        }
+      },
+      "base_applies": {
+        "Meydan": {
+          "kind": "text",
+          "value": "Full package",
+          "numeric": null,
+          "display": "Full package",
+          "confidence": "assumed",
+          "note": null
+        },
+        "IFZA": {
+          "kind": "text",
+          "value": "Standard licence price",
+          "numeric": null,
+          "display": "Standard licence price",
+          "confidence": "confirmed",
+          "note": null
+        },
+        "RAKEZ": {
+          "kind": "text",
+          "value": "Licence only",
+          "numeric": null,
+          "display": "Licence only",
+          "confidence": "assumed",
+          "note": null
+        },
+        "Ajman": {
+          "kind": "text",
+          "value": "All-inclusive package",
+          "numeric": null,
+          "display": "All-inclusive package",
+          "confidence": "confirmed",
+          "note": null
+        },
+        "DWTC": {
+          "kind": "text",
+          "value": "Unknown",
+          "numeric": null,
+          "display": "Unknown",
+          "confidence": "assumed",
+          "note": null
+        }
+      },
+      "base_amount": {
+        "Meydan": {
+          "kind": "num",
+          "value": 12500,
+          "numeric": 12500,
+          "display": "12,500",
+          "confidence": "assumed",
+          "note": null
+        },
+        "IFZA": {
+          "kind": "num",
+          "value": 14900,
+          "numeric": 14900,
+          "display": "14,900",
+          "confidence": "confirmed",
+          "note": null
+        },
+        "RAKEZ": {
+          "kind": "num",
+          "value": 6010,
+          "numeric": 6010,
+          "display": "6,010",
+          "confidence": "assumed",
+          "note": null
+        },
+        "Ajman": {
+          "kind": "num",
+          "value": 10800,
+          "numeric": 10800,
+          "display": "10,800",
+          "confidence": "confirmed",
+          "note": null
+        },
+        "DWTC": {
+          "kind": "num",
+          "value": 14000,
+          "numeric": 14000,
+          "display": "14,000",
+          "confidence": "assumed",
+          "note": null
+        }
+      },
+      "renewal": {
+        "Meydan": {
+          "kind": "pct",
+          "value": 0.4,
+          "numeric": 0.4,
+          "display": "40%",
+          "confidence": "confirmed",
+          "note": "renewal rate"
+        },
+        "IFZA": {
+          "kind": "na",
+          "value": null,
+          "numeric": 0,
+          "display": "—",
+          "confidence": "na",
+          "note": "Plan B has no renewal"
+        },
+        "RAKEZ": {
+          "kind": "missing",
+          "value": null,
+          "numeric": 0,
+          "display": "",
+          "confidence": "missing",
+          "note": "RAKEZ renewal unknown"
+        },
+        "Ajman": {
+          "kind": "pct",
+          "value": 0.35,
+          "numeric": 0.35,
+          "display": "35%",
+          "confidence": "confirmed",
+          "note": "flat"
+        },
+        "DWTC": {
+          "kind": "missing",
+          "value": null,
+          "numeric": 0,
+          "display": "",
+          "confidence": "missing",
+          "note": "DWTC renewal unknown"
+        }
+      }
+    },
+    "tiers": {
+      "Meydan": [
+        {
+          "rank": 1,
+          "label": "Bronze · 0–20/qtr",
+          "one_time": 0.3,
+          "recurring": 0.2,
+          "one_time_conf": "confirmed",
+          "recurring_conf": "confirmed",
+          "confidence": "confirmed",
+          "note": null
+        },
+        {
+          "rank": 2,
+          "label": "Silver · 21–30/qtr",
+          "one_time": 0.35,
+          "recurring": 0.25,
+          "one_time_conf": "confirmed",
+          "recurring_conf": "confirmed",
+          "confidence": "confirmed",
+          "note": null
+        },
+        {
+          "rank": 3,
+          "label": "Gold · 31–75/qtr",
+          "one_time": 0.4,
+          "recurring": 0.3,
+          "one_time_conf": "confirmed",
+          "recurring_conf": "confirmed",
+          "confidence": "confirmed",
+          "note": null
+        },
+        {
+          "rank": 4,
+          "label": "Platinum · 76–120/qtr",
+          "one_time": 0.4,
+          "recurring": 0.4,
+          "one_time_conf": "confirmed",
+          "recurring_conf": "confirmed",
+          "confidence": "confirmed",
+          "note": null
+        },
+        {
+          "rank": 5,
+          "label": "Platinum+ · 121+/qtr",
+          "one_time": 0.5,
+          "recurring": 0.5,
+          "one_time_conf": "confirmed",
+          "recurring_conf": "confirmed",
+          "confidence": "confirmed",
+          "note": "50% new, 40% on renewal"
+        }
+      ],
+      "Ajman": [
+        {
+          "rank": 1,
+          "label": "≤10 cos/yr",
+          "one_time": 0.35,
+          "recurring": 0.35,
+          "one_time_conf": "confirmed",
+          "recurring_conf": "confirmed",
+          "confidence": "confirmed",
+          "note": null
+        },
+        {
+          "rank": 2,
+          "label": "≤20 cos/yr",
+          "one_time": 0.4,
+          "recurring": 0.35,
+          "one_time_conf": "confirmed",
+          "recurring_conf": "confirmed",
+          "confidence": "confirmed",
+          "note": null
+        },
+        {
+          "rank": 3,
+          "label": "≤30 cos/yr",
+          "one_time": 0.45,
+          "recurring": 0.35,
+          "one_time_conf": "confirmed",
+          "recurring_conf": "confirmed",
+          "confidence": "confirmed",
+          "note": null
+        },
+        {
+          "rank": 4,
+          "label": "≤350 cos/yr",
+          "one_time": 0.5,
+          "recurring": 0.35,
+          "one_time_conf": "confirmed",
+          "recurring_conf": "confirmed",
+          "confidence": "confirmed",
+          "note": null
+        },
+        {
+          "rank": 5,
+          "label": "350+ cos/yr",
+          "one_time": 0.55,
+          "recurring": 0.35,
+          "one_time_conf": "confirmed",
+          "recurring_conf": "confirmed",
+          "confidence": "confirmed",
+          "note": "capped 52% on a 1-visa deal; recurring/renewal flat 35%"
+        }
+      ],
+      "IFZA": [
+        {
+          "rank": 1,
+          "label": "Flat (Plan A / Plan B)",
+          "one_time": 0.4,
+          "recurring": 0.2,
+          "one_time_conf": "confirmed",
+          "recurring_conf": "assumed",
+          "confidence": "assumed",
+          "note": "Plan B 40% one-time; Plan A recurring 20–25% (assumed)"
+        }
+      ],
+      "RAKEZ": [
+        {
+          "rank": 1,
+          "label": "Flat",
+          "one_time": 0.5,
+          "recurring": null,
+          "one_time_conf": "confirmed",
+          "recurring_conf": "missing",
+          "confidence": "confirmed",
+          "note": "Single source; recurring not disclosed"
+        }
+      ],
+      "DWTC": [
+        {
+          "rank": 1,
+          "label": "Flat",
+          "one_time": 0.2,
+          "recurring": null,
+          "one_time_conf": "confirmed",
+          "recurring_conf": "missing",
+          "confidence": "confirmed",
+          "note": "Recurring not disclosed"
+        }
+      ]
+    },
+    "take_home": {
+      "Meydan": 3750,
+      "IFZA": 5960,
+      "RAKEZ": 3005,
+      "Ajman": 3780,
+      "DWTC": 2800
+    },
+    "take_home_formula": "entry one-time rate (tier rank 1) × base amount",
+    "level_note": "Level = each zone's own ladder position (Meydan = sales/quarter, Ajman = companies/year), not an identical volume.",
+    "level_descriptions": {
+      "low": "Entry tier of each zone's commission ladder: a partner with little or no business volume.",
+      "mid": "Middle tier of each zone's ladder: a partner with moderate business volume.",
+      "high": "Top tier of each zone's ladder: a partner at the highest qualifying volume."
+    }
+  },
+  "multi_year": {
+    "discount": {
+      "Meydan": {
+        "kind": "text",
+        "value": "2yr 10% / 3yr+ 15%",
+        "numeric": null,
+        "display": "2yr 10% / 3yr+ 15%",
+        "confidence": "assumed",
+        "note": null
+      },
+      "IFZA": {
+        "kind": "text",
+        "value": "2yr 15% / 3yr 20% / 5yr 30%",
+        "numeric": null,
+        "display": "2yr 15% / 3yr 20% / 5yr 30%",
+        "confidence": "confirmed",
+        "note": null
+      },
+      "RAKEZ": {
+        "kind": "text",
+        "value": "Explicit non-linear table (see below)",
+        "numeric": null,
+        "display": "Explicit non-linear table (see below)",
+        "confidence": "confirmed",
+        "note": null
+      },
+      "Ajman": {
+        "kind": "text",
+        "value": "Annual model — no multi-year",
+        "numeric": null,
+        "display": "Annual model — no multi-year",
+        "confidence": "confirmed",
+        "note": null
+      },
+      "DWTC": {
+        "kind": "missing",
+        "value": null,
+        "numeric": 0,
+        "display": "",
+        "confidence": "missing",
+        "note": "DWTC multi-year unknown"
+      }
+    },
+    "rakez_biz_one": {
+      "1y": {
+        "kind": "num",
+        "value": 14010,
+        "numeric": 14010,
+        "display": "14,010",
+        "confidence": "confirmed",
+        "note": null
+      },
+      "2y": {
+        "kind": "num",
+        "value": 26620,
+        "numeric": 26620,
+        "display": "26,620",
+        "confidence": "confirmed",
+        "note": null
+      },
+      "3y": {
+        "kind": "num",
+        "value": 37830,
+        "numeric": 37830,
+        "display": "37,830",
+        "confidence": "confirmed",
+        "note": null
+      },
+      "4y": {
+        "kind": "num",
+        "value": 50440,
+        "numeric": 50440,
+        "display": "50,440",
+        "confidence": "confirmed",
+        "note": null
+      },
+      "5y": {
+        "kind": "num",
+        "value": 59560,
+        "numeric": 59560,
+        "display": "59,560",
+        "confidence": "confirmed",
+        "note": null
+      },
+      "6y": {
+        "kind": "num",
+        "value": 67260,
+        "numeric": 67260,
+        "display": "67,260",
+        "confidence": "confirmed",
+        "note": null
+      },
+      "10y": {
+        "kind": "num",
+        "value": 105100,
+        "numeric": 105100,
+        "display": "105,100",
+        "confidence": "confirmed",
+        "note": null
+      }
+    },
+    "year_2": {
+      "Meydan": {
+        "kind": "num",
+        "value": 14700,
+        "numeric": 14700,
+        "display": "14,700",
+        "confidence": "assumed",
+        "note": "~14,700 — assumes visa NOT re-charged in Year 2"
+      },
+      "IFZA": {
+        "kind": "num",
+        "value": 17100,
+        "numeric": 17100,
+        "display": "17,100",
+        "confidence": "assumed",
+        "note": "~17,100"
+      },
+      "RAKEZ": {
+        "kind": "num",
+        "value": 14010,
+        "numeric": 14010,
+        "display": "14,010",
+        "confidence": "confirmed",
+        "note": null
+      },
+      "Ajman": {
+        "kind": "num",
+        "value": 9900,
+        "numeric": 9900,
+        "display": "9,900",
+        "confidence": "confirmed",
+        "note": null
+      },
+      "DWTC": {
+        "kind": "missing",
+        "value": null,
+        "numeric": 0,
+        "display": "",
+        "confidence": "missing",
+        "note": "DWTC Year-2 unknown"
+      }
+    },
+    "year_2_key": "Year-2 powers the flagship inference: 'Year-1 Meydan costly, Year-2 Meydan cheaper.' It rests on the assumption that the residence visa (valid ~2 yrs) is NOT re-charged in Year 2. CONFIRM with Jai — this is the lever."
+  },
+  "sources": [
+    {
+      "area": "B2C licence/visa fees",
+      "zone": "Meydan",
+      "source": "Meydan official quote",
+      "confidence": "confirmed",
+      "note": "Baseline zone"
+    },
+    {
+      "area": "B2C medical/EID",
+      "zone": "Meydan",
+      "source": "Internal estimate",
+      "confidence": "assumed",
+      "note": "Confirm real cost"
+    },
+    {
+      "area": "B2C licence",
+      "zone": "IFZA",
+      "source": "IFZA quote / contact",
+      "confidence": "assumed",
+      "note": "11,900 vs 12,900 open"
+    },
+    {
+      "area": "B2C medical/EID",
+      "zone": "IFZA",
+      "source": "Internal estimate",
+      "confidence": "assumed",
+      "note": "Confirm real cost"
+    },
+    {
+      "area": "B2C all fees",
+      "zone": "RAKEZ",
+      "source": "RAKEZ official (Biz One)",
+      "confidence": "confirmed",
+      "note": "Bundled visa increment"
+    },
+    {
+      "area": "B2C all fees",
+      "zone": "Ajman",
+      "source": "Ajman official",
+      "confidence": "confirmed",
+      "note": "Bundled visa increment"
+    },
+    {
+      "area": "B2C fees",
+      "zone": "DWTC",
+      "source": "Partial / estimate",
+      "confidence": "assumed",
+      "note": "Desk/medical/EID/status missing"
+    },
+    {
+      "area": "B2B commission base",
+      "zone": "Meydan",
+      "source": "To confirm (Akshay)",
+      "confidence": "assumed",
+      "note": "Full package assumed"
+    },
+    {
+      "area": "B2B commission",
+      "zone": "IFZA",
+      "source": "IFZA partner terms",
+      "confidence": "confirmed",
+      "note": "Plan A/B"
+    },
+    {
+      "area": "B2B commission base",
+      "zone": "RAKEZ",
+      "source": "To confirm (Akshay)",
+      "confidence": "assumed",
+      "note": "Licence-only assumed"
+    },
+    {
+      "area": "B2B commission",
+      "zone": "Ajman",
+      "source": "Ajman partner terms",
+      "confidence": "confirmed",
+      "note": "Tiered yearly"
+    },
+    {
+      "area": "B2B commission base",
+      "zone": "DWTC",
+      "source": "To confirm (Akshay)",
+      "confidence": "assumed",
+      "note": "Base unknown"
+    },
+    {
+      "area": "Multi-year",
+      "zone": "RAKEZ",
+      "source": "RAKEZ Biz One schedule",
+      "confidence": "confirmed",
+      "note": "Explicit table"
+    },
+    {
+      "area": "Year-2 visa-recharge",
+      "zone": "All",
+      "source": "To confirm (Jai)",
+      "confidence": "assumed",
+      "note": "Flagship lever"
+    }
+  ],
+  "assumptions_gaps": [
+    {
+      "item": "Commission bases (Meydan, RAKEZ, DWTC)",
+      "placeholder": "Full package / Licence only / Unknown",
+      "confidence": "assumed",
+      "owner": "Akshay",
+      "action": "Get the % base each zone applies commission to"
+    },
+    {
+      "item": "Multi-year (Meydan, DWTC)",
+      "placeholder": "Meydan 10/15% est; DWTC missing",
+      "confidence": "assumed",
+      "owner": "Akshay",
+      "action": "Get real multi-year discount schedules"
+    },
+    {
+      "item": "RAKEZ one-time vs recurring",
+      "placeholder": "Recurring missing",
+      "confidence": "missing",
+      "owner": "Akshay",
+      "action": "Get RAKEZ recurring commission"
+    },
+    {
+      "item": "IFZA 20-vs-25% & 11,900-vs-12,900",
+      "placeholder": "Plan A 20%; licence 12,900",
+      "confidence": "assumed",
+      "owner": "Akshay",
+      "action": "Resolve both IFZA ranges"
+    },
+    {
+      "item": "Meydan & IFZA medical/EID real cost",
+      "placeholder": "Meydan 2,000/750; IFZA 700/400 est",
+      "confidence": "assumed",
+      "owner": "Akshay",
+      "action": "Get actual medical + Emirates ID costs"
+    },
+    {
+      "item": "DWTC desk/medical/EID/status/renewal",
+      "placeholder": "Mostly missing",
+      "confidence": "missing",
+      "owner": "Akshay",
+      "action": "Get full DWTC component breakdown"
+    },
+    {
+      "item": "Live offers (all zones)",
+      "placeholder": "None loaded",
+      "confidence": "missing",
+      "owner": "Akshay",
+      "action": "Get current promotional offers"
+    },
+    {
+      "item": "Year-2 visa-recharge logic",
+      "placeholder": "Assumes visa not re-charged Y2",
+      "confidence": "assumed",
+      "owner": "Jai",
+      "action": "Confirm visa validity / Year-2 recharge — THE LEVER"
+    }
+  ]
+}

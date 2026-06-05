@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Competitor 360 — Commercial Benchmark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Spline+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F2E9;
+    --paper-2:#FBF8F1;
+    --ink:#1B2330;
+    --ink-soft:#465064;
+    --ink-faint:#8C93A1;
+    --line:#E2DACB;
+    --line-strong:#CDC3AE;
+    --teal:#137B6E;        /* Meydan / us */
+    --teal-wash:#137B6E14;
+    --ochre:#B0743A;       /* accent / hidden cost */
+    --ochre-wash:#B0743A1A;
+    --rust:#9C4221;
+    --ok:#3F8E5B;
+    --warn:#C08A2E;
+    --grey:#A7A294;
+    --shadow:0 1px 2px rgba(27,35,48,.04),0 8px 30px rgba(27,35,48,.06);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Spline Sans',sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(var(--line) 0.6px, transparent 0.6px);
+    background-size:22px 22px;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:48px 32px 80px}
+  .num{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+
+  /* ---------- header ---------- */
+  header{border-bottom:1px solid var(--line-strong);padding-bottom:26px;margin-bottom:8px}
+  .kicker{display:flex;align-items:center;gap:10px;font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--ochre);font-weight:600}
+  .kicker .dot{width:5px;height:5px;border-radius:50%;background:var(--ochre)}
+  h1{font-family:'Fraunces',serif;font-weight:500;font-size:clamp(34px,5.5vw,54px);line-height:1.02;letter-spacing:-.015em;margin:14px 0 0}
+  h1 em{font-style:italic;color:var(--teal)}
+  .sub{font-size:15.5px;color:var(--ink-soft);max-width:60ch;margin-top:16px}
+  .meta-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px;align-items:center}
+  .tag{font-size:11.5px;font-weight:500;padding:5px 11px;border-radius:100px;border:1px solid var(--line-strong);background:var(--paper-2);color:var(--ink-soft);display:inline-flex;align-items:center;gap:7px}
+  .tag.proto{border-color:var(--ochre);color:var(--rust);background:var(--ochre-wash)}
+  .tag .d{width:6px;height:6px;border-radius:50%}
+  .d.ok{background:var(--ok)} .d.warn{background:var(--warn)} .d.grey{background:var(--grey)}
+
+  /* ---------- tabs ---------- */
+  .tabs{display:flex;gap:6px;margin:34px 0 30px;background:var(--paper-2);border:1px solid var(--line);border-radius:14px;padding:6px;width:fit-content;box-shadow:var(--shadow)}
+  .tab{font-family:'Spline Sans';font-size:14px;font-weight:500;color:var(--ink-soft);background:transparent;border:none;padding:11px 20px;border-radius:9px;cursor:pointer;display:flex;align-items:center;gap:9px;transition:all .25s ease}
+  .tab .n{font-family:'Fraunces',serif;font-style:italic;font-size:15px;opacity:.6}
+  .tab:hover{color:var(--ink)}
+  .tab.active{background:var(--ink);color:var(--paper);box-shadow:0 2px 10px rgba(27,35,48,.18)}
+  .tab.active .n{opacity:.85;color:var(--paper)}
+
+  .view{display:none;animation:rise .5s cubic-bezier(.2,.7,.2,1) both}
+  .view.show{display:block}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+  .lead{font-family:'Fraunces',serif;font-size:22px;font-weight:400;letter-spacing:-.01em;line-height:1.32;max-width:54ch;margin-bottom:6px}
+  .lead b{font-weight:600;color:var(--teal);font-style:normal}
+  .lead .hi{background:linear-gradient(transparent 62%, var(--ochre-wash) 62%);padding:0 2px}
+  .eyebrow{font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+  .eyebrow:before{content:"";flex:0 0 22px;height:1px;background:var(--line-strong)}
+
+  /* ---------- bar comparison ---------- */
+  .panel{background:var(--paper-2);border:1px solid var(--line);border-radius:18px;padding:30px 32px;box-shadow:var(--shadow);margin:24px 0}
+  .basket-note{font-size:12.5px;color:var(--ink-faint);margin-bottom:24px;display:flex;align-items:center;gap:8px}
+  .basket-note .pill{font-family:'IBM Plex Mono';font-size:11px;background:var(--ink);color:var(--paper);padding:3px 9px;border-radius:6px;letter-spacing:0}
+
+  .bar-row{display:grid;grid-template-columns:108px 1fr 96px;align-items:center;gap:18px;padding:13px 0}
+  .bar-row + .bar-row{border-top:1px dashed var(--line)}
+  .zone-name{font-weight:600;font-size:15px;display:flex;flex-direction:column;gap:2px}
+  .zone-name .tagline{font-size:11px;font-weight:400;color:var(--ink-faint);letter-spacing:.01em}
+  .zone-name.us{color:var(--teal)}
+  .zone-name.us .tagline{color:var(--teal);opacity:.7}
+
+  .track{position:relative;height:34px;background:var(--paper);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .fill-sticker{position:absolute;left:0;top:0;bottom:0;border-radius:7px 0 0 7px;background:var(--ink);opacity:.88}
+  .fill-hidden{position:absolute;top:0;bottom:0;background-image:repeating-linear-gradient(135deg,var(--ochre) 0 2px,transparent 2px 7px);background-color:var(--ochre-wash);border-right:1.5px solid var(--ochre)}
+  .zone-name.us ~ .track .fill-sticker{background:var(--teal)}
+  .tick-label{position:absolute;top:50%;transform:translateY(-50%);font-family:'IBM Plex Mono';font-size:11px;font-weight:500;color:var(--paper);padding-left:9px;white-space:nowrap}
+  .allin{justify-self:end;text-align:right}
+  .allin .v{font-family:'IBM Plex Mono';font-size:18px;font-weight:600;letter-spacing:-.03em}
+  .allin .l{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint)}
+  .zone-name.us ~ .allin .v{color:var(--teal)}
+
+  .gap-flag{display:inline-flex;align-items:center;gap:5px;font-family:'IBM Plex Mono';font-size:10.5px;font-weight:500;color:var(--rust);background:var(--ochre-wash);padding:2px 7px;border-radius:5px;margin-top:3px}
+
+  .legend{display:flex;flex-wrap:wrap;gap:18px;margin-top:22px;padding-top:18px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-soft)}
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+  .sw{width:20px;height:11px;border-radius:3px;flex:none}
+  .sw.solid{background:var(--ink)} .sw.us{background:var(--teal)}
+  .sw.hatch{background-image:repeating-linear-gradient(135deg,var(--ochre) 0 2px,transparent 2px 7px);background-color:var(--ochre-wash);border:1px solid var(--ochre)}
+
+  /* ---------- component table ---------- */
+  .tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);background:var(--paper-2)}
+  table{border-collapse:collapse;width:100%;min-width:640px;font-size:13.5px}
+  th,td{text-align:left;padding:13px 16px;border-bottom:1px solid var(--line)}
+  thead th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);font-weight:600;background:var(--paper);position:sticky;top:0}
+  thead th.zone{text-align:center;font-family:'Spline Sans'}
+  thead th.zone.us{color:var(--teal)}
+  tbody tr:last-child td{border-bottom:none}
+  td.feat{font-weight:500;color:var(--ink)}
+  td.feat small{display:block;font-weight:400;color:var(--ink-faint);font-size:11px}
+  td.cell{text-align:center;font-family:'IBM Plex Mono';font-size:13px;color:var(--ink-soft)}
+  td.cell.us{background:var(--teal-wash)}
+  .inc{color:var(--ok);font-weight:600;font-family:'Spline Sans';font-size:12.5px}
+  .extra{color:var(--rust);font-weight:500}
+  tr.total td{background:var(--ink);color:var(--paper);font-weight:600;border-bottom:none}
+  tr.total td.feat{color:var(--paper)}
+  tr.total td.cell{color:var(--paper);font-size:15px}
+  tr.total td.cell.us{background:var(--teal);color:#fff}
+  tr.renewal td{background:var(--paper);font-style:normal}
+  tr.renewal td.feat{color:var(--ink-soft);font-weight:500}
+  tr.renewal td.cell{color:var(--ink-soft);font-size:12px}
+  .ci{display:inline-block;width:6px;height:6px;border-radius:50%;margin-left:5px;vertical-align:middle}
+  .ci.ok{background:var(--ok)} .ci.warn{background:var(--warn)} .ci.grey{background:var(--grey)}
+
+  /* ---------- commission cards ---------- */
+  .comm-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:24px}
+  .ccard{border:1px solid var(--line);border-radius:16px;padding:22px;background:var(--paper-2);box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .ccard.us{border-color:var(--teal);background:linear-gradient(180deg,var(--teal-wash),var(--paper-2))}
+  .ccard h3{font-family:'Fraunces',serif;font-weight:600;font-size:19px;display:flex;justify-content:space-between;align-items:baseline}
+  .ccard.us h3{color:var(--teal)}
+  .ccard .model{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);font-weight:600;margin:2px 0 18px}
+  .rate-big{font-family:'IBM Plex Mono';font-size:38px;font-weight:600;letter-spacing:-.04em;line-height:1}
+  .ccard.us .rate-big{color:var(--teal)}
+  .rate-cap{font-size:12px;color:var(--ink-soft);margin-top:4px}
+  .crow{display:flex;justify-content:space-between;font-size:12.5px;padding:7px 0;border-top:1px dashed var(--line);color:var(--ink-soft)}
+  .crow b{color:var(--ink);font-family:'IBM Plex Mono';font-weight:500}
+  .ccard .note{font-size:11.5px;color:var(--ink-faint);margin-top:14px;line-height:1.45;border-top:1px solid var(--line);padding-top:12px}
+
+  .comm-bars{margin-top:8px}
+  .cb-row{display:grid;grid-template-columns:108px 1fr 150px;align-items:center;gap:16px;padding:11px 0}
+  .cb-row + .cb-row{border-top:1px dashed var(--line)}
+  .cb-track{position:relative;height:30px;background:var(--paper);border:1px solid var(--line);border-radius:7px;overflow:visible}
+  .cb-fill{position:absolute;left:0;top:0;bottom:0;border-radius:6px;background:var(--ink-faint)}
+  .cb-fill.us{background:var(--teal)}
+  .cb-fill.best{background:var(--ink)}
+  .cb-ceil{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ochre)}
+  .cb-ceil:after{content:attr(data-l);position:absolute;top:-15px;left:50%;transform:translateX(-50%);font-family:'IBM Plex Mono';font-size:9px;color:var(--ochre);white-space:nowrap}
+  .cb-val{font-family:'IBM Plex Mono';font-size:11px;color:var(--paper);font-weight:600;position:absolute;top:50%;transform:translateY(-50%);left:10px}
+  .cb-meta{font-size:11.5px;color:var(--ink-soft);justify-self:start}
+
+  /* ---------- sources / verify ---------- */
+  .foot{margin-top:46px;border-top:1px solid var(--line-strong);padding-top:30px}
+  .foot-grid{display:grid;grid-template-columns:1fr 1fr;gap:34px}
+  @media(max-width:720px){.foot-grid{grid-template-columns:1fr}}
+  .foot h4{font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:14px;font-weight:600}
+  .src-item{font-size:12.5px;color:var(--ink-soft);padding:8px 0;border-bottom:1px solid var(--line);display:flex;gap:9px;align-items:flex-start}
+  .src-item:last-child{border-bottom:none}
+  .src-item .ci{margin-top:6px;flex:none}
+  .src-item b{color:var(--ink);font-weight:600}
+  .verify .v-item{font-size:12.5px;color:var(--ink-soft);padding:9px 0;border-bottom:1px solid var(--line);line-height:1.45}
+  .verify .v-item:last-child{border-bottom:none}
+  .verify .v-item b{color:var(--rust);font-weight:600}
+  .endline{text-align:center;font-size:11.5px;color:var(--ink-faint);margin-top:40px;font-family:'Fraunces',serif;font-style:italic;font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="kicker"><span class="dot"></span> Competitor 360 · Commercial Benchmark</div>
+    <h1>What does it <em>actually</em> cost?</h1>
+    <p class="sub">Meydan against IFZA, RAKEZ and Ajman — on the only two levers that move a free-zone decision: the price the customer pays, and the commission the channel partner earns. Everything else is the same trade licence.</p>
+    <div class="meta-row">
+      <span class="tag proto"><span class="d" style="background:var(--rust)"></span> Prototype · DWTC pending</span>
+      <span class="tag"><span class="d ok"></span> Confirmed</span>
+      <span class="tag"><span class="d warn"></span> Mixed / estimated</span>
+      <span class="tag"><span class="d grey"></span> To verify</span>
+    </div>
+  </header>
+
+  <div class="tabs" role="tablist">
+    <button class="tab active" data-view="cust" role="tab"><span class="n">01</span> Customer Pricing</button>
+    <button class="tab" data-view="cp" role="tab"><span class="n">02</span> Channel Partner</button>
+  </div>
+
+  <!-- ============ VIEW 1 : CUSTOMER PRICING ============ -->
+  <section class="view show" id="cust">
+
+    <div class="eyebrow">The headline is a trap</div>
+    <p class="lead">On the sticker, <b>Meydan</b> looks like the second-cheapest. On a real <span class="hi">all-in basket</span>, it is the <b>most expensive</b> of the four — because everyone else bundles, and Meydan charges for each piece separately.</p>
+
+    <div class="panel">
+      <div class="basket-note"><span class="pill">BASKET</span> One investor visa · operating company · Year 1 · all-in (licence, flexi-desk, establishment card, visa, medical &amp; EID, status change). All figures AED, VAT-incl.</div>
+
+      <!-- AJMAN -->
+      <div class="bar-row">
+        <div class="zone-name">Ajman<span class="tagline">ANCFZ · bundled</span></div>
+        <div class="track">
+          <div class="fill-sticker" style="width:45%"><span class="tick-label">10,800 sticker</span></div>
+        </div>
+        <div class="allin"><div class="v">10,800</div><div class="l">all-in</div></div>
+      </div>
+      <!-- RAKEZ -->
+      <div class="bar-row">
+        <div class="zone-name">RAKEZ<span class="tagline">Biz One Visa · bundled</span></div>
+        <div class="track">
+          <div class="fill-sticker" style="width:58.4%"><span class="tick-label">14,010 sticker</span></div>
+        </div>
+        <div class="allin"><div class="v">14,010</div><div class="l">all-in</div></div>
+      </div>
+      <!-- IFZA -->
+      <div class="bar-row">
+        <div class="zone-name">IFZA<span class="tagline">1-visa · unbundled</span></div>
+        <div class="track">
+          <div class="fill-sticker" style="width:62.1%"><span class="tick-label">14,900 sticker</span></div>
+          <div class="fill-hidden" style="left:62.1%;width:23.7%"></div>
+        </div>
+        <div class="allin"><div class="v">~20,600</div><div class="l">all-in</div><div class="gap-flag">+5,700 hidden</div></div>
+      </div>
+      <!-- MEYDAN -->
+      <div class="bar-row">
+        <div class="zone-name us">Meydan<span class="tagline">us · unbundled</span></div>
+        <div class="track">
+          <div class="fill-sticker" style="width:50.5%"><span class="tick-label">12,125 sticker</span></div>
+          <div class="fill-hidden" style="left:50.5%;width:48.4%"></div>
+        </div>
+        <div class="allin"><div class="v">23,725</div><div class="l">all-in</div><div class="gap-flag">+11,600 hidden</div></div>
+      </div>
+
+      <div class="legend">
+        <span><span class="sw solid"></span> Advertised sticker price</span>
+        <span><span class="sw us"></span> Meydan sticker</span>
+        <span><span class="sw hatch"></span> Cost added on top before you can operate</span>
+      </div>
+    </div>
+
+    <div class="eyebrow">Why — the same basket, line by line</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th class="zone us">Meydan</th>
+            <th class="zone">IFZA</th>
+            <th class="zone">RAKEZ</th>
+            <th class="zone">Ajman</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="feat">Licence + 3 activities<small>base package</small></td>
+            <td class="cell us">12,125<span class="ci ok"></span></td>
+            <td class="cell">14,900<span class="ci warn"></span></td>
+            <td class="cell">incl.</td>
+            <td class="cell">incl.</td>
+          </tr>
+          <tr>
+            <td class="feat">Flexi-desk / co-working</td>
+            <td class="cell us"><span class="inc">included</span></td>
+            <td class="cell"><span class="inc">included</span></td>
+            <td class="cell"><span class="inc">included</span></td>
+            <td class="cell"><span class="inc">included</span></td>
+          </tr>
+          <tr>
+            <td class="feat">Establishment / immigration card</td>
+            <td class="cell us"><span class="extra">+2,000</span></td>
+            <td class="cell"><span class="extra">+2,000</span></td>
+            <td class="cell"><span class="inc">included</span></td>
+            <td class="cell"><span class="inc">included</span></td>
+          </tr>
+          <tr>
+            <td class="feat">Visa allocation (quota)</td>
+            <td class="cell us"><span class="extra">+1,850</span></td>
+            <td class="cell"><span class="inc">included</span></td>
+            <td class="cell"><span class="inc">included</span></td>
+            <td class="cell"><span class="inc">included</span></td>
+          </tr>
+          <tr>
+            <td class="feat">Residence visa (investor)<small>the actual visa issuance</small></td>
+            <td class="cell us"><span class="extra">+4,000</span></td>
+            <td class="cell">FREE<small style="color:var(--ok)">+1,000 title</small></td>
+            <td class="cell"><span class="inc">included</span></td>
+            <td class="cell"><span class="inc">included</span></td>
+          </tr>
+          <tr>
+            <td class="feat">Medical + Emirates ID</td>
+            <td class="cell us"><span class="extra">+2,250</span><span class="ci grey"></span></td>
+            <td class="cell"><span class="extra">~1,100</span><span class="ci grey"></span></td>
+            <td class="cell"><span class="inc">included</span></td>
+            <td class="cell"><span class="inc">included</span></td>
+          </tr>
+          <tr>
+            <td class="feat">Status change<small>if applicant inside UAE</small></td>
+            <td class="cell us"><span class="extra">+1,500</span></td>
+            <td class="cell"><span class="extra">+1,600</span></td>
+            <td class="cell"><span class="inc">included</span></td>
+            <td class="cell"><span class="inc">included</span></td>
+          </tr>
+          <tr class="total">
+            <td class="feat">All-in · Year 1</td>
+            <td class="cell us">23,725</td>
+            <td class="cell">~20,600</td>
+            <td class="cell">14,010</td>
+            <td class="cell">10,800</td>
+          </tr>
+          <tr class="renewal">
+            <td class="feat">Renewal · Year 2<small>direction of travel</small></td>
+            <td class="cell us">≈ same (re-charges all)</td>
+            <td class="cell">↓ visa stays free</td>
+            <td class="cell">= same as Y1</td>
+            <td class="cell">↓ 9,900</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="basket-note" style="margin-top:16px"><span class="d ok" style="width:6px;height:6px;border-radius:50%;background:var(--ok)"></span>&nbsp; The renewal row is the quiet kicker: Meydan re-charges licence + allocation + visa every year, while IFZA's visa is free-for-life and Ajman renews cheaper — so Meydan's gap <b style="color:var(--teal)">&nbsp;widens&nbsp;</b> over a 3-year horizon.</p>
+
+  </section>
+
+  <!-- ============ VIEW 2 : CHANNEL PARTNER ============ -->
+  <section class="view" id="cp">
+
+    <div class="eyebrow">The other half of the war</div>
+    <p class="lead"><b>RAKEZ</b> pays a partner <span class="hi">50% from the very first deal</span>. <b>Meydan</b> starts at 30% and only reaches 50% above 121 sales a quarter — so for the typical partner, Meydan is the <b>least rewarding zone to sell</b>.</p>
+
+    <div class="panel">
+      <div class="basket-note"><span class="pill">SCENARIO</span> Commission a partner earns on one <b>new</b> sale, at their <b>entry</b> tier. Orange marker = the ceiling they could reach at top volume.</div>
+
+      <div class="comm-bars">
+        <!-- RAKEZ -->
+        <div class="cb-row">
+          <div class="zone-name">RAKEZ<span class="tagline">flat</span></div>
+          <div class="cb-track"><div class="cb-fill best" style="width:91%"><span class="cb-val">50%</span></div></div>
+          <div class="cb-meta">Same 50% at any volume</div>
+        </div>
+        <!-- AJMAN -->
+        <div class="cb-row">
+          <div class="zone-name">Ajman<span class="tagline">tiered · yearly</span></div>
+          <div class="cb-track"><div class="cb-fill" style="width:63.6%"><span class="cb-val">35%</span></div><div class="cb-ceil" data-l="55%" style="left:100%"></div></div>
+          <div class="cb-meta">→ up to 55% at 350+ cos/yr</div>
+        </div>
+        <!-- MEYDAN -->
+        <div class="cb-row">
+          <div class="zone-name us">Meydan<span class="tagline">tiered · quarterly</span></div>
+          <div class="cb-track"><div class="cb-fill us" style="width:54.5%"><span class="cb-val">30%</span></div><div class="cb-ceil" data-l="50%" style="left:91%"></div></div>
+          <div class="cb-meta">→ 50% only above 121/qtr</div>
+        </div>
+        <!-- IFZA -->
+        <div class="cb-row">
+          <div class="zone-name">IFZA<span class="tagline">plan A / plan B</span></div>
+          <div class="cb-track"><div class="cb-fill" style="width:40.9%"><span class="cb-val">~22%</span></div><div class="cb-ceil" data-l="40% one-time" style="left:72.7%"></div></div>
+          <div class="cb-meta">Plan A 20–25%, or 40% one-time</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="eyebrow">How each scheme is actually built</div>
+    <div class="comm-grid">
+
+      <div class="ccard us">
+        <h3>Meydan</h3>
+        <div class="model">5 tiers · quarterly · pick one</div>
+        <div class="rate-big">30–50%</div>
+        <div class="rate-cap">Bronze → Platinum+ on quarterly new sales</div>
+        <div class="crow"><span>Entry (Bronze 0–20)</span><b>30% / 20%</b></div>
+        <div class="crow"><span>Top (Platinum+ 121+)</span><b>50% / 50%</b></div>
+        <div class="crow"><span>Renewal</span><b>40% recur.</b></div>
+        <div class="note">Partner <b>chooses</b> one-time (more now, nothing on renewal) <b>or</b> recurring (less, but paid on every renewal invoice). Back-loaded — generous only at high volume.</div>
+      </div>
+
+      <div class="ccard">
+        <h3>RAKEZ</h3>
+        <div class="model">flat</div>
+        <div class="rate-big">50%</div>
+        <div class="rate-cap">Same from the first sale</div>
+        <div class="crow"><span>Entry</span><b>50%</b></div>
+        <div class="crow"><span>Top</span><b>50%</b></div>
+        <div class="crow"><span>Renewal</span><b>—</b></div>
+        <div class="note">The most generous for a small or new partner. Single source so far — worth confirming whether one-time only or recurring.</div>
+      </div>
+
+      <div class="ccard">
+        <h3>Ajman</h3>
+        <div class="model">tiered · yearly volume</div>
+        <div class="rate-big">35–55%</div>
+        <div class="rate-cap">By companies sold per year</div>
+        <div class="crow"><span>Entry (≤10 cos)</span><b>35%</b></div>
+        <div class="crow"><span>Top (350+ cos)</span><b>55%*</b></div>
+        <div class="crow"><span>Renewal</span><b>35% flat</b></div>
+        <div class="note">The "45%" quoted by the contact is the mid tier (≤30 cos). *Capped at 52% on the 1-visa band.</div>
+      </div>
+
+      <div class="ccard">
+        <h3>IFZA</h3>
+        <div class="model">choice of two plans</div>
+        <div class="rate-big">20–40%</div>
+        <div class="rate-cap">Plan A recurring · Plan B one-time</div>
+        <div class="crow"><span>Plan A</span><b>20–25%</b></div>
+        <div class="crow"><span>Plan B</span><b>40% once</b></div>
+        <div class="crow"><span>Renewal</span><b>A only</b></div>
+        <div class="note">Plan B pays 40% once with no slab and nothing on renewal. Rate conflicts across sources (20% vs 25%).</div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ============ SHARED FOOTER ============ -->
+  <div class="foot">
+    <div class="foot-grid">
+      <div>
+        <h4>Sources &amp; freshness</h4>
+        <div class="src-item"><span class="ci ok"></span><div><b>Meydan</b> — official price list (footer dated 19 Aug 2025) + Channel Partner Tier Scheme + Tanya commission walkthrough.</div></div>
+        <div class="src-item"><span class="ci warn"></span><div><b>IFZA</b> — official price list &amp; schedule of fees (Aug 2024) + partner price-list image + fresh contact pricing (Jun 2026).</div></div>
+        <div class="src-item"><span class="ci ok"></span><div><b>RAKEZ</b> — 2026 product factsheet + component advantages sheet; commission via contact message.</div></div>
+        <div class="src-item"><span class="ci ok"></span><div><b>Ajman</b> — ANCFZ package list image + commission Annexure + contact message.</div></div>
+      </div>
+      <div class="verify">
+        <h4>Before this goes to leadership — verify</h4>
+        <div class="v-item"><b>Meydan medical/EID:</b> is the 2,250 inside the 4,000 visa fee or genuinely separate? Swings the all-in by ~2,250.</div>
+        <div class="v-item"><b>Meydan price list date:</b> filename says Mar 2026, footer says Aug 2025 — confirm which is live.</div>
+        <div class="v-item"><b>IFZA medical/EID:</b> figure is estimated (not on the price list); confirm the real cost.</div>
+        <div class="v-item"><b>IFZA commission:</b> 20% (price list) vs 25% (contact) — which is current?</div>
+        <div class="v-item"><b>Ajman entity:</b> ANCFZ all-inclusive vs the separate Freelancer/Virtual/Physical-Office sheet — confirm the competitor of record.</div>
+        <div class="v-item"><b>RAKEZ commission:</b> single source — confirm flat 50% and one-time vs recurring.</div>
+      </div>
+    </div>
+    <p class="endline">Same licence everywhere. The fight is price and commission — and on both, Meydan is currently the costly, cautious option.</p>
+  </div>
+
+</div>
+
+<script>
+  const tabs = document.querySelectorAll('.tab');
+  const views = document.querySelectorAll('.view');
+  tabs.forEach(t=>t.addEventListener('click',()=>{
+    tabs.forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    const v = t.dataset.view;
+    views.forEach(s=>{
+      s.classList.remove('show');
+      if(s.id===v){ void s.offsetWidth; s.classList.add('show'); }
+    });
+  }));
+
+  // gentle reveal of bars on first paint
+  window.addEventListener('DOMContentLoaded',()=>{
+    document.querySelectorAll('.fill-sticker,.fill-hidden,.cb-fill').forEach((el,i)=>{
+      const w = el.style.width || el.style.left;
+      el.style.transition='none';
+      const target = el.style.width;
+      el.style.width='0';
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{
+        el.style.transition='width .9s cubic-bezier(.2,.7,.2,1) '+(i*60)+'ms';
+        el.style.width=target;
+      }));
+    });
+  });
+</script>
+</body>
+</html>
