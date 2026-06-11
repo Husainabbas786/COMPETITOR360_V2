@@ -439,6 +439,67 @@ table.b2c-grid thead th, table.b2c-grid .grid-cell, table.b2c-grid .row-label { 
   .insight { font-size: 16px; }
 }
 
+/* ===========================================================================
+   B2C EDIT PANEL — live figure editing + export (Phase 1)
+   =========================================================================== */
+.b2c-toolbar { display: flex; justify-content: flex-end; align-items: center; margin: 0 0 12px; }
+
+/* "Edit data" toggle (ochre accent to distinguish from the ink in-table toggles) */
+.edit-toggle { display: inline-flex; align-items: center; gap: 9px; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--ink-soft); user-select: none; }
+.edit-toggle.on { color: var(--ink); }
+.edit-toggle input { position: absolute; opacity: 0; width: 0; height: 0; }
+.edit-toggle .tgl-track { position: relative; inset: auto; width: 34px; height: 20px; flex: none; background: var(--line-strong); border-radius: 999px; transition: background .18s; }
+.edit-toggle .tgl-track::before { content: ""; position: absolute; left: 2px; top: 2px; width: 16px; height: 16px; background: #fff; border-radius: 50%; transition: .18s; box-shadow: 0 1px 2px rgba(0, 0, 0, .15); }
+.edit-toggle input:checked + .tgl-track { background: var(--ochre); }
+.edit-toggle input:checked + .tgl-track::before { transform: translateX(14px); }
+
+/* fixed right drawer — keeps the table visible (body padding makes room) */
+body { transition: padding-right .2s ease; }
+body.b2c-editing { padding-right: 380px; }
+.edit-drawer {
+  position: fixed; top: 0; right: 0; width: 380px; height: 100vh; z-index: 200;
+  background: var(--paper-2); border-left: 1px solid var(--line-strong);
+  box-shadow: -8px 0 30px rgba(27, 35, 48, .10);
+  display: flex; flex-direction: column;
+  animation: drawer-in .22s cubic-bezier(.2, .7, .2, 1);
+}
+@keyframes drawer-in { from { transform: translateX(24px); opacity: .5; } to { transform: none; opacity: 1; } }
+.edit-head { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px 10px; }
+.edit-head h3 { font-family: var(--serif); font-size: 18px; font-weight: 600; }
+.edit-close { width: 28px; height: 28px; border-radius: 8px; border: 1px solid var(--line-strong); background: var(--paper); font-size: 18px; line-height: 1; cursor: pointer; color: var(--ink-soft); }
+.edit-close:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.edit-hint { font-size: 11.5px; color: var(--ink-faint); padding: 0 20px 6px; line-height: 1.5; }
+
+.edit-body { flex: 1; overflow-y: auto; padding: 6px 12px 12px; }
+.edit-zone { border: 1px solid var(--line); border-radius: 12px; margin: 10px 0; background: var(--paper); overflow: hidden; }
+.edit-zone-head { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 11px 14px; background: var(--paper-2); border: none; cursor: pointer; }
+.edit-zone-head:hover { background: var(--line); }
+.edit-zone-name { font-family: var(--serif); font-weight: 600; font-size: 15px; color: var(--ink); }
+.edit-zone-meta { display: inline-flex; align-items: center; gap: 10px; font-size: 9.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint); }
+.edit-chev { font-family: var(--mono); font-size: 13px; width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--line-strong); border-radius: 5px; color: var(--ink-soft); }
+.edit-zone-body { padding: 4px 12px 10px; }
+.edit-row { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px dashed var(--line); }
+.edit-row:last-child { border-bottom: none; }
+.edit-row-label { flex: 1 1 88px; min-width: 0; font-size: 12px; color: var(--ink-soft); line-height: 1.25; padding-top: 5px; }
+.edit-row-label small { display: block; font-size: 10px; color: var(--ink-faint); }
+.edit-inputs { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+.edit-field { display: inline-flex; flex-direction: column; gap: 2px; }
+.edit-field-label { font-size: 8.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-faint); text-align: center; }
+.edit-field input { width: 90px; font-family: var(--mono); font-size: 12px; text-align: right; padding: 5px 7px; border: 1px solid var(--line-strong); border-radius: 7px; background: var(--paper-2); color: var(--ink); }
+.edit-field input:focus { outline: none; border-color: var(--ochre); background: #fff; }
+
+.edit-foot { display: flex; gap: 8px; padding: 12px; border-top: 1px solid var(--line-strong); background: var(--paper-2); }
+.edit-reset, .edit-download { flex: 1; padding: 9px 10px; font-family: var(--sans); font-size: 12.5px; font-weight: 500; border-radius: 9px; cursor: pointer; border: 1px solid var(--line-strong); transition: background .15s, color .15s; }
+.edit-reset { background: var(--paper); color: var(--ink-soft); }
+.edit-reset:hover { background: var(--line); color: var(--ink); }
+.edit-download { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.edit-download:hover { background: #000; }
+
+@media (max-width: 760px) {
+  body.b2c-editing { padding-right: 0; }
+  .edit-drawer { width: 100%; }
+}
+
 /* ---------- B2B commission bars ---------- */
 .comm-bars { margin-top: 4px; }
 .cb-row { display: grid; grid-template-columns: 140px 1fr 168px; align-items: center; gap: 22px; padding: 17px 0; }

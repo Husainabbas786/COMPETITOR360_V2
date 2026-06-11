@@ -3,7 +3,7 @@
 // Shared by B2CView (which owns the data) so the table and the read-out render
 // from one source. Reads only through the compute engine; no figures here.
 // ---------------------------------------------------------------------------
-import { b2c, CURRENCY } from '../../lib/b2cEngine.js'
+import { CURRENCY } from '../../lib/b2cEngine.js'
 import { COPY } from './copy.js'
 
 const CUR = CURRENCY.replace(/\s*\(.*\)/, '') // "AED"
@@ -32,10 +32,10 @@ function pickItemisedPackage(z, V) {
   return z.packages.find((p) => p.visas === Math.min(V, max)) || z.packages[z.packages.length - 1]
 }
 
-function itemisedColumn(zone, sel, isBaseline) {
+function itemisedColumn(engine, zone, sel, isBaseline) {
   const { visas: V, years, statusChange, medicalCount, eidCount } = sel
-  const z = b2c.getZone(zone)
-  const result = b2c.computeCost({ zone, visas: V, years, statusChange, medicalCount, eidCount })
+  const z = engine.getZone(zone)
+  const result = engine.computeCost({ zone, visas: V, years, statusChange, medicalCount, eidCount })
   const pkg = pickItemisedPackage(z, V)
   return {
     zone,
@@ -51,12 +51,12 @@ function itemisedColumn(zone, sel, isBaseline) {
   }
 }
 
-function bundledColumn(zone, pkg, years, V, limited = false) {
+function bundledColumn(engine, zone, pkg, years, V, limited = false) {
   if (!pkg) {
     // No package at this visa count (e.g. RAKEZ beyond 8 visas) — greyed slot.
     return { zone, isBaseline: false, pkgName: '—', sub: visaLabel(V), result: null, twoYear: null, byKey: {}, activities: null, limited, available: false }
   }
-  const result = b2c.computeCost({ zone, packageId: pkg.package_id, years })
+  const result = engine.computeCost({ zone, packageId: pkg.package_id, years })
   return {
     zone,
     isBaseline: false,
@@ -65,26 +65,27 @@ function bundledColumn(zone, pkg, years, V, limited = false) {
     result,
     twoYear: twoYearOf(result),
     byKey: indexLines(result.lines),
-    activities: pkg.activities || b2c.getZone(zone).activities,
+    activities: pkg.activities || engine.getZone(zone).activities,
     limited,
     available: true,
   }
 }
 
-// One column per zone for the selected visa count. RAKEZ adds its limited Biz
-// Saver as a second column when one exists at that count.
-export function buildColumns(sel) {
+// One column per zone for the selected visa count, computed via the (stateful)
+// engine passed in. RAKEZ adds its limited Biz Saver as a second column when one
+// exists at that count.
+export function buildColumns(engine, sel) {
   const { visas: V, years } = sel
-  const cols = [itemisedColumn('Meydan', sel, true), itemisedColumn('IFZA', sel, false)]
+  const cols = [itemisedColumn(engine, 'Meydan', sel, true), itemisedColumn(engine, 'IFZA', sel, false)]
 
-  const rakez = b2c.getZone('RAKEZ')
+  const rakez = engine.getZone('RAKEZ')
   const bizPkg = rakez.packages.find((p) => p.package_id.startsWith('rakez_biz') && p.visas === V)
   const saverPkg = rakez.packages.find((p) => p.package_id.startsWith('rakez_saver') && p.visas === V)
-  cols.push(bundledColumn('RAKEZ', bizPkg, years, V))
-  if (saverPkg) cols.push(bundledColumn('RAKEZ', saverPkg, years, V, true))
+  cols.push(bundledColumn(engine, 'RAKEZ', bizPkg, years, V))
+  if (saverPkg) cols.push(bundledColumn(engine, 'RAKEZ', saverPkg, years, V, true))
 
-  const ajman = b2c.getZone('Ajman')
-  cols.push(bundledColumn('Ajman', ajman.packages.find((p) => p.visas === V), years, V))
+  const ajman = engine.getZone('Ajman')
+  cols.push(bundledColumn(engine, 'Ajman', ajman.packages.find((p) => p.visas === V), years, V))
 
   return cols
 }

@@ -4,7 +4,11 @@
 import schema from '../data/master-schema.json'
 import { createB2CCompute } from './b2cCompute.js'
 
+// Pristine, untouched schema reference (used for "Reset to saved").
 export const SCHEMA = schema
+// Re-exported so the view can rebuild the engine from an edited schema clone.
+export { createB2CCompute }
+// Default singleton engine (pristine schema) — kept for non-edit consumers.
 export const b2c = createB2CCompute(schema)
 
 // Fixed component rows (order is meaningful — render as-is).

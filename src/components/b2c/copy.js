@@ -65,6 +65,16 @@ export const COPY = {
     deltaPricier: 'dearer than Meydan',
   },
 
+  edit: {
+    toggle: 'Edit data',
+    title: 'Edit data',
+    hint: 'Edits preview live across the table and read-out. Download to make them permanent; nothing is saved to the browser.',
+    download: 'Download updated schema',
+    reset: 'Reset to saved',
+    close: 'Close edit panel',
+    renewalNote: '1yr = renewal',
+  },
+
   saverBadge: 'limited',
   note:
     'Meydan is the baseline. Itemised zones (Meydan, IFZA) build from per-component fees; bundled zones (RAKEZ, Ajman) carry the all-in in the package price, so every component reads “Included”. Residence visas are valid ~2 years, so visa-side items are not re-charged in Year 2.',
