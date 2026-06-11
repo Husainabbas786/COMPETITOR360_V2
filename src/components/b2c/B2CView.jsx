@@ -1,37 +1,35 @@
-import { useMemo } from 'react'
-import { pricing } from '../../logic/engines.js'
-import ComponentPanel from './ComponentPanel.jsx'
-import PricingTable from './PricingTable.jsx'
-import StickerChart from './StickerChart.jsx'
+import { useMemo, useState } from 'react'
+import B2CControls from './B2CControls.jsx'
+import B2CTable from './B2CTable.jsx'
+import B2CInsights from './B2CInsights.jsx'
 import SourcesPanel from '../SourcesPanel.jsx'
+import { COPY } from './copy.js'
+import { buildColumns, buildGroups, buildInsights } from './b2cModel.js'
 
+// Rebuilt B2C view. The two-column grid holds ONLY the control rail and the
+// table, so the sticky rail releases exactly at the table's end. Everything else
+// (foot-note, read-out, sources & verify) sits full-width below the grid.
 export default function B2CView({ state, setState }) {
-  const results = useMemo(() => pricing.computeAll(state), [state])
+  const cols = useMemo(() => buildColumns(state), [state])
+  const groups = useMemo(() => buildGroups(cols), [cols])
+  const [collapsed, setCollapsed] = useState({})
+  const toggle = (zone) => setCollapsed((c) => ({ ...c, [zone]: !c[zone] }))
+  const insights = buildInsights(groups, collapsed)
 
   return (
     <>
-      {/* Slim control rail (left) + wide chart/table (right), visible together */}
       <div className="b2c-layout">
-        <ComponentPanel state={state} setState={setState} />
-
+        <B2CControls state={state} setState={setState} />
         <div className="b2c-main">
-          <div className="section-head">
-            <h2>{state.subview === 'chart' ? 'Sticker vs all-in' : 'The same basket, line by line'}</h2>
-          </div>
-
-          {state.subview === 'chart'
-            ? <StickerChart state={state} results={results} />
-            : <PricingTable state={state} results={results} />}
-
-          <p className="foot-note">
-            Sticker = the price each zone advertises (licence for unbundled zones; the full package for bundled
-            RAKEZ &amp; Ajman). Hidden = all-in − sticker — the cost stacked on before you can operate. Visa-side
-            items are Year-1 one-time costs; the residence visa is valid ~2 yrs, so it is not re-charged in Year-2.
-          </p>
+          <B2CTable state={state} cols={cols} groups={groups} collapsed={collapsed} toggle={toggle} />
         </div>
       </div>
 
-      <SourcesPanel filter="b2c" />
+      <div className="b2c-below">
+        <p className="foot-note">{COPY.note}</p>
+        <B2CInsights insights={insights} />
+        <SourcesPanel filter="b2c" />
+      </div>
     </>
   )
 }

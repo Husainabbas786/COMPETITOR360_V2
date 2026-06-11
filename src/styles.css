@@ -37,7 +37,7 @@ body {
   background-image: radial-gradient(var(--line) 0.6px, transparent 0.6px);
   background-size: 22px 22px;
 }
-.wrap { max-width: 1160px; margin: 0 auto; padding: 36px 40px 96px; }
+.wrap { max-width: 1360px; margin: 0 auto; padding: 36px 30px 96px; }
 @media (max-width: 640px) { .wrap { padding: 28px 20px 72px; } }
 .num, .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
 
@@ -55,7 +55,7 @@ h1 em { font-style: italic; color: var(--teal); }
 .d.ok { background: var(--ok); } .d.warn { background: var(--warn); } .d.grey { background: var(--grey); }
 
 /* ---------- tabs ---------- */
-.tabs { display: flex; gap: 6px; margin: 22px 0 22px; background: var(--paper-2); border: 1px solid var(--line); border-radius: 14px; padding: 6px; width: fit-content; box-shadow: var(--shadow); }
+.tabs { display: flex; gap: 6px; margin: 22px auto; background: var(--paper-2); border: 1px solid var(--line); border-radius: 14px; padding: 6px; width: fit-content; box-shadow: var(--shadow); }
 .tab { font-family: var(--sans); font-size: 14px; font-weight: 500; color: var(--ink-soft); background: transparent; border: none; padding: 11px 20px; border-radius: 9px; cursor: pointer; display: flex; align-items: center; gap: 9px; transition: all .25s ease; }
 .tab .n { font-family: var(--serif); font-style: italic; font-size: 15px; opacity: .6; }
 .tab:hover { color: var(--ink); }
@@ -89,11 +89,14 @@ h1 em { font-style: italic; color: var(--teal); }
 .panel + .panel { margin-top: 18px; }
 .panel h3 { font-family: var(--serif); font-weight: 600; font-size: 16px; margin-bottom: 14px; }
 .panel .hint { font-size: 11.5px; color: var(--ink-faint); margin: -6px 0 14px; line-height: 1.5; }
-/* ---------- B2C : slim control rail + wide chart ---------- */
-.b2c-layout { display: grid; grid-template-columns: 264px 1fr; gap: 30px; align-items: start; margin-top: 6px; }
+/* ---------- B2C : slim control rail + wide table centerpiece ---------- */
+.b2c-layout { display: grid; grid-template-columns: 300px 1fr; gap: 28px; align-items: start; margin-top: 16px; }
 @media (max-width: 860px) { .b2c-layout { grid-template-columns: 1fr; gap: 20px; } }
-.b2c-main { min-width: 0; }            /* let the chart/table own the column, no overflow */
-.b2c-main .section-head { margin-top: 0; }
+.b2c-main { min-width: 0; }            /* let the table own the column, no overflow */
+
+/* Everything below the table sits full-width, outside the sticky-rail grid. */
+.b2c-below { margin-top: 14px; }
+.b2c-below .foot-note { max-width: 92ch; }
 
 .rail { }
 .rail-field { margin-bottom: 18px; }
@@ -194,6 +197,247 @@ tr.deltarow td.cell { font-size: 12px; }
 /* confidence dots (HTML .ci) */
 .ci { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-left: 5px; vertical-align: middle; cursor: help; }
 .ci.ok { background: var(--ok); } .ci.warn { background: var(--warn); } .ci.grey { background: var(--grey); }
+
+/* ===========================================================================
+   B2C REBUILD — control rail + dense zone-grouped comparison grid
+   =========================================================================== */
+
+/* ---- left rail controls ---- */
+/* Pin the controls so visa / medical / EID / year / status stay reachable at any
+   scroll position (clear of the header). Sticks within the grid column. */
+.b2c-rail { position: sticky; top: 20px; align-self: start; }
+@media (max-width: 860px) { .b2c-rail { position: static; } }
+.b2c-rail .visa-stepper {
+  display: flex; align-items: stretch; width: 100%;
+  border: 1px solid var(--line-strong); border-radius: 10px;
+  background: var(--paper); overflow: hidden;
+}
+.b2c-rail .visa-stepper button {
+  flex: none; width: 42px; background: transparent; border: none; cursor: pointer;
+  font-size: 20px; line-height: 1; color: var(--ink-soft); transition: background .15s, color .15s;
+}
+.b2c-rail .visa-stepper button:hover:not(:disabled) { background: var(--paper-2); color: var(--ink); }
+.b2c-rail .visa-stepper button:disabled { opacity: .3; cursor: default; }
+.b2c-rail .visa-count {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: 600; color: var(--ink);
+  border-left: 1px solid var(--line); border-right: 1px solid var(--line);
+}
+.status-toggle { display: flex; align-items: center; gap: 11px; padding: 4px 0; }
+.status-toggle .status-text { font-size: 13px; color: var(--ink-soft); }
+.status-toggle.on .status-text { color: var(--ink); font-weight: 500; }
+
+/* ---- grid shell ---- */
+/* No overflow here: an overflow container would trap position:sticky inside the
+   wrapper. Keeping it visible lets thead stick to the PAGE (viewport) on scroll
+   and the label column stick to the viewport's left edge. Narrow screens re-enable
+   horizontal scroll below (where the header then sticks within the card). */
+.b2c-grid-wrap {
+  overflow: visible; border: 1px solid var(--line); border-radius: 16px;
+  box-shadow: var(--shadow); background: var(--paper-2);
+}
+table.b2c-grid {
+  border-collapse: separate; border-spacing: 0; width: 100%; min-width: 760px;
+  /* Fixed layout = evenly-weighted zone columns at any visa count (the label
+     column is sized explicitly; remaining width splits equally among the zone/
+     package columns, so fewer columns simply widen — no dead gap, no balloon). */
+  table-layout: fixed;
+  font-size: 13.5px; font-variant-numeric: tabular-nums;
+}
+table.b2c-grid th, table.b2c-grid td {
+  padding: 12px 16px; border-bottom: 1px solid var(--line); text-align: center; white-space: nowrap;
+}
+
+/* ---- sticky header ----
+   Every sticky header cell carries an explicit OPAQUE background so scrolling
+   body rows never show through. The two header rows sit flush with zero gap:
+   the zone row has a FIXED height (--zone-row-h) and the package row sticks at
+   exactly that offset. --teal-wash is translucent (8% alpha), so the "us" tint
+   is composited over solid paper rather than used as the background-color. */
+table.b2c-grid { --zone-row-h: 58px; }
+table.b2c-grid thead th {
+  position: sticky;
+  background-color: var(--paper);  /* opaque on EVERY header cell, never inherited */
+  z-index: 4;
+}
+.zone-row { height: var(--zone-row-h); }
+.zone-row .zone-h {
+  top: 0; height: var(--zone-row-h); padding: 8px 8px;
+  background-color: var(--paper);
+  font-family: var(--serif); font-weight: 600; font-size: 15px; color: var(--ink);
+  border-left: 1px solid var(--line-strong); border-bottom: 1px solid var(--line-strong);
+}
+.zone-row .zone-h.us {
+  color: var(--teal);
+  background-color: var(--paper);
+  background-image: linear-gradient(var(--teal-wash), var(--teal-wash));  /* opaque teal tint */
+}
+.zone-row .zone-h .zone-base {
+  display: block; font-family: var(--sans); font-size: 7.5px; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--teal); font-weight: 600; opacity: .8; margin-top: 1px; line-height: 1.2;
+}
+.pkg-row .pkg-h {
+  top: var(--zone-row-h);  /* flush under the zone row — zero gap */
+  background-color: var(--paper);
+  font-weight: 500; border-left: 1px solid var(--line);
+  border-bottom: 1px solid var(--line-strong);
+  box-shadow: 0 5px 6px -5px rgba(27, 35, 48, .22);  /* crisp frozen-header boundary */
+  vertical-align: top;
+}
+.pkg-row .pkg-h.us {
+  background-color: var(--paper);
+  background-image: linear-gradient(var(--teal-wash), var(--teal-wash));
+}
+.pkg-row .pkg-h.na { background-color: var(--paper); }
+.pkg-na-name { color: var(--ink-faint) !important; font-weight: 600; }
+.pkg-na-sub { color: var(--ink-faint); text-transform: none !important; letter-spacing: .01em !important; font-style: italic; }
+.pkg-h .pkg-name { display: block; font-size: 12.5px; color: var(--ink); line-height: 1.25; white-space: normal; max-width: 130px; margin: 0 auto; }
+.pkg-h.us .pkg-name { color: var(--teal); }
+.pkg-h .pkg-sub { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-faint); margin-top: 4px; }
+.pkg-h .pkg-badge { font-style: normal; font-size: 8.5px; letter-spacing: .08em; background: var(--ochre-wash); color: var(--rust); border: 1px solid var(--ochre); padding: 1px 5px; border-radius: 5px; }
+.zone-row .corner, .pkg-row { } /* corner spans both rows */
+
+/* ---- sticky left label column ---- */
+/* Layering: corner (6) > header rows (4) > left label column (3) > body (auto). */
+table.b2c-grid .corner,
+table.b2c-grid .row-label {
+  position: sticky; left: 0; z-index: 3; text-align: left;
+  background-color: var(--paper-2); border-right: 1px solid var(--line-strong);
+  font-weight: 500; color: var(--ink);
+  width: 220px; white-space: normal;  /* fixed width; wrap the longer component labels */
+}
+/* top-left corner: frozen on BOTH axes, sits above everything */
+table.b2c-grid .corner {
+  top: 0; left: 0; z-index: 6;
+  background-color: var(--paper);
+  border-bottom: 1px solid var(--line-strong);
+  box-shadow: 0 5px 6px -5px rgba(27, 35, 48, .22);
+  font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-faint); font-weight: 600;
+}
+
+/* ---- body cells ---- */
+.comp-row .row-label { font-size: 13px; }
+.grid-cell { font-family: var(--mono); font-size: 13px; color: var(--ink-soft); }
+.grid-cell.us { background: var(--teal-wash); }
+.comp-row:hover td:not(.us), .comp-row:hover .row-label { background: var(--paper); }
+
+.c-fee { color: var(--ink); font-weight: 500; }
+.c-qty { font-family: var(--sans); font-size: 10px; color: var(--ink-faint); margin-left: 4px; }
+.c-incl { font-family: var(--sans); font-size: 11px; font-weight: 500; color: var(--ink-faint); background: var(--line); padding: 2px 9px; border-radius: 100px; }
+.c-free { font-family: var(--sans); font-size: 12px; font-weight: 600; color: var(--ok); }
+.c-dash { color: var(--line-strong); }
+.c-allin { color: var(--ink); font-weight: 600; }
+
+.c-act { display: inline-flex; flex-direction: column; align-items: center; gap: 2px; }
+.c-act-n { font-weight: 600; color: var(--ink); }
+.c-act-t { font-family: var(--sans); font-size: 10px; color: var(--ink-faint); white-space: normal; max-width: 150px; line-height: 1.3; }
+
+/* ---- total / renewal / grand / delta rows ---- */
+.t-year1 td, .t-year1 .row-label { background: var(--paper); border-top: 1px solid var(--line-strong); }
+.t-year1 .row-label { font-family: var(--serif); font-weight: 600; font-size: 14px; }
+.t-num { font-size: 15px; font-weight: 600; color: var(--ink); }
+.t-year1 .grid-cell.us .t-num { color: var(--teal); }
+
+.t-section td { text-align: left; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-faint); background: var(--paper-2); padding: 8px 16px; position: sticky; left: 0; }
+.t-year2 td, .t-year2 .row-label { background: var(--paper-2); }
+.t-year2 .row-label { color: var(--ink-soft); font-weight: 500; font-size: 12.5px; }
+.t-num-soft { font-size: 13px; color: var(--ink-soft); }
+
+.t-grand td, .t-grand .row-label { background: var(--ink); border-bottom: none; }
+.t-grand .row-label { color: var(--paper); font-family: var(--serif); font-weight: 600; font-size: 15px; }
+.g-num { font-size: 18px; font-weight: 700; color: var(--paper); letter-spacing: -.02em; }
+.t-grand .grid-cell.us { background: var(--teal); }
+.t-grand .grid-cell.us .g-num { color: #fff; }
+
+.t-delta td, .t-delta .row-label { background: var(--paper-2); border-top: 1px solid var(--line); }
+.t-delta .row-label { color: var(--ink-faint); font-weight: 500; font-size: 12px; }
+.t-delta .grid-cell { font-size: 12.5px; }
+.d-base { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--teal); font-weight: 600; }
+.d-zero { color: var(--ink-faint); }
+.d-neg { color: var(--teal); font-weight: 600; }
+.d-pos { color: var(--rust); font-weight: 600; }
+.d-arrow { font-size: 9px; margin-right: 3px; vertical-align: middle; }
+
+/* ---- legend ---- */
+.grid-legend { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 16px; font-size: 12px; color: var(--ink-soft); align-items: center; }
+.grid-legend .gl-item { display: inline-flex; align-items: center; gap: 7px; }
+.gl-sw { width: 18px; height: 12px; border-radius: 4px; flex: none; }
+.gl-sw.gl-num { background: var(--ink); }
+.gl-sw.gl-free { background: var(--ok); }
+.gl-sw.gl-incl { background: var(--line-strong); }
+.gl-sw.gl-dash { background: repeating-linear-gradient(135deg, var(--line-strong) 0 3px, transparent 3px 6px); border: 1px solid var(--line); }
+.grid-legend .gl-cur { margin-left: auto; color: var(--ink-faint); font-family: var(--mono); font-size: 11px; }
+
+/* ---- medical / EID count group (visually tied to the visa stepper) ---- */
+.count-group {
+  margin: -6px 0 18px; padding: 12px 12px 6px; border: 1px dashed var(--line-strong);
+  border-radius: 12px; background: var(--paper-2);
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px;
+}
+.count-group .rail-field { margin-bottom: 8px; }
+.count-group .rail-field > label { font-size: 10px; }
+.count-group .visa-stepper button { width: 32px; font-size: 17px; }
+.count-group .visa-count { font-size: 16px; }
+.count-group-hint { grid-column: 1 / -1; margin: 2px 0 4px; }
+
+/* ---- zone collapse controls ---- */
+/* name + BASELINE tag (stacked) + collapse button must fit inside the fixed
+   column width — keep the "−"/"+" fully visible and aligned across zones. */
+.zone-h-inner { display: inline-flex; align-items: center; justify-content: center; gap: 7px; max-width: 100%; }
+.zone-name-wrap { display: inline-flex; flex-direction: column; align-items: center; gap: 0; line-height: 1.1; min-width: 0; }
+.zone-name { white-space: nowrap; }
+.zone-toggle {
+  flex: none; width: 19px; height: 19px; border-radius: 6px; cursor: pointer;
+  border: 1px solid var(--line-strong); background: var(--paper); color: var(--ink-soft);
+  font-size: 14px; line-height: 1; display: inline-flex; align-items: center; justify-content: center;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.zone-toggle:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.zone-h.us .zone-toggle:hover { background: var(--teal); border-color: var(--teal); }
+
+.zone-collapsed { width: 40px; background-color: var(--paper) !important; background-image: none !important; vertical-align: middle; padding: 12px 6px; }
+.zone-collapsed.us { background-color: var(--paper) !important; background-image: linear-gradient(var(--teal-wash), var(--teal-wash)) !important; }
+.zone-collapsed .zone-vert {
+  writing-mode: vertical-rl; transform: rotate(180deg); display: inline-block; margin-top: 10px;
+  font-family: var(--serif); font-weight: 600; font-size: 13px; color: var(--ink-soft); letter-spacing: .02em;
+}
+.zone-collapsed.us .zone-vert { color: var(--teal); }
+.collapsed-cell { width: 40px; min-width: 40px; background: var(--paper); opacity: .5; }
+.collapsed-cell.us { background: var(--teal-wash); }
+
+/* ---- unavailable (impossible) package columns: greyed, disabled, no dashes ---- */
+.na-col {
+  background-color: var(--paper);
+  background-image: repeating-linear-gradient(135deg, var(--line) 0 5px, transparent 5px 11px);
+  opacity: .6;
+}
+table.b2c-grid thead th, table.b2c-grid .grid-cell, table.b2c-grid .row-label { transition: background .25s ease, color .25s ease; }
+
+/* ---- insights read-out ---- */
+.insights { margin-top: 26px; padding-top: 20px; border-top: 1px solid var(--line-strong); }
+.insights-eyebrow {
+  font-size: 11.5px; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-faint);
+  font-weight: 600; display: flex; align-items: center; gap: 10px;
+}
+.insights-eyebrow:before { content: ""; width: 22px; height: 1px; background: var(--line-strong); }
+.insight-list { list-style: none; margin: 16px 0 0; display: grid; gap: 12px; }
+.insight {
+  font-family: var(--serif); font-size: 18px; font-weight: 400; line-height: 1.4; color: var(--ink);
+  letter-spacing: -.005em; max-width: 80ch; display: flex; gap: 12px; align-items: baseline;
+  animation: rise .4s cubic-bezier(.2,.7,.2,1) both;
+}
+.insight-mark { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--ochre); transform: translateY(-3px); }
+.insight:first-child .insight-mark { background: var(--teal); }
+
+/* Narrow viewports: scroll the grid horizontally inside the card again. The
+   header still sticks — within the card here rather than the page. */
+@media (max-width: 1100px) {
+  .b2c-grid-wrap { overflow-x: auto; }
+}
+@media (max-width: 860px) {
+  table.b2c-grid .corner, table.b2c-grid .row-label { width: 168px; }
+  .insight { font-size: 16px; }
+}
 
 /* ---------- B2B commission bars ---------- */
 .comm-bars { margin-top: 4px; }

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { pricing } from './logic/engines.js'
+import { b2cDefaultState } from './lib/b2cEngine.js'
 import { ConfidenceTags } from './components/Confidence.jsx'
 import B2CView from './components/b2c/B2CView.jsx'
 import B2BView from './components/b2b/B2BView.jsx'
@@ -12,7 +12,7 @@ const TABS = [
 export default function App() {
   const [tab, setTab] = useState('b2c')
   // Each view keeps its own filter state so switching tabs preserves it.
-  const [b2cState, setB2cState] = useState(() => pricing.defaultState())
+  const [b2cState, setB2cState] = useState(b2cDefaultState)
   const [b2bState, setB2bState] = useState({ mode: 'onetime', level: 'low' })
 
   return (

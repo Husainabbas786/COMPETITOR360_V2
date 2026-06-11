@@ -1,0 +1,198 @@
+{
+  "meta": {
+    "title": "Competitor 360 — Master Data (consolidated schema v2)",
+    "built": "2026-06-11",
+    "baseline": "Meydan",
+    "active_zones": ["Meydan", "IFZA", "RAKEZ", "Ajman"],
+    "parked_zones": ["DWTC"],
+    "currency": "AED (VAT-incl)",
+    "scope": "B2C only (B2B parked per Jai, Meeting 2)",
+    "design_notes": [
+      "Component rows are FIXED (see component_registry) and render for every zone; dash where not applicable.",
+      "Cell value is dynamic: cost = max(0, selectedQty - free_allowance) * unit_fee. Shows 'Included' when present but charge is 0; dash when not applicable.",
+      "Itemised zones (Meydan, IFZA) build cost from per-component fees. Bundled zones (RAKEZ, Ajman) carry the cost in the tier price; component rows mostly 'Included'.",
+      "max_visas on a package powers the gray-out: if selected visas > max_visas, that package column greys out.",
+      "Every leaf has confidence + source. value:null = to be filled. Do NOT treat assumed cells as final."
+    ],
+    "how_to_fill": "Replace null values and update confidence to 'confirmed' when real figures land. See open_questions at the bottom for exactly what is missing and who owns it."
+  },
+
+  "confidence_legend": {
+    "confirmed": "Official source (price list / factsheet) or directly confirmed.",
+    "assumed": "Estimate / placeholder — overwrite when real data lands.",
+    "missing": "No data yet — value is null.",
+    "na": "Not applicable for this zone (renders as dash)."
+  },
+
+  "component_registry": [
+    { "key": "licence",            "label": "Licence",                 "group": "quantitative", "per": "base",        "note": "Itemised zones: flat or tiered licence price. Bundled zones: the tier/all-in price sits here and scales with visa count." },
+    { "key": "shared_desk",        "label": "Shared desk / flexi",     "group": "quantitative", "per": "base" },
+    { "key": "activities",         "label": "Activities",              "group": "qualitative",  "per": "base",        "note": "Carries count (quantitative) AND type_restriction (qualitative)." },
+    { "key": "establishment_card", "label": "Establishment / Imm. card","group": "quantitative", "per": "per_company_if_visa", "note": "One per company; applies once visas >= 1." },
+    { "key": "e_channel",          "label": "E-channel",               "group": "quantitative", "per": "per_company_if_visa", "note": "Northern Emirates only (RAKEZ, Ajman). Dash for Meydan & IFZA." },
+    { "key": "visa_allocation",    "label": "Visa allocation",         "group": "quantitative", "per": "per_visa" },
+    { "key": "residence_visa_fee", "label": "Residence visa fee",      "group": "quantitative", "per": "per_visa",    "note": "free_allowance applies here (e.g. IFZA/RAKEZ 1st visa free)." },
+    { "key": "investor_addon",     "label": "Investor / partner add-on","group": "quantitative", "per": "per_visa" },
+    { "key": "medical",            "label": "Medical",                 "group": "quantitative", "per": "per_visa" },
+    { "key": "emirates_id",        "label": "Emirates ID",             "group": "quantitative", "per": "per_visa" },
+    { "key": "status_change",      "label": "Status change",           "group": "quantitative", "per": "situational", "note": "Only if applicant is inside the UAE." },
+    { "key": "health_insurance",   "label": "Health insurance",        "group": "quantitative", "per": "per_visa",    "note": "Mandatory but priced separately. Keep as a NOTED line, not in core all-in, until all zones publish it." }
+  ],
+
+  "zones": [
+    {
+      "zone": "Meydan",
+      "is_benchmark": true,
+      "model": "itemised",
+      "source_doc": "Meydan FZ Price List, last updated 19 Aug 2025",
+      "shareholders_included": 6,
+      "compute_note": "Total = licence(flat) + shared_desk + (establishment_card if visa>=1) + visa_allocation*visas + residence_visa_fee*visas + medical*visas + emirates_id*visas + (status_change if inside UAE). Multi-year 15% discount applies ONLY to licence + visa_allocation.",
+      "activities": { "count": 3, "max": null, "type": "Any (3 included; +1,000 per additional)", "confidence": "confirmed", "source": "Price List #1, #11" },
+      "multi_year": {
+        "type": "flat_discount",
+        "discount_pct": 0.15,
+        "applies_to": ["licence", "visa_allocation"],
+        "terms": [2, 3, 4, 5],
+        "confidence": "confirmed",
+        "source": "Confirmed verbally, Jun 2026",
+        "note": "15% discount applies to licence + visa_allocation ONLY. Shared desk charged PER YEAR (confirmed). Establishment card assumed PER YEAR (validity-1 per calculator). So multi-year Meydan = (licence + allocation) x years x 0.85 + (card + desk) x years at full price + visa/medical/EID charged every 2 years."
+      },
+      "components": {
+        "licence":            { "kind": "flat", "y1": { "fee": 12125, "confidence": "confirmed", "source": "#1" }, "y2": { "fee": 12125, "confidence": "confirmed", "source": "#2 renewal" } },
+        "shared_desk":        { "kind": "flat", "y1": { "fee": 375, "confidence": "confirmed", "source": "#14 flexi/co-working shared desk" }, "y2": { "fee": 375, "confidence": "confirmed", "source": "#18" } },
+        "establishment_card": { "kind": "per_company_if_visa", "y1": { "fee": 2000, "confidence": "confirmed", "source": "#25" }, "y2": { "fee": 0, "confidence": "confirmed", "source": "Immigration/establishment card validity = 2 yrs (like the visa) -> NOT re-charged in Y2. CEO correction Jun 2026: renewal must exclude the card." } },
+        "e_channel":          { "kind": "na" },
+        "visa_allocation":    { "kind": "per_visa", "free_allowance": 0, "y1": { "fee": 1850, "confidence": "confirmed", "source": "#29" }, "y2": { "fee": 0, "confidence": "confirmed", "source": "Meydan cost calculator: allocation validity = 2 yrs -> renews on the 2-yr visa cycle, NOT yearly -> 0 in Y2" } },
+        "residence_visa_fee": { "kind": "per_visa", "free_allowance": 0, "y1": { "fee": 4000, "confidence": "confirmed", "source": "#87 investor/partner visa" }, "y2": { "fee": 0, "confidence": "confirmed", "source": "Meydan cost calculator: investor visa validity = 2 yrs -> not re-charged in Y2" } },
+        "investor_addon":     { "kind": "na", "note": "Meydan investor visa fee (4,000) already captured in residence_visa_fee; no separate add-on." },
+        "medical":            { "kind": "per_visa", "free_allowance": 0, "y1": { "fee": 2000, "confidence": "confirmed", "source": "#104 Medical Assistance (VIP/home pickup; bundled Medical+EID = 2,250 at #102)" }, "y2": { "fee": 0, "confidence": "confirmed", "source": "Meydan cost calculator: medical+EID validity = 2 yrs -> not re-charged in Y2" } },
+        "emirates_id":        { "kind": "per_visa", "free_allowance": 0, "y1": { "fee": 750, "confidence": "confirmed", "source": "#105 EID Assistance" }, "y2": { "fee": 0, "confidence": "confirmed", "source": "Meydan cost calculator: medical+EID validity = 2 yrs -> not re-charged in Y2" } },
+        "status_change":      { "kind": "situational", "y1": { "fee": 1500, "confidence": "confirmed", "source": "#74 (only if inside UAE)" }, "y2": { "fee": 0, "confidence": "confirmed", "note": "one-time" } },
+        "health_insurance":   { "kind": "per_visa", "noted_separate": true, "y1": { "fee": 1680, "confidence": "confirmed", "source": "#140 Cat A (investor / salary >4,000). Cat B 1,080; dependents 1,876/3,960" } }
+      },
+      "packages": [
+        { "package_id": "meydan_base", "name": "Meydan Licence", "is_base": true, "max_visas": null, "facility": "coworking (flexi desk)", "note": "Single à-la-carte structure; visa count driven by stepper, costs build from components." }
+      ],
+      "derived_checks": {
+        "base_0visa": 12500,
+        "all_in_1visa_inside_uae": 24600,
+        "all_in_1visa_bundled_med_eid": 24100,
+        "year2_1visa": "12,500 = licence 12,125 + flexi 375. Card is validity-2 (CEO correction Jun 2026) -> 0 in Y2, like visa/allocation/medical/EID. CEO states renewal ~12,700; ~200 gap may be a small renewal-admin line if exactness is required."
+      }
+    },
+
+    {
+      "zone": "IFZA",
+      "is_benchmark": false,
+      "model": "itemised_tiered",
+      "source_doc": "IFZA 1/2/3/5-Yr Price List (Aug 2024) + IFZA Schedule of Fees + 2025 Partner Price List",
+      "shareholders_included": 3,
+      "compute_note": "Total = licence_by_visa[visaCount] (allocation baked into tier) + (establishment_card if visa>=1) + residence_visa_fee*chargeable (free_allowance 1) + investor_addon*visas + medical*visas + emirates_id*visas + (status_change if inside UAE).",
+      "activities": { "count": 3, "max": 7, "type": "Commercial + Professional; GT fee & cross-business fee WAIVED under Aug-2024 promo for 4 yrs (else +1,000/activity, cross-business +2,000)", "confidence": "confirmed", "source": "Schedule of Fees footnote 1,2" },
+      "multi_year": {
+        "type": "tiered_discount",
+        "standard_formula": "1yr_price * years, then discount",
+        "discounts": { "2y": 0.15, "3y": 0.20, "5y": 0.30 },
+        "terms": [2, 3, 5],
+        "applies_to": ["licence"],
+        "confidence": "confirmed",
+        "source": "Multi-year Price List (no 4yr tier published)"
+      },
+      "renewal_policy": "Price held for new + next 3 renewals (4 yrs). Visa free-for-life persists at renewal. Establishment card renewal = 2,200.",
+      "components": {
+        "licence": {
+          "kind": "tiered_by_visa",
+          "y1_by_visa": { "0": 12900, "1": 14900, "2": 16900, "3": 18900, "4": 20900 },
+          "confidence": "confirmed",
+          "source": "Official 1-Yr Price List. NOTE: tier step = +2,000/visa = the visa ALLOCATION baked in.",
+          "note": "11,900 seen in Akshay text is the 1-visa PARTNER-PAYS figure (B2B net), NOT the zero-visa B2C price. Use 12,900 for B2C.",
+          "y2_by_visa": "same as y1 (held for 4 yrs)"
+        },
+        "shared_desk":        { "kind": "flat", "included": true, "y1": { "fee": 0, "display": "Included", "confidence": "assumed", "note": "IFZA licence includes flexi/digital workspace; no separate desk fee published" } },
+        "establishment_card": { "kind": "per_company_if_visa", "y1": { "fee": 2000, "confidence": "confirmed", "source": "Schedule of Fees" }, "y2": { "fee": 2200, "confidence": "confirmed", "source": "E-Card Renewal" } },
+        "e_channel":          { "kind": "na" },
+        "visa_allocation":    { "kind": "baked_in_licence", "note": "Already in the licence tier step (+2,000/visa). Do not double-count." },
+        "residence_visa_fee": { "kind": "per_visa", "free_allowance": 1, "y1": { "fee": 3750, "confidence": "confirmed", "source": "Schedule: UAE Residence Visa Fee (valid 2 yrs). 1st visa FREE for life (issuance+renewal waived)" }, "y2": { "fee": 0, "free_allowance": 1, "confidence": "confirmed", "note": "Visa valid 2 yrs -> not re-charged in Y2; 1st free persists" } },
+        "investor_addon":     { "kind": "per_visa", "y1": { "fee": 1000, "confidence": "confirmed", "source": "Schedule: Investor/Partner Visa Add-On (paid even on free visa)" } },
+        "medical":            { "kind": "per_visa", "free_allowance": 0, "y1": { "fee": 700, "confidence": "assumed", "source": "Estimate — Schedule says 'enquire with CEM'; NOT published" }, "y2": { "fee": 0, "confidence": "assumed", "note": "0 in Y2 (visa valid 2 yrs)" } },
+        "emirates_id":        { "kind": "per_visa", "free_allowance": 0, "y1": { "fee": 400, "confidence": "assumed", "source": "Estimate — not published" }, "y2": { "fee": 0, "confidence": "assumed" } },
+        "status_change":      { "kind": "situational", "y1": { "fee": 1600, "confidence": "confirmed", "source": "Schedule: Visa Status Change (inside UAE)" } },
+        "health_insurance":   { "kind": "per_visa", "noted_separate": true, "y1": { "fee": null, "confidence": "missing", "source": "Schedule: 'enquire with CEM' — unpriced" } }
+      },
+      "packages": [
+        { "package_id": "ifza_0v", "name": "Zero Visa License", "visas": 0, "max_visas": 0, "licence_y1": 12900, "confidence": "confirmed" },
+        { "package_id": "ifza_1v", "name": "1 Visa License",    "visas": 1, "max_visas": 1, "licence_y1": 14900, "confidence": "confirmed" },
+        { "package_id": "ifza_2v", "name": "2 Visa License",    "visas": 2, "max_visas": 2, "licence_y1": 16900, "confidence": "confirmed" },
+        { "package_id": "ifza_3v", "name": "3 Visa License",    "visas": 3, "max_visas": 3, "licence_y1": 18900, "confidence": "confirmed" },
+        { "package_id": "ifza_4v", "name": "4 Visa License+",   "visas": 4, "max_visas": null, "licence_y1": 20900, "confidence": "confirmed", "note": "4 and above" }
+      ]
+    },
+
+    {
+      "zone": "RAKEZ",
+      "is_benchmark": false,
+      "model": "bundled",
+      "source_doc": "RAKEZ Fact Sheet 2026 (Channel Partner Enhanced). Supersedes Oct-2022 xlsx.",
+      "shareholders_included": 10,
+      "compute_note": "Bundled: the tier_price IS the all-in for that visa count. All visa components Included. Small real add-ons: medical_allocation 40, eid_delivery 30. Health insurance separate (unpriced).",
+      "primary_line": "Biz Packages (coworking, full activities) — what we benchmark.",
+      "included_components": ["establishment_card", "e_channel", "residence_visa_fee", "medical", "emirates_id", "status_change", "residency_approval"],
+      "add_ons": { "medical_allocation": 40, "eid_delivery": 30, "additional_shareholder": 100, "wage_protection_employee": "252/2yr" },
+      "multi_year": { "type": "explicit_table", "note": "Per-package multi-year prices listed in each package below. Renewal = same as 1yr (annual).", "confidence": "confirmed" },
+      "health_insurance": { "fee": null, "confidence": "missing", "note": "Additional & mandatory for all visa — unpriced" },
+      "packages": [
+        { "package_id": "rakez_biz0",      "name": "Biz 0 Visa",       "visas": 0, "max_visas": 0, "facility": "coworking", "activities": { "count": 10, "type": "Up to 10, all license types" }, "tier_price": { "1y": 6010,  "2y": 10820, "3y": 15330, "4y": 20440, "5y": 25550, "6y": 30600, "10y": 51100 },  "confidence": "confirmed" },
+        { "package_id": "rakez_saver1",    "name": "Biz Saver 1 (limited)", "visas": 1, "max_visas": 1, "facility": "coworking", "activities": { "count": 1, "type": "1 activity only, 1 shareholder (GT+Ecom)" }, "tier_price": { "1y": 12010, "2y": 22820, "3y": 32430, "4y": 43240, "5y": 51050, "6y": 57660, "10y": 90100 },  "confidence": "confirmed", "note": "Cheap activity-limited 'perception' package; show with limitation visible." },
+        { "package_id": "rakez_biz1",      "name": "Biz One Visa",     "visas": 1, "max_visas": 1, "facility": "coworking", "activities": { "count": 10, "type": "Up to 10" }, "tier_price": { "1y": 14010, "2y": 26620, "3y": 37830, "4y": 50440, "5y": 59560, "6y": 67260, "10y": 105100 }, "confidence": "confirmed" },
+        { "package_id": "rakez_biz2",      "name": "Biz Two Visa",     "visas": 2, "max_visas": 2, "facility": "coworking", "activities": { "count": 10, "type": "Up to 10" }, "tier_price": { "1y": 18010, "2y": 34220, "3y": 48630, "4y": 64840, "5y": 76550, "6y": 86460, "10y": 135100 }, "confidence": "confirmed" },
+        { "package_id": "rakez_biz3",      "name": "Biz Three Visa",   "visas": 3, "max_visas": 3, "facility": "coworking", "activities": { "count": 10, "type": "Up to 10" }, "tier_price": { "1y": 22010, "2y": 41820, "3y": 59430, "4y": 79240, "5y": 93550, "6y": 105660, "10y": 165100 }, "confidence": "confirmed" },
+        { "package_id": "rakez_biz4",      "name": "Biz Four Visa",    "visas": 4, "max_visas": 4, "facility": "coworking", "activities": { "count": 10, "type": "Up to 10" }, "tier_price": { "1y": 26010, "2y": 49420, "3y": 70230, "4y": 93640, "5y": 110550, "6y": 124860, "10y": 195100 }, "confidence": "confirmed" },
+        { "package_id": "rakez_biz5",      "name": "Biz Five Visa",    "visas": 5, "max_visas": 5, "facility": "coworking", "activities": { "count": 10, "type": "Up to 10" }, "tier_price": { "1y": 31010, "2y": 49620 }, "confidence": "confirmed" },
+        { "package_id": "rakez_biz6",      "name": "Biz Six Visa",     "visas": 6, "max_visas": 6, "facility": "coworking", "activities": { "count": 10, "type": "Up to 10" }, "tier_price": { "1y": 36010, "2y": 57620 }, "confidence": "confirmed" },
+        { "package_id": "rakez_biz7",      "name": "Biz Seven Visa",   "visas": 7, "max_visas": 7, "facility": "coworking", "activities": { "count": 10, "type": "Up to 10" }, "tier_price": { "1y": 41010, "2y": 65620 }, "confidence": "confirmed" },
+        { "package_id": "rakez_biz8",      "name": "Biz Eight Visa",   "visas": 8, "max_visas": 8, "facility": "coworking", "activities": { "count": 10, "type": "Up to 10" }, "tier_price": { "1y": 46010, "2y": 73620 }, "confidence": "confirmed" }
+      ],
+      "open": { "refundable_deposits": "Old xlsx had 2,025/visa refundable; 2026 Biz coworking sheet does not list — confirm still applies or dropped." }
+    },
+
+    {
+      "zone": "Ajman",
+      "is_benchmark": false,
+      "model": "bundled",
+      "entity": "Ajman NuVentures Centre Free Zone (ANCFZ)",
+      "source_doc": "ANCFZ All-Inclusive package sheet + Annexure 1 (commission).",
+      "shareholders_included": "Unlimited",
+      "compute_note": "Bundled all-inclusive: tier_price (advance payment) IS the all-in. All visa components Included. Annual model — Year 2 uses the (lower) renewal price. No multi-year discount.",
+      "included_components": ["establishment_card", "e_channel", "investor_security_approval", "medical", "emirates_id", "status_change", "residency"],
+      "multi_year": { "type": "none", "note": "Annual model only. Year 2 = renewal price (cheaper than new).", "confidence": "confirmed" },
+      "activities": { "count": 10, "type": "Up to 10 mix & match", "confidence": "confirmed" },
+      "health_insurance": { "fee": null, "confidence": "missing", "note": "Applicants must obtain insurance — unpriced" },
+      "pricing_note": "Two payment options: ADVANCE (headline, used here) and INSTALLMENT (higher). Medical 'normal in Ajman' included; Dubai medical extra. 0-visa gets no installment/discount.",
+      "packages": [
+        { "package_id": "ajman_0v",  "name": "0 Visa",  "visas": 0,  "max_visas": 0,  "tier_price_new": 4888,  "tier_price_renewal": 4888,  "tier_price_installment": 4888,  "confidence": "confirmed" },
+        { "package_id": "ajman_1v",  "name": "1 Visa",  "visas": 1,  "max_visas": 1,  "tier_price_new": 10800, "tier_price_renewal": 9900,  "tier_price_installment": 12000, "confidence": "confirmed" },
+        { "package_id": "ajman_2v",  "name": "2 Visas", "visas": 2,  "max_visas": 2,  "tier_price_new": 16200, "tier_price_renewal": 13950, "tier_price_installment": 18000, "confidence": "confirmed" },
+        { "package_id": "ajman_3v",  "name": "3 Visas", "visas": 3,  "max_visas": 3,  "tier_price_new": 20700, "tier_price_renewal": 17550, "tier_price_installment": 23000, "confidence": "confirmed" },
+        { "package_id": "ajman_4v",  "name": "4 Visas", "visas": 4,  "max_visas": 4,  "tier_price_new": 25200, "tier_price_renewal": 21150, "tier_price_installment": 28000, "confidence": "confirmed" },
+        { "package_id": "ajman_5v",  "name": "5 Visas", "visas": 5,  "max_visas": 5,  "tier_price_new": 29700, "tier_price_renewal": 24750, "tier_price_installment": 33000, "confidence": "confirmed" },
+        { "package_id": "ajman_6v",  "name": "6 Visas", "visas": 6,  "max_visas": 6,  "tier_price_new": 34200, "tier_price_renewal": 28350, "tier_price_installment": 38000, "confidence": "confirmed" },
+        { "package_id": "ajman_7v",  "name": "7 Visas", "visas": 7,  "max_visas": 7,  "tier_price_new": 38700, "tier_price_renewal": 31950, "tier_price_installment": 43000, "confidence": "confirmed" },
+        { "package_id": "ajman_8v",  "name": "8 Visas", "visas": 8,  "max_visas": 8,  "tier_price_new": 43200, "tier_price_renewal": 35550, "tier_price_installment": null, "confidence": "confirmed", "source": "Annexure" },
+        { "package_id": "ajman_9v",  "name": "9 Visas", "visas": 9,  "max_visas": 9,  "tier_price_new": 47700, "tier_price_renewal": 39150, "tier_price_installment": null, "confidence": "confirmed", "source": "Annexure" },
+        { "package_id": "ajman_10v", "name": "10 Visas","visas": 10, "max_visas": 10, "tier_price_new": 52200, "tier_price_renewal": 42750, "tier_price_installment": null, "confidence": "confirmed", "source": "Annexure" }
+      ],
+      "open": { "mystery_pdf": "Freelancer/Virtual Office/Physical Office (Al-Jurf) PDF conflicts with ANCFZ (5 shareholders vs unlimited; Dubai medical). Confirm which entity it is — not used in this line." }
+    }
+  ],
+
+  "open_questions": [
+    { "owner": "Meydan ops — RESOLVED via cost calculator", "item": "Investor visa validity = 2 yrs. In Year 2 only licence + immigration card recur; visa, allocation, medical, EID are all validity-2 and NOT re-charged. Meydan Year-2 (1 visa) = 14,700.", "impacts": "Meydan Year-2 — now filled" },
+    { "owner": "Meydan ops — optional, not a blocker", "item": "Multi-year card charging: shared desk = per-year (confirmed by Husain); establishment card assumed per-year (validity-1). Confirm card eventually if convenient.", "impacts": "Meydan multi-year totals (minor)" },
+    { "owner": "Akshay", "item": "IFZA actual medical test cost per visa? (currently estimated ~700)", "impacts": "IFZA all-in" },
+    { "owner": "Akshay", "item": "IFZA actual Emirates ID cost per visa? (currently estimated ~400)", "impacts": "IFZA all-in" },
+    { "owner": "Akshay", "item": "Health insurance cost per investor visa for RAKEZ, Ajman, IFZA? (Meydan publishes 1,680; others don't)", "impacts": "Optional insurance line" },
+    { "owner": "Akshay", "item": "Confirm IFZA zero-visa licence = 12,900 (11,900 looks like the 1-visa partner-pays/B2B net).", "impacts": "IFZA base price" },
+    { "owner": "Akshay / Ajman source", "item": "What entity is the Freelancer/Virtual/Physical Office (Al-Jurf) PDF? Conflicts with ANCFZ.", "impacts": "Ajman scope" },
+    { "owner": "RAKEZ source", "item": "Do refundable deposits (2,025/visa) still apply to 2026 Biz coworking packages?", "impacts": "RAKEZ all-in (refundable, minor)" }
+  ]
+}
