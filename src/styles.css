@@ -500,6 +500,18 @@ textarea.edit-text { resize: vertical; min-height: 46px; line-height: 1.4; }
 .edit-text:focus { outline: none; border-color: var(--ochre); background: #fff; }
 .edit-numrow .edit-num { width: 80px; font-family: var(--mono); text-align: right; }
 
+/* component-label row: text input + inline show/hide toggle (Phase 2 pass 2) */
+.edit-labelrow { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+.edit-labelrow:last-of-type { border-bottom: none; }
+.edit-label-input { flex: 1; min-width: 0; }
+.edit-labelrow.is-hidden .edit-label-input { opacity: .5; text-decoration: line-through; }
+.edit-vis { flex: none; display: inline-flex; align-items: center; gap: 5px; cursor: pointer; font-size: 9.5px; letter-spacing: .06em; text-transform: uppercase; font-weight: 600; user-select: none; padding: 4px 7px; border: 1px solid var(--line-strong); border-radius: 999px; transition: background .15s, color .15s, border-color .15s; }
+.edit-vis input { position: absolute; opacity: 0; width: 0; height: 0; }
+.edit-vis-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.edit-vis.on { color: var(--ochre); border-color: var(--ochre); background: var(--ochre-wash); }
+.edit-vis.off { color: var(--ink-faint); background: var(--paper-2); }
+.edit-hiddennote { margin: 8px 0 0; padding-top: 8px; border-top: 1px solid var(--line); font-style: italic; }
+
 .edit-pkg { margin: 6px 0; padding-top: 8px; border-top: 1px solid var(--line); }
 .edit-pkg:first-of-type { border-top: none; padding-top: 2px; }
 .edit-pkg-name { font-size: 12.5px; font-weight: 600; color: var(--ink); margin-bottom: 4px; display: flex; align-items: baseline; gap: 8px; }

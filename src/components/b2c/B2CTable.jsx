@@ -81,9 +81,11 @@ export default function B2CTable({ state, cols, groups, collapsed, toggle, regis
   }
 
   // Fixed registry rows, minus rows every column treats as a separate noted line
-  // (health insurance). Row set is stable across collapse.
+  // (health insurance), minus rows hidden via the edit panel. Hiding is visual
+  // only — totals are computed in the engine and are unaffected. Row set is
+  // otherwise stable across collapse.
   const avail = cols.filter((c) => c.available)
-  const rows = registry.filter((reg) => !avail.every((c) => c.byKey[reg.key]?.noted))
+  const rows = registry.filter((reg) => !reg.hidden && !avail.every((c) => c.byKey[reg.key]?.noted))
 
   const baseTotal = cols[0].result?.total ?? 0
 

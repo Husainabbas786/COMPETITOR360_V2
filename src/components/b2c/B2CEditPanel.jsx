@@ -34,6 +34,31 @@ function Field({ field, onEdit }) {
   )
 }
 
+// One component-label row: editable display label + an inline show/hide toggle.
+// Hiding only drops the row from the table — totals are computed in the engine,
+// so the headline cost is unchanged (see hiddenNote in the panel).
+function LabelRow({ item, onEdit }) {
+  const shown = !item.hidden
+  return (
+    <div className={`edit-labelrow ${shown ? '' : 'is-hidden'}`}>
+      <input
+        type="text"
+        className="edit-text edit-label-input"
+        value={item.value}
+        onChange={(e) => onEdit(item.path, e.target.value)}
+      />
+      <label
+        className={`edit-vis ${shown ? 'on' : 'off'}`}
+        title={shown ? COPY.edit.showTitle : COPY.edit.hiddenTitle}
+      >
+        <input type="checkbox" checked={shown} onChange={(e) => onEdit(item.hiddenPath, !e.target.checked)} />
+        <span className="edit-vis-dot" />
+        {shown ? COPY.edit.showLabel : COPY.edit.hiddenLabel}
+      </label>
+    </div>
+  )
+}
+
 // One figures row: component/package label + its inline numeric inputs.
 function FigureRow({ row, onEdit }) {
   return (
@@ -93,8 +118,9 @@ export default function B2CEditPanel({ schema, onEdit, onDownload, onReset, onCl
             <div className="edit-zone-body">
               <p className="edit-subnote">{COPY.edit.labelsHint}</p>
               {componentLabels.map((f) => (
-                <Field key={f.key} field={{ kind: 'text', label: f.key, path: f.path, value: f.value }} onEdit={onEdit} />
+                <LabelRow key={f.key} item={f} onEdit={onEdit} />
               ))}
+              <p className="edit-subnote edit-hiddennote">{COPY.edit.hiddenNote}</p>
             </div>
           )}
         </section>

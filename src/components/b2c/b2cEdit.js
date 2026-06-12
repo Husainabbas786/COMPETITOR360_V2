@@ -41,11 +41,15 @@ export function buildEditModel(schema) {
   const registry = schema.component_registry || []
   const labelOf = (key) => registry.find((r) => r.key === key)?.label || key
 
-  // Shared component display labels (the table row labels).
+  // Shared component display labels (the table row labels) + a per-row show/hide
+  // flag. Hiding is VISUAL only — the engine computes totals from zone figures,
+  // not from this registry, so hidden rows never change the headline cost.
   const componentLabels = registry.map((reg, i) => ({
     key: reg.key,
     path: ['component_registry', i, 'label'],
     value: reg.label,
+    hidden: !!reg.hidden,
+    hiddenPath: ['component_registry', i, 'hidden'],
   }))
 
   const zones = schema.zones.map((zone, zi) => {
@@ -90,6 +94,8 @@ export function buildEditModel(schema) {
       const pb = ['zones', zi, 'packages', pi]
       const fields = []
       if (typeof pkg.name === 'string') fields.push({ kind: 'text', label: 'Name', path: [...pb, 'name'], value: pkg.name })
+      // Gray-out threshold: selecting more visas than this greys the column out.
+      if (typeof pkg.max_visas === 'number') fields.push({ kind: 'number', label: 'Max visas (gray-out)', path: [...pb, 'max_visas'], value: pkg.max_visas })
       if (typeof pkg.note === 'string') fields.push({ kind: 'textarea', label: 'Offer / note', path: [...pb, 'note'], value: pkg.note })
       if (pkg.activities) {
         const pa = pkg.activities

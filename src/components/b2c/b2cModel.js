@@ -13,6 +13,11 @@ export const money = (n) => `${CUR} ${fmt.format(Math.round(n))}`
 const visaLabel = (n) => `${n} visa${n === 1 ? '' : 's'}`
 const indexLines = (lines) => Object.fromEntries((lines || []).map((l) => [l.key, l]))
 
+// Gray-out threshold: a package column is unavailable when the selected visa
+// count exceeds the package's editable max_visas. null/undefined = no ceiling.
+// Defaults equal each package's own visas, so this never changes default output.
+const exceedsMaxVisas = (pkg, V) => !!pkg && typeof pkg.max_visas === 'number' && V > pkg.max_visas
+
 const ORDINALS = ['', 'lowest', 'second-lowest', 'third-lowest', 'fourth-lowest', 'fifth-lowest']
 const ordinal = (n) => ORDINALS[n] || `${n}th-lowest`
 const NUMWORDS = ['', 'one', 'two', 'three', 'four', 'five']
@@ -47,7 +52,7 @@ function itemisedColumn(engine, zone, sel, isBaseline) {
     byKey: indexLines(result.lines),
     activities: z.activities,
     limited: false,
-    available: true,
+    available: !exceedsMaxVisas(pkg, V),
   }
 }
 
@@ -67,7 +72,7 @@ function bundledColumn(engine, zone, pkg, years, V, limited = false) {
     byKey: indexLines(result.lines),
     activities: pkg.activities || engine.getZone(zone).activities,
     limited,
-    available: true,
+    available: !exceedsMaxVisas(pkg, V),
   }
 }
 
