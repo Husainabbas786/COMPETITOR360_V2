@@ -356,10 +356,12 @@ export function createB2CCompute(schema) {
 
     logger.log('— Meydan (itemised) —')
     check('Meydan 1 visa Y1 (status ON)', meydan1.year1, 24600)
-    check('Meydan 1 visa Y2 (card validity-2 → 0)', meydan1.year2, 12500)
+    check('Meydan 1 visa Y2 (card 2,200 + alloc 1,850, annual; visa/med/EID validity-2)', meydan1.year2, 16550)
+    check('Meydan 1 visa 2-year annual sum (Y1 + Y2)', meydan1.year1 + meydan1.year2, 41150)
     check('Meydan 0 visa Y1', meydan0.year1, 12500)
+    check('Meydan 0 visa Y2 (no card/alloc — visa-gated, unchanged)', meydan0.year2, 12500)
     check('Meydan 1 visa 1-year multi-year (= Y1)', meydan1.multiYear, 24600)
-    check('Meydan 1 visa 2-year multi-year (card once, not twice)', meydan1y2.multiYear, 33185)
+    check('Meydan 1 visa 2-year committed multi-year (15% licence+alloc discount)', meydan1y2.multiYear, 33185)
 
     logger.log('— IFZA (itemised, medical 700 / EID 400 assumed) —')
     check('IFZA 1 visa Y1 (status ON)', ifza1.year1, 20600)

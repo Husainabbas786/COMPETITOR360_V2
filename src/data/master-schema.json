@@ -60,9 +60,9 @@
       "components": {
         "licence":            { "kind": "flat", "y1": { "fee": 12125, "confidence": "confirmed", "source": "#1" }, "y2": { "fee": 12125, "confidence": "confirmed", "source": "#2 renewal" } },
         "shared_desk":        { "kind": "flat", "y1": { "fee": 375, "confidence": "confirmed", "source": "#14 flexi/co-working shared desk" }, "y2": { "fee": 375, "confidence": "confirmed", "source": "#18" } },
-        "establishment_card": { "kind": "per_company_if_visa", "y1": { "fee": 2000, "confidence": "confirmed", "source": "#25" }, "y2": { "fee": 0, "confidence": "confirmed", "source": "Immigration/establishment card validity = 2 yrs (like the visa) -> NOT re-charged in Y2. CEO correction Jun 2026: renewal must exclude the card." } },
+        "establishment_card": { "kind": "per_company_if_visa", "y1": { "fee": 2000, "confidence": "confirmed", "source": "#25" }, "y2": { "fee": 2200, "confidence": "confirmed", "source": "Pricing confirmed Jun 2026: establishment/immigration card IS charged every year; Y2 renewal rate = 2,200. Visa-gated (only when visas >= 1), same as Y1." } },
         "e_channel":          { "kind": "na" },
-        "visa_allocation":    { "kind": "per_visa", "free_allowance": 0, "y1": { "fee": 1850, "confidence": "confirmed", "source": "#29" }, "y2": { "fee": 0, "confidence": "confirmed", "source": "Meydan cost calculator: allocation validity = 2 yrs -> renews on the 2-yr visa cycle, NOT yearly -> 0 in Y2" } },
+        "visa_allocation":    { "kind": "per_visa", "free_allowance": 0, "y1": { "fee": 1850, "confidence": "confirmed", "source": "#29" }, "y2": { "fee": 1850, "confidence": "confirmed", "source": "Pricing confirmed Jun 2026: visa allocation IS charged every year (Y2 = 1,850), NOT validity-2. Visa-gated (only when visas >= 1), same as Y1." } },
         "residence_visa_fee": { "kind": "per_visa", "free_allowance": 0, "y1": { "fee": 4000, "confidence": "confirmed", "source": "#87 investor/partner visa" }, "y2": { "fee": 0, "confidence": "confirmed", "source": "Meydan cost calculator: investor visa validity = 2 yrs -> not re-charged in Y2" } },
         "investor_addon":     { "kind": "na", "note": "Meydan investor visa fee (4,000) already captured in residence_visa_fee; no separate add-on." },
         "medical":            { "kind": "per_visa", "free_allowance": 0, "y1": { "fee": 2000, "confidence": "confirmed", "source": "#104 Medical Assistance (VIP/home pickup; bundled Medical+EID = 2,250 at #102)" }, "y2": { "fee": 0, "confidence": "confirmed", "source": "Meydan cost calculator: medical+EID validity = 2 yrs -> not re-charged in Y2" } },
@@ -77,7 +77,7 @@
         "base_0visa": 12500,
         "all_in_1visa_inside_uae": 24600,
         "all_in_1visa_bundled_med_eid": 24100,
-        "year2_1visa": "12,500 = licence 12,125 + flexi 375. Card is validity-2 (CEO correction Jun 2026) -> 0 in Y2, like visa/allocation/medical/EID. CEO states renewal ~12,700; ~200 gap may be a small renewal-admin line if exactness is required."
+        "year2_1visa": "16,550 = licence 12,125 + flexi 375 + establishment card 2,200 + visa allocation 1,850. Pricing confirmed Jun 2026: card + allocation are charged EVERY year (visa-gated); visa/medical/EID are validity-2 and not re-charged. 0-visa Y2 stays 12,500 (licence + flexi only)."
       }
     },
 
