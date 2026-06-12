@@ -73,6 +73,11 @@ export const COPY = {
     reset: 'Reset to saved',
     close: 'Close edit panel',
     renewalNote: '1yr = renewal',
+    labelsTitle: 'Component labels',
+    labelsHint: 'Row labels, shared across all zones.',
+    figuresHead: 'Figures',
+    activitiesHead: 'Activities',
+    packagesHead: 'Packages & offers',
   },
 
   saverBadge: 'limited',

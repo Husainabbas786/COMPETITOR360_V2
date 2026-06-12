@@ -53,7 +53,7 @@ export default function B2CView({ state, setState }) {
       <div className="b2c-layout">
         <B2CControls state={state} setState={setState} />
         <div className="b2c-main">
-          <B2CTable state={state} cols={cols} groups={groups} collapsed={collapsed} toggle={toggle} />
+          <B2CTable state={state} cols={cols} groups={groups} collapsed={collapsed} toggle={toggle} registry={schema.component_registry} />
         </div>
       </div>
 

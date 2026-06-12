@@ -1,4 +1,4 @@
-import { REGISTRY, CURRENCY } from '../../lib/b2cEngine.js'
+import { CURRENCY } from '../../lib/b2cEngine.js'
 import { COPY } from './copy.js'
 import AnimatedNumber from './AnimatedNumber.jsx'
 
@@ -68,9 +68,10 @@ function BodyCells({ bodyCols, render }) {
   })
 }
 
-// Pure renderer. Receives the column model + collapse state from B2CView so the
-// read-out (below the grid) can share the same data.
-export default function B2CTable({ state, cols, groups, collapsed, toggle }) {
+// Pure renderer. Receives the column model + collapse state + the (stateful)
+// component registry from B2CView so the read-out shares the same data and row
+// labels reflect live edits.
+export default function B2CTable({ state, cols, groups, collapsed, toggle, registry }) {
   // Flat column list for body/total rows: a collapsed zone becomes ONE empty
   // placeholder column (its vertical header spans both header rows).
   const bodyCols = []
@@ -82,7 +83,7 @@ export default function B2CTable({ state, cols, groups, collapsed, toggle }) {
   // Fixed registry rows, minus rows every column treats as a separate noted line
   // (health insurance). Row set is stable across collapse.
   const avail = cols.filter((c) => c.available)
-  const rows = REGISTRY.filter((reg) => !avail.every((c) => c.byKey[reg.key]?.noted))
+  const rows = registry.filter((reg) => !avail.every((c) => c.byKey[reg.key]?.noted))
 
   const baseTotal = cols[0].result?.total ?? 0
 
