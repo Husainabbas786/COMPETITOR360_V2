@@ -26,6 +26,25 @@ function Field({ field, onEdit }) {
       </label>
     )
   }
+  if (field.kind === 'percent') {
+    // Stored as a fraction (0.15); shown and edited as a percentage (15).
+    const pct = field.value == null ? '' : +(field.value * 100).toFixed(2)
+    return (
+      <label className="edit-textrow edit-numrow">
+        <span className="edit-field-label">{field.label}</span>
+        <span className="edit-pct">
+          <input
+            type="number"
+            className="edit-text edit-num"
+            value={pct}
+            onFocus={(e) => e.target.select()}
+            onChange={(e) => onEdit(field.path, e.target.value === '' ? 0 : Number((Number(e.target.value) / 100).toFixed(4)))}
+          />
+          <span className="edit-pct-sign">%</span>
+        </span>
+      </label>
+    )
+  }
   return (
     <label className="edit-textrow">
       <span className="edit-field-label">{field.label}</span>
@@ -143,6 +162,16 @@ export default function B2CEditPanel({ schema, onEdit, onDownload, onReset, onCl
                     <div className="edit-subhead">{COPY.edit.figuresHead}</div>
                     {section.rows.map((row) => (
                       <FigureRow key={row.key} row={row} onEdit={onEdit} />
+                    ))}
+                  </>
+                )}
+
+                {section.discount && section.discount.fields.length > 0 && (
+                  <>
+                    <div className="edit-subhead">{COPY.edit.discountHead}</div>
+                    <p className="edit-subnote">{COPY.edit.discountHint(section.discount.appliesTo)}</p>
+                    {section.discount.fields.map((f) => (
+                      <Field key={f.path.join('.')} field={f} onEdit={onEdit} />
                     ))}
                   </>
                 )}

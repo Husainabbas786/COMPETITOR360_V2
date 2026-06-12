@@ -34,6 +34,34 @@ function componentFigureInputs(comp, base) {
   return inputs
 }
 
+// Editable percentage rules for a zone's multi_year block, or null if it has no
+// percentage rule (RAKEZ explicit_table / Ajman none). Percentages are stored as
+// fractions (0.15); the panel renders them as % and writes the fraction back.
+function buildDiscountFields(zone, zi, labelOf) {
+  const my = zone.multi_year
+  if (!my) return null
+  const base = ['zones', zi, 'multi_year']
+  const appliesTo = (my.applies_to || []).map(labelOf)
+
+  // Meydan: one flat % across all its terms.
+  if (my.type === 'flat_discount' && typeof my.discount_pct === 'number') {
+    const terms = my.terms || []
+    const label = terms.length ? `${terms.join('/')}yr` : 'All terms'
+    return { appliesTo, fields: [{ kind: 'percent', label, path: [...base, 'discount_pct'], value: my.discount_pct }] }
+  }
+
+  // IFZA: one % per committed term, keyed "2y" / "3y" / "5y".
+  if (my.type === 'tiered_discount' && my.discounts) {
+    const terms = my.terms || Object.keys(my.discounts).map((k) => parseInt(k, 10))
+    const fields = terms
+      .filter((t) => my.discounts[`${t}y`] != null)
+      .map((t) => ({ kind: 'percent', label: `${t}yr`, path: [...base, 'discounts', `${t}y`], value: my.discounts[`${t}y`] }))
+    if (fields.length) return { appliesTo, fields }
+  }
+
+  return null
+}
+
 // Walk the schema → { componentLabels, zones }. Each zone carries number `rows`
 // (figures), zone-level `activities` text/number fields, and per-`packages` text
 // (name, note, and per-package activities for bundled zones that store them).
@@ -105,7 +133,13 @@ export function buildEditModel(schema) {
       if (fields.length) packages.push({ key: pkg.package_id, label: pkg.name || pkg.package_id, sub: visaSub(pkg.visas), fields })
     })
 
-    return { zone: zone.zone, model: zone.model, rows, activities, packages }
+    // ----- multi-year percentage discount (Meydan flat / IFZA tiered) -----
+    // Only the percentages are editable; which components they discount
+    // (applies_to) and the term list are left as-is. RAKEZ stores per-term
+    // package prices (explicit_table) and Ajman has none → no section here.
+    const discount = buildDiscountFields(zone, zi, labelOf)
+
+    return { zone: zone.zone, model: zone.model, rows, activities, packages, discount }
   })
 
   return { componentLabels, zones }

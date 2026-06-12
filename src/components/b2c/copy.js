@@ -81,6 +81,11 @@ export const COPY = {
     showTitle: 'Hide this row from the table',
     hiddenTitle: 'Show this row in the table',
     figuresHead: 'Figures',
+    discountHead: 'Multi-year discount',
+    discountHint: (applies) =>
+      applies && applies.length
+        ? `Discount on longer licence terms, applied to ${applies.join(' + ')}. Percentages only — which components it discounts is fixed.`
+        : 'Discount on longer licence terms. Percentages only — which components it discounts is fixed.',
     activitiesHead: 'Activities',
     packagesHead: 'Packages & offers',
   },
