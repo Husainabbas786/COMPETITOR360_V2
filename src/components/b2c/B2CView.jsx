@@ -42,15 +42,7 @@ export default function B2CView({ state, setState }) {
 
   return (
     <>
-      <div className="b2c-toolbar">
-        <label className={`edit-toggle ${editMode ? 'on' : ''}`}>
-          <input type="checkbox" checked={editMode} onChange={(e) => setEditMode(e.target.checked)} />
-          <span className="tgl-track" />
-          {COPY.edit.toggle}
-        </label>
-      </div>
-
-      <B2CControls state={state} setState={setState} />
+      <B2CControls state={state} setState={setState} editMode={editMode} setEditMode={setEditMode} />
       <div className="b2c-main">
         <B2CTable state={state} cols={cols} groups={groups} collapsed={collapsed} toggle={toggle} registry={schema.component_registry} />
       </div>

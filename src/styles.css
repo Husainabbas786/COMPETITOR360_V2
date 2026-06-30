@@ -130,8 +130,11 @@ h1 em { font-style: italic; color: var(--teal); }
   border-left: 1px solid var(--line); border-right: 1px solid var(--line);
 }
 .b2c-controlbar .seg.wide { width: auto; }
-.b2c-controlbar .seg button { padding: 6px 11px; font-size: 12.5px; }
+/* nowrap + min-width so "1 yr" / "2 yrs" / "3 yrs" / "5 yrs" each sit on one line, evenly sized */
+.b2c-controlbar .seg button { padding: 6px 12px; min-width: 46px; font-size: 12.5px; white-space: nowrap; }
 .b2c-controlbar .status-toggle { padding: 0; }
+/* Edit-data toggle rides at the far right of the bar (after the status field). */
+.b2c-controlbar .cbar-edit { align-self: center; }
 
 @media (max-width: 860px) {
   /* Bar scrolls away with the page; header re-pins at the top (--cbar-h → 0). */
@@ -318,7 +321,7 @@ table.b2c-grid thead th {
 .zone-row .zone-h.us {
   color: var(--ink);
   background-color: var(--paper);
-  border-left: 2px solid var(--ink-faint);
+  border-left: 1px solid var(--line);
 }
 .zone-row .zone-h.us .zone-name { font-weight: 700; }
 .zone-row .zone-h .zone-base {
@@ -338,7 +341,7 @@ table.b2c-grid thead th {
 }
 .pkg-row .pkg-h.us {
   background-color: var(--paper);
-  border-left: 2px solid var(--ink-faint);
+  border-left: 1px solid var(--line);
 }
 .pkg-row .pkg-h.na { background-color: var(--paper); }
 .pkg-na-name { color: var(--ink-faint) !important; font-weight: 600; }
@@ -354,7 +357,8 @@ table.b2c-grid thead th {
 table.b2c-grid .corner,
 table.b2c-grid .row-label {
   position: sticky; left: 0; z-index: 3; text-align: left;
-  background-color: var(--paper-2); border-right: 1px solid var(--line-strong);
+  /* soft hairline divider — the strong line read as a harsh black bar against the paper palette */
+  background-color: var(--paper-2); border-right: 1px solid var(--line);
   font-weight: 500; color: var(--ink);
   width: 220px; white-space: normal;  /* fixed width; wrap the longer component labels */
 }
@@ -372,7 +376,7 @@ table.b2c-grid .corner {
 .grid-cell { font-family: var(--mono); font-size: 13px; color: var(--ink-soft); }
 /* Meydan column: neutral left rule down the full height (no green) — the
    baseline marker that replaces the old teal fill. */
-.grid-cell.us { border-left: 2px solid var(--ink-faint); }
+.grid-cell.us { border-left: 1px solid var(--line); }
 /* subtle alternating zone banding — applied to component rows only, so the
    designed total/renewal/grand row backgrounds stay clean. */
 .comp-row .grid-cell.z-alt { background: var(--zone-band); }
@@ -452,7 +456,7 @@ table.b2c-grid .corner {
 .zone-toggle:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
 
 .zone-collapsed { width: 40px; background-color: var(--paper) !important; background-image: none !important; vertical-align: middle; padding: 12px 6px; }
-.zone-collapsed.us { background-color: var(--paper) !important; background-image: none !important; border-left: 2px solid var(--ink-faint); }
+.zone-collapsed.us { background-color: var(--paper) !important; background-image: none !important; border-left: 1px solid var(--line); }
 .zone-collapsed.z-alt { background-image: linear-gradient(var(--zone-band), var(--zone-band)) !important; }
 .zone-collapsed .zone-vert {
   writing-mode: vertical-rl; transform: rotate(180deg); display: inline-block; margin-top: 10px;
@@ -460,7 +464,7 @@ table.b2c-grid .corner {
 }
 .zone-collapsed.us .zone-vert { color: var(--ink); font-weight: 700; }
 .collapsed-cell { width: 40px; min-width: 40px; background: var(--paper); opacity: .5; }
-.collapsed-cell.us { border-left: 2px solid var(--ink-faint); }
+.collapsed-cell.us { border-left: 1px solid var(--line); }
 .collapsed-cell.z-alt { background: var(--zone-band); }
 
 /* ---- unavailable (impossible) package columns: greyed, disabled, no dashes ---- */
@@ -500,8 +504,6 @@ table.b2c-grid thead th, table.b2c-grid .grid-cell, table.b2c-grid .row-label { 
 /* ===========================================================================
    B2C EDIT PANEL — live figure editing + export (Phase 1)
    =========================================================================== */
-.b2c-toolbar { display: flex; justify-content: flex-end; align-items: center; margin: 0 0 12px; }
-
 /* "Edit data" toggle (ochre accent to distinguish from the ink in-table toggles) */
 .edit-toggle { display: inline-flex; align-items: center; gap: 9px; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--ink-soft); user-select: none; }
 .edit-toggle.on { color: var(--ink); }

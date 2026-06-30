@@ -28,7 +28,9 @@ function Stepper({ label, value, onStep, title }) {
 // { visas, years, statusChange, medicalCount, eidCount }. Medical & EID track
 // the visa count (reset to it when visas change) but can be nudged on their own.
 // Laid out horizontally above the full-width table; sticky via `.b2c-controlbar`.
-export default function B2CControls({ state, setState }) {
+// The Edit-data toggle (editMode/setEditMode, owned by B2CView) rides at the far
+// right of this same row rather than floating in its own bar above.
+export default function B2CControls({ state, setState, editMode, setEditMode }) {
   const setVisas = (delta) =>
     setState((s) => {
       const v = clamp(s.visas + delta)
@@ -85,6 +87,12 @@ export default function B2CControls({ state, setState }) {
           <span className="status-text">{COPY.controls.statusSub}</span>
         </div>
       </div>
+
+      <label className={`edit-toggle cbar-edit ${editMode ? 'on' : ''}`}>
+        <input type="checkbox" checked={editMode} onChange={(e) => setEditMode(e.target.checked)} />
+        <span className="tgl-track" />
+        {COPY.edit.toggle}
+      </label>
     </div>
   )
 }
