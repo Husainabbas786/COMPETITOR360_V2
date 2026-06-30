@@ -68,8 +68,8 @@ export const COPY = {
       { kind: 'incl', text: 'Bundled into the package price' },
       { kind: 'dash', text: 'Not applicable for this zone' },
     ],
-    deltaCheaper: 'cheaper than Meydan',
-    deltaPricier: 'dearer than Meydan',
+    deltaCheaper: (zone) => `cheaper than ${zone}`,
+    deltaPricier: (zone) => `dearer than ${zone}`,
   },
 
   edit: {

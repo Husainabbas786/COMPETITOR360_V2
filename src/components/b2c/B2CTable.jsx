@@ -265,11 +265,11 @@ export default function B2CTable({ state, cols, groups, collapsed, toggle, regis
         ))}
         <span className="gl-item">
           <span className="d-arrow d-neg">▼</span>
-          {COPY.legend.deltaCheaper}
+          {COPY.legend.deltaCheaper(baseZoneName)}
         </span>
         <span className="gl-item">
           <span className="d-arrow d-pos">▲</span>
-          {COPY.legend.deltaPricier}
+          {COPY.legend.deltaPricier(baseZoneName)}
         </span>
         <span className="gl-item gl-cur">All figures {CUR}</span>
       </div>
