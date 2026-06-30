@@ -18,8 +18,9 @@ export default function App() {
   return (
     <div className="wrap">
       <header className="masthead">
-        <div className="kicker"><span className="dot" /> Competitor 360 · Commercial Benchmark</div>
-        <h1>What does it <em>actually</em> cost?</h1>
+        <div className="kicker"><span className="dot" /> Competitor 360</div>
+        <h1>Money Map</h1>
+        <p className="masthead-tagline">Commercial Benchmark</p>
         <div className="meta-row">
           <span className="tag proto"><span className="d" style={{ background: 'var(--rust)' }} /> Prototype · live tool</span>
           <ConfidenceTags />

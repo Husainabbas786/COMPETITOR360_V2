@@ -57,13 +57,13 @@ function Delta({ col, getVal, base }) {
 function BodyCells({ bodyCols, render }) {
   return bodyCols.map((bc, i) => {
     if (bc.collapsed) {
-      return <td key={i} className={`grid-cell collapsed-cell ${bc.isBaseline ? 'us' : ''}`} aria-hidden="true" />
+      return <td key={i} className={`grid-cell collapsed-cell ${bc.isBaseline ? 'us' : ''} ${bc.shade}`} aria-hidden="true" />
     }
     if (!bc.col.available) {
-      return <td key={i} className="grid-cell na-col" aria-hidden="true" />
+      return <td key={i} className={`grid-cell na-col ${bc.shade}`} aria-hidden="true" />
     }
     return (
-      <td key={i} className={`grid-cell ${bc.col.isBaseline ? 'us' : ''}`}>
+      <td key={i} className={`grid-cell ${bc.col.isBaseline ? 'us' : ''} ${bc.shade}`}>
         {render(bc.col)}
       </td>
     )
@@ -76,11 +76,15 @@ function BodyCells({ bodyCols, render }) {
 export default function B2CTable({ state, cols, groups, collapsed, toggle, registry }) {
   // Flat column list for body/total rows: a collapsed zone becomes ONE empty
   // placeholder column (its vertical header spans both header rows).
+  // Subtle alternating zone banding: every column carries its zone's parity
+  // (group index) so all package sub-columns within a zone share one shade. The
+  // band is purely visual — see `.z-alt` in styles.css.
+  const shadeOf = (gi) => (gi % 2 === 1 ? 'z-alt' : '')
   const bodyCols = []
-  for (const g of groups) {
-    if (collapsed[g.zone]) bodyCols.push({ collapsed: true, zone: g.zone, isBaseline: g.isBaseline })
-    else for (const c of g.cols) bodyCols.push({ collapsed: false, col: c })
-  }
+  groups.forEach((g, gi) => {
+    if (collapsed[g.zone]) bodyCols.push({ collapsed: true, zone: g.zone, isBaseline: g.isBaseline, shade: shadeOf(gi) })
+    else for (const c of g.cols) bodyCols.push({ collapsed: false, col: c, shade: shadeOf(gi) })
+  })
 
   // Fixed registry rows, minus rows every column treats as a separate noted line
   // (health insurance), minus rows hidden via the edit panel. Hiding is visual
@@ -114,9 +118,9 @@ export default function B2CTable({ state, cols, groups, collapsed, toggle, regis
             <th className="corner" rowSpan={2}>
               {COPY.table.componentHeader}
             </th>
-            {groups.map((g) =>
+            {groups.map((g, gi) =>
               collapsed[g.zone] ? (
-                <th key={g.zone} rowSpan={2} className={`zone-h zone-collapsed ${g.isBaseline ? 'us' : ''}`}>
+                <th key={g.zone} rowSpan={2} className={`zone-h zone-collapsed ${g.isBaseline ? 'us' : ''} ${shadeOf(gi)}`}>
                   <button
                     type="button"
                     className="zone-toggle"
@@ -129,7 +133,7 @@ export default function B2CTable({ state, cols, groups, collapsed, toggle, regis
                   <span className="zone-vert">{g.zone}</span>
                 </th>
               ) : (
-                <th key={g.zone} colSpan={g.cols.length} className={`zone-h ${g.isBaseline ? 'us' : ''}`}>
+                <th key={g.zone} colSpan={g.cols.length} className={`zone-h ${g.isBaseline ? 'us' : ''} ${shadeOf(gi)}`}>
                   <span className="zone-h-inner">
                     <span className="zone-name-wrap">
                       <span className="zone-name">{g.zone}</span>
@@ -152,9 +156,9 @@ export default function B2CTable({ state, cols, groups, collapsed, toggle, regis
           <tr className="pkg-row">
             {groups
               .filter((g) => !collapsed[g.zone])
-              .flatMap((g) => g.cols)
-              .map((c, i) => (
-                <th key={i} className={`pkg-h ${c.isBaseline ? 'us' : ''} ${c.limited ? 'limited' : ''} ${!c.available ? 'na' : ''}`}>
+              .flatMap((g) => g.cols.map((c) => ({ c, shade: shadeOf(groups.indexOf(g)) })))
+              .map(({ c, shade }, i) => (
+                <th key={i} className={`pkg-h ${c.isBaseline ? 'us' : ''} ${c.limited ? 'limited' : ''} ${!c.available ? 'na' : ''} ${shade}`}>
                   {c.available ? (
                     <>
                       <span className="pkg-name">{c.pkgName}</span>

@@ -19,6 +19,7 @@
   --ok:#3F8E5B;
   --warn:#C08A2E;
   --grey:#A7A294;
+  --zone-band:rgba(27,35,48,.045);   /* faint neutral banding to separate zone columns */
   --shadow:0 1px 2px rgba(27,35,48,.04),0 8px 30px rgba(27,35,48,.06);
 
   --serif:'Fraunces',serif;
@@ -47,6 +48,7 @@ header.masthead { border-bottom: 1px solid var(--line-strong); padding-bottom: 2
 .kicker .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--ochre); }
 h1 { font-family: var(--serif); font-weight: 500; font-size: clamp(30px,4.6vw,44px); line-height: 1.04; letter-spacing: -.015em; margin: 12px 0 0; }
 h1 em { font-style: italic; color: var(--teal); }
+.masthead-tagline { font-family: var(--sans); font-size: 12.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-faint); font-weight: 500; margin-top: 8px; }
 .sub { font-size: 15.5px; color: var(--ink-soft); max-width: 60ch; margin-top: 16px; }
 .meta-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; align-items: center; }
 .tag { font-size: 11.5px; font-weight: 500; padding: 5px 11px; border-radius: 100px; border: 1px solid var(--line-strong); background: var(--paper-2); color: var(--ink-soft); display: inline-flex; align-items: center; gap: 7px; }
@@ -267,15 +269,21 @@ table.b2c-grid thead th {
   font-family: var(--serif); font-weight: 600; font-size: 15px; color: var(--ink);
   border-left: 1px solid var(--line-strong); border-bottom: 1px solid var(--line-strong);
 }
+/* Meydan/baseline: NO green fill — distinguished by a neutral left rule, the
+   "baseline" tag and a bolder ink name. Green is reserved for the delta rows. */
 .zone-row .zone-h.us {
-  color: var(--teal);
+  color: var(--ink);
   background-color: var(--paper);
-  background-image: linear-gradient(var(--teal-wash), var(--teal-wash));  /* opaque teal tint */
+  border-left: 2px solid var(--ink-faint);
 }
+.zone-row .zone-h.us .zone-name { font-weight: 700; }
 .zone-row .zone-h .zone-base {
   display: block; font-family: var(--sans); font-size: 7.5px; letter-spacing: .1em;
-  text-transform: uppercase; color: var(--teal); font-weight: 600; opacity: .8; margin-top: 1px; line-height: 1.2;
+  text-transform: uppercase; color: var(--ink-faint); font-weight: 600; opacity: .9; margin-top: 1px; line-height: 1.2;
 }
+/* subtle alternating zone banding (header) — composited over the opaque paper */
+.zone-row .zone-h.z-alt { background-image: linear-gradient(var(--zone-band), var(--zone-band)); }
+.pkg-row .pkg-h.z-alt { background-image: linear-gradient(var(--zone-band), var(--zone-band)); }
 .pkg-row .pkg-h {
   top: var(--zone-row-h);  /* flush under the zone row — zero gap */
   background-color: var(--paper);
@@ -286,13 +294,13 @@ table.b2c-grid thead th {
 }
 .pkg-row .pkg-h.us {
   background-color: var(--paper);
-  background-image: linear-gradient(var(--teal-wash), var(--teal-wash));
+  border-left: 2px solid var(--ink-faint);
 }
 .pkg-row .pkg-h.na { background-color: var(--paper); }
 .pkg-na-name { color: var(--ink-faint) !important; font-weight: 600; }
 .pkg-na-sub { color: var(--ink-faint); text-transform: none !important; letter-spacing: .01em !important; font-style: italic; }
 .pkg-h .pkg-name { display: block; font-size: 12.5px; color: var(--ink); line-height: 1.25; white-space: normal; max-width: 130px; margin: 0 auto; }
-.pkg-h.us .pkg-name { color: var(--teal); }
+.pkg-h.us .pkg-name { color: var(--ink); font-weight: 600; }
 .pkg-h .pkg-sub { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-faint); margin-top: 4px; }
 .pkg-h .pkg-badge { font-style: normal; font-size: 8.5px; letter-spacing: .08em; background: var(--ochre-wash); color: var(--rust); border: 1px solid var(--ochre); padding: 1px 5px; border-radius: 5px; }
 .zone-row .corner, .pkg-row { } /* corner spans both rows */
@@ -318,13 +326,18 @@ table.b2c-grid .corner {
 /* ---- body cells ---- */
 .comp-row .row-label { font-size: 13px; }
 .grid-cell { font-family: var(--mono); font-size: 13px; color: var(--ink-soft); }
-.grid-cell.us { background: var(--teal-wash); }
-.comp-row:hover td:not(.us), .comp-row:hover .row-label { background: var(--paper); }
+/* Meydan column: neutral left rule down the full height (no green) — the
+   baseline marker that replaces the old teal fill. */
+.grid-cell.us { border-left: 2px solid var(--ink-faint); }
+/* subtle alternating zone banding — applied to component rows only, so the
+   designed total/renewal/grand row backgrounds stay clean. */
+.comp-row .grid-cell.z-alt { background: var(--zone-band); }
+.comp-row:hover td, .comp-row:hover .row-label { background: var(--paper); }
 
 .c-fee { color: var(--ink); font-weight: 500; }
 .c-qty { font-family: var(--sans); font-size: 10px; color: var(--ink-faint); margin-left: 4px; }
 .c-incl { font-family: var(--sans); font-size: 11px; font-weight: 500; color: var(--ink-faint); background: var(--line); padding: 2px 9px; border-radius: 100px; }
-.c-free { font-family: var(--sans); font-size: 12px; font-weight: 600; color: var(--ok); }
+.c-free { font-family: var(--sans); font-size: 12px; font-weight: 600; color: var(--ink-soft); }
 .c-dash { color: var(--line-strong); }
 .c-allin { color: var(--ink); font-weight: 600; }
 
@@ -336,7 +349,7 @@ table.b2c-grid .corner {
 .t-year1 td, .t-year1 .row-label { background: var(--paper); border-top: 1px solid var(--line-strong); }
 .t-year1 .row-label { font-family: var(--serif); font-weight: 600; font-size: 14px; }
 .t-num { font-size: 15px; font-weight: 600; color: var(--ink); }
-.t-year1 .grid-cell.us .t-num { color: var(--teal); }
+.t-year1 .grid-cell.us .t-num { color: var(--ink); font-weight: 700; }
 
 .t-section td { text-align: left; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-faint); background: var(--paper-2); padding: 8px 16px; position: sticky; left: 0; }
 .t-year2 td, .t-year2 .row-label { background: var(--paper-2); }
@@ -346,13 +359,13 @@ table.b2c-grid .corner {
 .t-grand td, .t-grand .row-label { background: var(--ink); border-bottom: none; }
 .t-grand .row-label { color: var(--paper); font-family: var(--serif); font-weight: 600; font-size: 15px; }
 .g-num { font-size: 18px; font-weight: 700; color: var(--paper); letter-spacing: -.02em; }
-.t-grand .grid-cell.us { background: var(--teal); }
-.t-grand .grid-cell.us .g-num { color: #fff; }
+/* Meydan grand cell matches the rest of the dark row — no green fill (the
+   neutral left rule from .grid-cell.us carries the baseline marker). */
 
 .t-delta td, .t-delta .row-label { background: var(--paper-2); border-top: 1px solid var(--line); }
 .t-delta .row-label { color: var(--ink-faint); font-weight: 500; font-size: 12px; }
 .t-delta .grid-cell { font-size: 12.5px; }
-.d-base { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--teal); font-weight: 600; }
+.d-base { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-faint); font-weight: 600; }
 .d-zero { color: var(--ink-faint); }
 .d-neg { color: var(--teal); font-weight: 600; }
 .d-pos { color: var(--rust); font-weight: 600; }
@@ -363,7 +376,7 @@ table.b2c-grid .corner {
 .grid-legend .gl-item { display: inline-flex; align-items: center; gap: 7px; }
 .gl-sw { width: 18px; height: 12px; border-radius: 4px; flex: none; }
 .gl-sw.gl-num { background: var(--ink); }
-.gl-sw.gl-free { background: var(--ok); }
+.gl-sw.gl-free { background: var(--ink-soft); }
 .gl-sw.gl-incl { background: var(--line-strong); }
 .gl-sw.gl-dash { background: repeating-linear-gradient(135deg, var(--line-strong) 0 3px, transparent 3px 6px); border: 1px solid var(--line); }
 .grid-legend .gl-cur { margin-left: auto; color: var(--ink-faint); font-family: var(--mono); font-size: 11px; }
@@ -393,17 +406,18 @@ table.b2c-grid .corner {
   transition: background .15s, color .15s, border-color .15s;
 }
 .zone-toggle:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-.zone-h.us .zone-toggle:hover { background: var(--teal); border-color: var(--teal); }
 
 .zone-collapsed { width: 40px; background-color: var(--paper) !important; background-image: none !important; vertical-align: middle; padding: 12px 6px; }
-.zone-collapsed.us { background-color: var(--paper) !important; background-image: linear-gradient(var(--teal-wash), var(--teal-wash)) !important; }
+.zone-collapsed.us { background-color: var(--paper) !important; background-image: none !important; border-left: 2px solid var(--ink-faint); }
+.zone-collapsed.z-alt { background-image: linear-gradient(var(--zone-band), var(--zone-band)) !important; }
 .zone-collapsed .zone-vert {
   writing-mode: vertical-rl; transform: rotate(180deg); display: inline-block; margin-top: 10px;
   font-family: var(--serif); font-weight: 600; font-size: 13px; color: var(--ink-soft); letter-spacing: .02em;
 }
-.zone-collapsed.us .zone-vert { color: var(--teal); }
+.zone-collapsed.us .zone-vert { color: var(--ink); font-weight: 700; }
 .collapsed-cell { width: 40px; min-width: 40px; background: var(--paper); opacity: .5; }
-.collapsed-cell.us { background: var(--teal-wash); }
+.collapsed-cell.us { border-left: 2px solid var(--ink-faint); }
+.collapsed-cell.z-alt { background: var(--zone-band); }
 
 /* ---- unavailable (impossible) package columns: greyed, disabled, no dashes ---- */
 .na-col {
@@ -427,7 +441,7 @@ table.b2c-grid thead th, table.b2c-grid .grid-cell, table.b2c-grid .row-label { 
   animation: rise .4s cubic-bezier(.2,.7,.2,1) both;
 }
 .insight-mark { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--ochre); transform: translateY(-3px); }
-.insight:first-child .insight-mark { background: var(--teal); }
+.insight:first-child .insight-mark { background: var(--ink); }
 
 /* Narrow viewports: scroll the grid horizontally inside the card again. The
    header still sticks — within the card here rather than the page. */
