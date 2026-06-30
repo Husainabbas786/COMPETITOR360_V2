@@ -35,7 +35,7 @@
     { "key": "investor_addon",     "label": "Investor / partner add-on","group": "quantitative", "per": "per_visa" },
     { "key": "medical",            "label": "Medical",                 "group": "quantitative", "per": "per_visa" },
     { "key": "emirates_id",        "label": "Emirates ID",             "group": "quantitative", "per": "per_visa" },
-    { "key": "status_change",      "label": "Status change",           "group": "quantitative", "per": "situational", "note": "Only if applicant is inside the UAE." },
+    { "key": "status_change",      "label": "Change of status",        "group": "quantitative", "per": "situational", "note": "Only if applicant is inside the UAE." },
     { "key": "health_insurance",   "label": "Health insurance",        "group": "quantitative", "per": "per_visa",    "note": "Mandatory but priced separately. Keep as a NOTED line, not in core all-in, until all zones publish it." }
   ],
 

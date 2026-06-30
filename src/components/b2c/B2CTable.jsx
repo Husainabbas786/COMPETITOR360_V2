@@ -36,10 +36,12 @@ function ActivitiesCell({ activities, available }) {
   )
 }
 
-function Delta({ col, baseTotal }) {
+// Generic vs-baseline delta: `getVal(col)` selects which total to compare
+// (Year-1 all-in, or the 2-year Y1+Y2 sum), `base` is the same figure for Meydan.
+function Delta({ col, getVal, base }) {
   if (col.isBaseline) return <span className="d-base">{COPY.table.baselineTag}</span>
   if (!col.available || col.result == null) return <span className="c-dash">{COPY.cell.dash}</span>
-  const d = col.result.total - baseTotal
+  const d = getVal(col) - base
   if (d === 0) return <span className="d-zero">±0</span>
   const cheaper = d < 0
   return (
@@ -87,7 +89,12 @@ export default function B2CTable({ state, cols, groups, collapsed, toggle, regis
   const avail = cols.filter((c) => c.available)
   const rows = registry.filter((reg) => !reg.hidden && !avail.every((c) => c.byKey[reg.key]?.noted))
 
-  const baseTotal = cols[0].result?.total ?? 0
+  // Baseline (Meydan) figures the vs-Meydan rows compare against. The 2-year
+  // total is the plain Year-1 + Year-2 sum (col.twoYear) — same definition for
+  // every zone, so a zone's 2-year total = its Year-1 + its Year-2 and the deltas
+  // reconcile.
+  const baseYear1 = cols[0].result?.year1 ?? 0
+  const baseTwoYear = cols[0].twoYear ?? 0
 
   return (
     <div className="b2c-grid-wrap">
@@ -176,6 +183,7 @@ export default function B2CTable({ state, cols, groups, collapsed, toggle, regis
             </tr>
           ))}
 
+          {/* (a) Year-1 all-in, then (b) its vs-Meydan delta — the Year-1 story. */}
           <tr className="t-year1">
             <th className="row-label" scope="row">
               {COPY.table.year1Total}
@@ -186,6 +194,14 @@ export default function B2CTable({ state, cols, groups, collapsed, toggle, regis
             />
           </tr>
 
+          <tr className="t-delta">
+            <th className="row-label" scope="row">
+              {COPY.table.vsBaseline}
+            </th>
+            <BodyCells bodyCols={bodyCols} render={(col) => <Delta col={col} getVal={(c) => c.result.year1} base={baseYear1} />} />
+          </tr>
+
+          {/* (c) Renewal / Year-2. */}
           <tr className="t-section">
             <td colSpan={bodyCols.length + 1}>{COPY.table.renewalSection}</td>
           </tr>
@@ -200,13 +216,14 @@ export default function B2CTable({ state, cols, groups, collapsed, toggle, regis
             />
           </tr>
 
+          {/* (d) 2-year total (Year-1 + Year-2), then (e) its vs-Meydan delta. */}
           <tr className="t-grand">
             <th className="row-label" scope="row">
-              {COPY.table.grandTotal(state.years)}
+              {COPY.table.twoYearTotal}
             </th>
             <BodyCells
               bodyCols={bodyCols}
-              render={(col) => (col.available ? <AnimatedNumber value={col.result.total} className="g-num" /> : <span className="c-dash">{COPY.cell.dash}</span>)}
+              render={(col) => (col.available ? <AnimatedNumber value={col.twoYear} className="g-num" /> : <span className="c-dash">{COPY.cell.dash}</span>)}
             />
           </tr>
 
@@ -214,7 +231,7 @@ export default function B2CTable({ state, cols, groups, collapsed, toggle, regis
             <th className="row-label" scope="row">
               {COPY.table.vsBaseline}
             </th>
-            <BodyCells bodyCols={bodyCols} render={(col) => <Delta col={col} baseTotal={baseTotal} />} />
+            <BodyCells bodyCols={bodyCols} render={(col) => <Delta col={col} getVal={(c) => c.twoYear} base={baseTwoYear} />} />
           </tr>
         </tbody>
       </table>
