@@ -3,7 +3,7 @@
 // Shared by B2CView (which owns the data) so the table and the read-out render
 // from one source. Reads only through the compute engine; no figures here.
 // ---------------------------------------------------------------------------
-import { CURRENCY } from '../../lib/b2cEngine.js'
+import { CURRENCY, ZONE_ORDER } from '../../lib/b2cEngine.js'
 import { COPY } from './copy.js'
 
 const CUR = CURRENCY.replace(/\s*\(.*\)/, '') // "AED"
@@ -68,7 +68,7 @@ function itemisedColumn(engine, zone, sel, isBaseline) {
   }
 }
 
-function bundledColumn(engine, zone, pkg, years, V, limited = false) {
+function bundledColumn(engine, zone, pkg, years, V, limited = false, isBaseline = false) {
   if (!pkg) {
     // No package at this visa count (e.g. RAKEZ beyond 8 visas) — greyed slot.
     return { zone, isBaseline: false, pkgName: '—', sub: visaLabel(V), result: null, twoYear: null, byKey: {}, activities: null, limited, available: false }
@@ -76,7 +76,7 @@ function bundledColumn(engine, zone, pkg, years, V, limited = false) {
   const result = engine.computeCost({ zone, packageId: pkg.package_id, years })
   return {
     zone,
-    isBaseline: false,
+    isBaseline,
     pkgName: pkg.name,
     sub: visaLabel(pkg.visas),
     result,
@@ -88,23 +88,42 @@ function bundledColumn(engine, zone, pkg, years, V, limited = false) {
   }
 }
 
-// One column per zone for the selected visa count, computed via the (stateful)
-// engine passed in. RAKEZ adds its limited Biz Saver as a second column when one
-// exists at that count.
-export function buildColumns(engine, sel) {
+// Columns for a single zone at the selected visa count. Most zones yield one
+// column; RAKEZ adds its limited Biz Saver as a second column when one exists at
+// that count. The `isBaseline` flag rides on the zone's PRIMARY column only (Biz
+// One, never the limited Saver), so the base figure is read from the right one.
+function zoneColumns(engine, zone, sel, isBaseline) {
   const { visas: V, years } = sel
-  const cols = [itemisedColumn(engine, 'Meydan', sel, true), itemisedColumn(engine, 'IFZA', sel, false)]
+  if (zone === 'Meydan' || zone === 'IFZA') return [itemisedColumn(engine, zone, sel, isBaseline)]
 
-  const rakez = engine.getZone('RAKEZ')
-  const bizPkg = rakez.packages.find((p) => p.package_id.startsWith('rakez_biz') && p.visas === V)
-  const saverPkg = rakez.packages.find((p) => p.package_id.startsWith('rakez_saver') && p.visas === V)
-  cols.push(bundledColumn(engine, 'RAKEZ', bizPkg, years, V))
-  if (saverPkg) cols.push(bundledColumn(engine, 'RAKEZ', saverPkg, years, V, true))
+  if (zone === 'RAKEZ') {
+    const rakez = engine.getZone('RAKEZ')
+    const bizPkg = rakez.packages.find((p) => p.package_id.startsWith('rakez_biz') && p.visas === V)
+    const saverPkg = rakez.packages.find((p) => p.package_id.startsWith('rakez_saver') && p.visas === V)
+    const out = [bundledColumn(engine, 'RAKEZ', bizPkg, years, V, false, isBaseline)]
+    if (saverPkg) out.push(bundledColumn(engine, 'RAKEZ', saverPkg, years, V, true)) // Saver never the baseline
+    return out
+  }
 
-  const ajman = engine.getZone('Ajman')
-  cols.push(bundledColumn(engine, 'Ajman', ajman.packages.find((p) => p.visas === V), years, V))
+  if (zone === 'Ajman') {
+    const ajman = engine.getZone('Ajman')
+    return [bundledColumn(engine, 'Ajman', ajman.packages.find((p) => p.visas === V), years, V, false, isBaseline)]
+  }
 
-  return cols
+  return []
+}
+
+// All columns for the table. `baseZone` (default Meydan) is rendered LEFTMOST and
+// carries the baseline flag, so cols[0] is always the comparison base and the
+// table's positional delta logic re-points automatically. `shownZones` (default
+// all) filters which zones render; the base zone is always kept (the baseline can
+// never be hidden). With the defaults this reproduces the original column set and
+// order exactly.
+export function buildColumns(engine, sel, baseZone = 'Meydan', shownZones = null) {
+  const visible = (z) => z === baseZone || !shownZones || shownZones.includes(z)
+  const rest = ZONE_ORDER.filter((z) => z !== baseZone && visible(z))
+  const order = [baseZone, ...rest]
+  return order.flatMap((z) => zoneColumns(engine, z, sel, z === baseZone))
 }
 
 // Zone-group spans (Meydan | IFZA | RAKEZ[·Saver] | Ajman).
@@ -121,7 +140,7 @@ export function buildGroups(cols) {
 // ---- read-out (computed from the data) -------------------------------------
 // Visible (non-collapsed) zones only, one primary (non-limited, available)
 // column per zone. Two-year totals are Y1+Y2 — same definition for all.
-export function buildInsights(groups, collapsed) {
+export function buildInsights(groups, collapsed, baseZone = 'Meydan') {
   const cols = groups
     .filter((g) => !collapsed[g.zone])
     .map((g) => g.cols.find((c) => c.available && !c.limited) || g.cols.find((c) => c.available))
@@ -143,9 +162,11 @@ export function buildInsights(groups, collapsed) {
     .sort((a, b) => b.d - a.d)[0]
   if (drop) out.push(COPY.insights.biggestDrop(drop.zone, money(drop.from), money(drop.to), money(drop.d)))
 
-  const mi = by2y.findIndex((c) => c.zone === 'Meydan')
-  if (mi === 0) out.push(COPY.insights.meydanLeads)
-  else if (mi > 0) out.push(COPY.insights.meydanRank(ordinal(mi + 1), numWord(by2y.length)))
+  // The baseline's standing in the field — re-points to whichever zone is the base
+  // so the read-out speaks from the same reference as the vs-delta rows.
+  const mi = by2y.findIndex((c) => c.zone === baseZone)
+  if (mi === 0) out.push(COPY.insights.baseLeads(baseZone))
+  else if (mi > 0) out.push(COPY.insights.baseRank(baseZone, ordinal(mi + 1), numWord(by2y.length)))
 
   return out
 }

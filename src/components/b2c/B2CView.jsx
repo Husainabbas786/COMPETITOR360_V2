@@ -7,7 +7,7 @@ import SourcesPanel from '../SourcesPanel.jsx'
 import { COPY } from './copy.js'
 import { buildColumns, buildGroups, buildInsights } from './b2cModel.js'
 import { setIn, downloadSchema } from './b2cEdit.js'
-import { SCHEMA, createB2CCompute } from '../../lib/b2cEngine.js'
+import { SCHEMA, createB2CCompute, ZONE_ORDER } from '../../lib/b2cEngine.js'
 
 // Deep clone of pure-JSON schema (no functions/dates) — exact and serialisable.
 const cloneSchema = (s) => JSON.parse(JSON.stringify(s))
@@ -22,11 +22,20 @@ export default function B2CView({ state, setState }) {
   const [schema, setSchema] = useState(() => cloneSchema(SCHEMA))
   const engine = useMemo(() => createB2CCompute(schema), [schema])
 
-  const cols = useMemo(() => buildColumns(engine, state), [engine, state])
+  // Comparison-selection state (display only — never changes any cost figure):
+  // which zone is the baseline, and which zones are shown. Defaults reproduce the
+  // original view exactly (Meydan baseline, all zones shown).
+  const [baseZone, setBaseZone] = useState('Meydan')
+  const [shownZones, setShownZones] = useState(() => [...ZONE_ORDER])
+
+  const cols = useMemo(
+    () => buildColumns(engine, state, baseZone, shownZones),
+    [engine, state, baseZone, shownZones],
+  )
   const groups = useMemo(() => buildGroups(cols), [cols])
   const [collapsed, setCollapsed] = useState({})
   const toggle = (zone) => setCollapsed((c) => ({ ...c, [zone]: !c[zone] }))
-  const insights = buildInsights(groups, collapsed)
+  const insights = buildInsights(groups, collapsed, baseZone)
 
   // Edit mode — off by default; when off the view is exactly as before.
   const [editMode, setEditMode] = useState(false)
@@ -42,13 +51,23 @@ export default function B2CView({ state, setState }) {
 
   return (
     <>
-      <B2CControls state={state} setState={setState} editMode={editMode} setEditMode={setEditMode} />
+      <B2CControls
+        state={state}
+        setState={setState}
+        editMode={editMode}
+        setEditMode={setEditMode}
+        zones={ZONE_ORDER}
+        baseZone={baseZone}
+        setBaseZone={setBaseZone}
+        shownZones={shownZones}
+        setShownZones={setShownZones}
+      />
       <div className="b2c-main">
         <B2CTable state={state} cols={cols} groups={groups} collapsed={collapsed} toggle={toggle} registry={schema.component_registry} />
       </div>
 
       <div className="b2c-below">
-        <p className="foot-note">{COPY.note}</p>
+        <p className="foot-note">{COPY.note(baseZone)}</p>
         <B2CInsights insights={insights} />
         <SourcesPanel filter="b2c" />
       </div>

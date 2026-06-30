@@ -102,6 +102,9 @@ export default function B2CTable({ state, cols, groups, collapsed, toggle, regis
   // reconcile.
   const baseYear1 = cols[0].result?.year1 ?? 0
   const baseTwoYear = cols[0].twoYear ?? 0
+  // The baseline is always the first column (buildColumns puts the chosen base
+  // zone leftmost), so the vs-delta rows label themselves from it.
+  const baseZoneName = cols[0]?.zone
 
   // The "2-year total" row is driven by the Licence Term control. At 1yr it shows
   // the plain Year-1 + Year-2 annual-renewal sum (col.twoYear); at 2/3/5yr it
@@ -213,7 +216,7 @@ export default function B2CTable({ state, cols, groups, collapsed, toggle, regis
 
           <tr className="t-delta">
             <th className="row-label" scope="row">
-              {COPY.table.vsBaseline}
+              {COPY.table.vsBaseline(baseZoneName)}
             </th>
             <BodyCells bodyCols={bodyCols} render={(col) => <Delta col={col} getVal={(c) => c.result.year1} base={baseYear1} />} />
           </tr>
@@ -246,7 +249,7 @@ export default function B2CTable({ state, cols, groups, collapsed, toggle, regis
 
           <tr className="t-delta">
             <th className="row-label" scope="row">
-              {COPY.table.vsBaseline}
+              {COPY.table.vsBaseline(baseZoneName)}
             </th>
             <BodyCells bodyCols={bodyCols} render={(col) => <Delta col={col} getVal={totalOf} base={baseTotalRow} />} />
           </tr>

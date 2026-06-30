@@ -16,6 +16,11 @@ export const COPY = {
     statusLabel: 'Change of status',
     statusSub: 'Applicant inside the UAE',
     statusHint: 'Adds the in-country change-of-status step to itemised zones (Meydan, IFZA). Bundled zones include it.',
+    baseLabel: 'Base zone',
+    baseHint: 'The comparison baseline. Every “vs” row and the read-out re-point to this zone; it moves to the leftmost column.',
+    filterLabel: 'Show zones',
+    filterHint: 'Choose which zones appear. The baseline is always shown.',
+    baseLockHint: (zone) => `${zone} is the baseline — always shown`,
   },
 
   table: {
@@ -27,7 +32,7 @@ export const COPY = {
     twoYearTotal: '2-year total',
     committedTotal: (years) => `Total · ${years} years (committed)`,
     grandTotal: (years) => (years === 1 ? 'Total · Year 1' : `Total · ${years} years`),
-    vsBaseline: 'vs Meydan',
+    vsBaseline: (zone) => `vs ${zone}`,
     collapseLabel: (zone) => `Collapse ${zone}`,
     expandLabel: (zone) => `Expand ${zone}`,
     naName: 'No package',
@@ -43,8 +48,8 @@ export const COPY = {
     dearest2y: (zone, money) => `Over two years, ${zone} is the highest total at ${money}.`,
     biggestDrop: (zone, from, to, delta) =>
       `${zone} shows the steepest Year 1 to Year 2 reduction — ${from} falling to ${to}, a ${delta} saving on renewal.`,
-    meydanLeads: 'Meydan has the lowest two-year total in the field.',
-    meydanRank: (ordinal, field) => `Meydan has the ${ordinal} two-year total of the ${field}.`,
+    baseLeads: (zone) => `${zone} has the lowest two-year total in the field.`,
+    baseRank: (zone, ordinal, field) => `${zone} has the ${ordinal} two-year total of the ${field}.`,
     empty: 'Select at least one zone to generate the read-out.',
   },
 
@@ -93,6 +98,6 @@ export const COPY = {
   },
 
   saverBadge: 'limited',
-  note:
-    'Meydan is the baseline. Itemised zones (Meydan, IFZA) build from per-component fees; bundled zones (RAKEZ, Ajman) carry the all-in in the package price, so every component reads “Included”. Residence visas are valid ~2 years, so visa-side items are not re-charged in Year 2.',
+  note: (base = 'Meydan') =>
+    `${base} is the baseline. Itemised zones (Meydan, IFZA) build from per-component fees; bundled zones (RAKEZ, Ajman) carry the all-in in the package price, so every component reads “Included”. Residence visas are valid ~2 years, so visa-side items are not re-charged in Year 2.`,
 }
