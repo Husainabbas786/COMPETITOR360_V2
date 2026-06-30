@@ -20,6 +20,7 @@
   --warn:#C08A2E;
   --grey:#A7A294;
   --zone-band:rgba(27,35,48,.045);   /* faint neutral banding to separate zone columns */
+  --cbar-h:74px;                     /* height of the sticky top control bar; table header pins below it */
   --shadow:0 1px 2px rgba(27,35,48,.04),0 8px 30px rgba(27,35,48,.06);
 
   --serif:'Fraunces',serif;
@@ -91,12 +92,55 @@ h1 em { font-style: italic; color: var(--teal); }
 .panel + .panel { margin-top: 18px; }
 .panel h3 { font-family: var(--serif); font-weight: 600; font-size: 16px; margin-bottom: 14px; }
 .panel .hint { font-size: 11.5px; color: var(--ink-faint); margin: -6px 0 14px; line-height: 1.5; }
-/* ---------- B2C : slim control rail + wide table centerpiece ---------- */
-.b2c-layout { display: grid; grid-template-columns: 300px 1fr; gap: 28px; align-items: start; margin-top: 16px; }
-@media (max-width: 860px) { .b2c-layout { grid-template-columns: 1fr; gap: 20px; } }
-.b2c-main { min-width: 0; }            /* let the table own the column, no overflow */
+/* ---------- B2C : top control bar + full-width table centerpiece ---------- */
+.b2c-main { min-width: 0; }            /* full-width table, no overflow blowout */
 
-/* Everything below the table sits full-width, outside the sticky-rail grid. */
+/* Controls in one horizontal row, pinned to the top of the viewport so visa /
+   medical / EID / term / status stay reachable at any scroll position. Sits
+   ABOVE the sticky table header (which is offset down by --cbar-h). */
+.b2c-controlbar {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 12px 26px;
+  min-height: var(--cbar-h); padding: 0 16px; margin: 0 0 14px;
+  background: var(--paper-2); border: 1px solid var(--line-strong);
+  border-radius: 12px; box-shadow: 0 2px 8px rgba(27, 35, 48, .05);
+}
+.cbar-field { display: flex; flex-direction: column; gap: 6px; }
+.cbar-field > label {
+  font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--ink-faint); font-weight: 600; line-height: 1;
+}
+.cbar-status { margin-left: auto; }    /* push the status toggle to the right end */
+
+/* Compact stepper for the bar (the old rail variant was deliberately oversized). */
+.b2c-controlbar .visa-stepper {
+  display: inline-flex; align-items: stretch;
+  border: 1px solid var(--line-strong); border-radius: 9px;
+  background: var(--paper); overflow: hidden;
+}
+.b2c-controlbar .visa-stepper button {
+  flex: none; width: 32px; height: 32px; background: transparent; border: none; cursor: pointer;
+  font-size: 17px; line-height: 1; color: var(--ink-soft); transition: background .15s, color .15s;
+}
+.b2c-controlbar .visa-stepper button:hover:not(:disabled) { background: var(--paper-2); color: var(--ink); }
+.b2c-controlbar .visa-stepper button:disabled { opacity: .3; cursor: default; }
+.b2c-controlbar .visa-count {
+  min-width: 40px; display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 600; color: var(--ink);
+  border-left: 1px solid var(--line); border-right: 1px solid var(--line);
+}
+.b2c-controlbar .seg.wide { width: auto; }
+.b2c-controlbar .seg button { padding: 6px 11px; font-size: 12.5px; }
+.b2c-controlbar .status-toggle { padding: 0; }
+
+@media (max-width: 860px) {
+  /* Bar scrolls away with the page; header re-pins at the top (--cbar-h → 0). */
+  :root { --cbar-h: 0px; }
+  .b2c-controlbar { position: static; gap: 12px 18px; padding: 12px 14px; }
+  .cbar-status { margin-left: 0; }
+}
+
+/* Everything below the table sits full-width. */
 .b2c-below { margin-top: 14px; }
 .b2c-below .foot-note { max-width: 92ch; }
 
@@ -264,7 +308,7 @@ table.b2c-grid thead th {
 }
 .zone-row { height: var(--zone-row-h); }
 .zone-row .zone-h {
-  top: 0; height: var(--zone-row-h); padding: 8px 8px;
+  top: var(--cbar-h); height: var(--zone-row-h); padding: 8px 8px;  /* pin below the sticky control bar */
   background-color: var(--paper);
   font-family: var(--serif); font-weight: 600; font-size: 15px; color: var(--ink);
   border-left: 1px solid var(--line-strong); border-bottom: 1px solid var(--line-strong);
@@ -285,7 +329,7 @@ table.b2c-grid thead th {
 .zone-row .zone-h.z-alt { background-image: linear-gradient(var(--zone-band), var(--zone-band)); }
 .pkg-row .pkg-h.z-alt { background-image: linear-gradient(var(--zone-band), var(--zone-band)); }
 .pkg-row .pkg-h {
-  top: var(--zone-row-h);  /* flush under the zone row — zero gap */
+  top: calc(var(--cbar-h) + var(--zone-row-h));  /* flush under the zone row — zero gap */
   background-color: var(--paper);
   font-weight: 500; border-left: 1px solid var(--line);
   border-bottom: 1px solid var(--line-strong);
@@ -316,7 +360,7 @@ table.b2c-grid .row-label {
 }
 /* top-left corner: frozen on BOTH axes, sits above everything */
 table.b2c-grid .corner {
-  top: 0; left: 0; z-index: 6;
+  top: var(--cbar-h); left: 0; z-index: 6;
   background-color: var(--paper);
   border-bottom: 1px solid var(--line-strong);
   box-shadow: 0 5px 6px -5px rgba(27, 35, 48, .22);

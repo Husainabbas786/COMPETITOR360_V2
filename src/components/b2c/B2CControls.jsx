@@ -3,10 +3,11 @@ import { COPY } from './copy.js'
 
 const clamp = (v) => Math.max(0, Math.min(MAX_VISAS, v))
 
-// A compact -/value/+ stepper, reused for visas / medical / EID.
-function Stepper({ label, value, onStep, sub }) {
+// A compact -/value/+ stepper, reused for visas / medical / EID. The helper hint
+// rides as a tooltip (title) so the top control bar stays one clean row.
+function Stepper({ label, value, onStep, title }) {
   return (
-    <div className="rail-field">
+    <div className="cbar-field" title={title}>
       <label>{label}</label>
       <div className="visa-stepper" role="group" aria-label={label}>
         <button type="button" onClick={() => onStep(-1)} disabled={value <= 0} aria-label={`decrease ${label}`}>
@@ -19,14 +20,14 @@ function Stepper({ label, value, onStep, sub }) {
           +
         </button>
       </div>
-      {sub && <p className="ctl-hint">{sub}</p>}
     </div>
   )
 }
 
-// Left control rail. State is the flat shape
+// Top control bar. State is the flat shape
 // { visas, years, statusChange, medicalCount, eidCount }. Medical & EID track
 // the visa count (reset to it when visas change) but can be nudged on their own.
+// Laid out horizontally above the full-width table; sticky via `.b2c-controlbar`.
 export default function B2CControls({ state, setState }) {
   const setVisas = (delta) =>
     setState((s) => {
@@ -38,21 +39,27 @@ export default function B2CControls({ state, setState }) {
     setState((s) => ({ ...s, [key]: clamp(s[key] + delta) }))
 
   return (
-    <aside className="rail b2c-rail">
+    <div className="b2c-controlbar" role="group" aria-label="Pricing controls">
       <Stepper
         label={COPY.controls.visasLabel}
         value={state.visas}
         onStep={setVisas}
-        sub={`${COPY.controls.visasHint} · 0–${MAX_VISAS}`}
+        title={`${COPY.controls.visasHint} · 0–${MAX_VISAS}`}
+      />
+      <Stepper
+        label={COPY.controls.medicalLabel}
+        value={state.medicalCount}
+        onStep={setCount('medicalCount')}
+        title={COPY.controls.countTrackHint}
+      />
+      <Stepper
+        label={COPY.controls.eidLabel}
+        value={state.eidCount}
+        onStep={setCount('eidCount')}
+        title={COPY.controls.countTrackHint}
       />
 
-      <div className="count-group">
-        <Stepper label={COPY.controls.medicalLabel} value={state.medicalCount} onStep={setCount('medicalCount')} />
-        <Stepper label={COPY.controls.eidLabel} value={state.eidCount} onStep={setCount('eidCount')} />
-        <p className="ctl-hint count-group-hint">{COPY.controls.countTrackHint}</p>
-      </div>
-
-      <div className="rail-field">
+      <div className="cbar-field">
         <label>{COPY.controls.yearsLabel}</label>
         <div className="seg wide">
           {YEAR_OPTIONS.map((y) => (
@@ -63,9 +70,9 @@ export default function B2CControls({ state, setState }) {
         </div>
       </div>
 
-      <div className="rail-field">
+      <div className="cbar-field cbar-status">
         <label>{COPY.controls.statusLabel}</label>
-        <div className={`status-toggle ${state.statusChange ? 'on' : ''}`}>
+        <div className={`status-toggle ${state.statusChange ? 'on' : ''}`} title={COPY.controls.statusHint}>
           <label className="tgl">
             <input
               type="checkbox"
@@ -77,8 +84,7 @@ export default function B2CControls({ state, setState }) {
           </label>
           <span className="status-text">{COPY.controls.statusSub}</span>
         </div>
-        <p className="ctl-hint">{COPY.controls.statusHint}</p>
       </div>
-    </aside>
+    </div>
   )
 }
