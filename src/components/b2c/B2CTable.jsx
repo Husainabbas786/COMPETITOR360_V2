@@ -11,9 +11,12 @@ function Cell({ line, available }) {
   if (line.included) return <span className="c-incl">{COPY.cell.included}</span>
   if (line.allIn) return <AnimatedNumber value={line.amount} className="c-allin" />
   if (typeof line.amount === 'number' && line.amount > 0) {
+    // Assumed estimates (e.g. IFZA medical/EID — unconfirmed) carry a subtle amber
+    // underline beneath the number, the financial-model "this is an assumption" mark.
+    const assumed = line.confidence === 'assumed'
     return (
       <span className="c-fee">
-        <AnimatedNumber value={line.amount} />
+        <AnimatedNumber value={line.amount} className={assumed ? 'is-assumed' : ''} />
         {line.qty > 1 && <small className="c-qty">×{line.qty}</small>}
       </span>
     )

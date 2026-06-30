@@ -13,6 +13,18 @@ export const money = (n) => `${CUR} ${fmt.format(Math.round(n))}`
 const visaLabel = (n) => `${n} visa${n === 1 ? '' : 's'}`
 const indexLines = (lines) => Object.fromEntries((lines || []).map((l) => [l.key, l]))
 
+// Surface each component's Year-1 confidence tag (from the schema) onto its line,
+// so the table can mark unconfirmed estimates (e.g. IFZA's medical / EID) with the
+// assumed-value underline. Display metadata only — no figure or total is touched.
+function withConfidence(byKey, components) {
+  if (!components) return byKey
+  for (const key of Object.keys(byKey)) {
+    const conf = components[key]?.y1?.confidence
+    if (conf) byKey[key] = { ...byKey[key], confidence: conf }
+  }
+  return byKey
+}
+
 // Gray-out threshold: a package column is unavailable when the selected visa
 // count exceeds the package's editable max_visas. null/undefined = no ceiling.
 // Defaults equal each package's own visas, so this never changes default output.
@@ -49,7 +61,7 @@ function itemisedColumn(engine, zone, sel, isBaseline) {
     sub: visaLabel(V),
     result,
     twoYear: twoYearOf(result),
-    byKey: indexLines(result.lines),
+    byKey: withConfidence(indexLines(result.lines), z.components),
     activities: z.activities,
     limited: false,
     available: !exceedsMaxVisas(pkg, V),

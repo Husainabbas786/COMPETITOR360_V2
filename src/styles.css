@@ -388,6 +388,16 @@ table.b2c-grid .corner {
 .c-free { font-family: var(--sans); font-size: 12px; font-weight: 600; color: var(--ink-soft); }
 .c-dash { color: var(--line-strong); }
 .c-allin { color: var(--ink); font-weight: 600; }
+/* Assumed-value mark — a discreet amber underline under unconfirmed estimates
+   (the financial-model "this figure is an assumption" convention). The number keeps
+   its ink colour; only the underline signals it. Amber = var(--warn), matching the
+   masthead "Assumed" pill so the legend and the mark read as the same thing. */
+.c-fee .num.is-assumed {
+  text-decoration: underline;
+  text-decoration-color: var(--warn);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
 
 .c-act { display: inline-flex; flex-direction: column; align-items: center; gap: 2px; }
 .c-act-n { font-weight: 600; color: var(--ink); }
