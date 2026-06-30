@@ -12,6 +12,9 @@ import { SCHEMA, createB2CCompute, ZONE_ORDER } from '../../lib/b2cEngine.js'
 // Deep clone of pure-JSON schema (no functions/dates) — exact and serialisable.
 const cloneSchema = (s) => JSON.parse(JSON.stringify(s))
 
+// Stable empty-notes reference so the table doesn't see a new object each render.
+const EMPTY_NOTES = {}
+
 // Rebuilt B2C view. The two-column grid holds ONLY the control rail and the
 // table, so the sticky rail releases exactly at the table's end. Everything else
 // (foot-note, read-out, sources & verify) sits full-width below the grid.
@@ -43,6 +46,22 @@ export default function B2CView({ state, setState }) {
   const onReset = () => setSchema(cloneSchema(SCHEMA))
   const onDownload = () => downloadSchema(schema)
 
+  // Per-cell hover notes — a quick annotation map folded into the schema state
+  // (schema.b2c_notes), so Download/Reset cover them for free and the compute
+  // engine (which never reads this key) stays unaffected. Empty text deletes the
+  // entry; an empty map is dropped so the default schema is unchanged.
+  const notes = schema.b2c_notes || EMPTY_NOTES
+  const setNote = (cellKey, text) =>
+    setSchema((prev) => {
+      const next = { ...(prev.b2c_notes || {}) }
+      const t = (text || '').trim()
+      if (t) next[cellKey] = t
+      else delete next[cellKey]
+      const out = { ...prev, b2c_notes: next }
+      if (Object.keys(next).length === 0) delete out.b2c_notes
+      return out
+    })
+
   // Make room for the fixed drawer so the table stays fully visible while editing.
   useEffect(() => {
     document.body.classList.toggle('b2c-editing', editMode)
@@ -63,7 +82,7 @@ export default function B2CView({ state, setState }) {
         setShownZones={setShownZones}
       />
       <div className="b2c-main">
-        <B2CTable state={state} cols={cols} groups={groups} collapsed={collapsed} toggle={toggle} registry={schema.component_registry} />
+        <B2CTable state={state} cols={cols} groups={groups} collapsed={collapsed} toggle={toggle} registry={schema.component_registry} notes={notes} setNote={setNote} />
       </div>
 
       <div className="b2c-below">

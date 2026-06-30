@@ -57,6 +57,9 @@ function itemisedColumn(engine, zone, sel, isBaseline) {
   return {
     zone,
     isBaseline,
+    // Stable per-column id for cell notes — the zone name (one column per itemised
+    // zone), deliberately independent of visa count / term / base zone.
+    colId: zone,
     pkgName: pkg?.name || zone,
     sub: visaLabel(V),
     result,
@@ -77,6 +80,9 @@ function bundledColumn(engine, zone, pkg, years, V, limited = false, isBaseline 
   return {
     zone,
     isBaseline,
+    // Stable per-column id for cell notes — the package_id (a bundled zone can
+    // have two columns, e.g. RAKEZ Biz One + Biz Saver), so each is distinct.
+    colId: pkg.package_id,
     pkgName: pkg.name,
     sub: visaLabel(pkg.visas),
     result,

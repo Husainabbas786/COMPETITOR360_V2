@@ -418,6 +418,44 @@ table.b2c-grid .corner {
   text-underline-offset: 3px;
 }
 
+/* ---- per-cell hover notes (Pass 6) ---------------------------------------
+   The wrapper fills the cell so the whole cell is the hover target; the marker
+   sits in the cell's top-right corner (inside the 16px padding, clear of the
+   column divider). Marker is invisible at rest when no note exists. */
+.cell-note { position: relative; display: block; width: 100%; text-align: center; }
+.note-marker {
+  position: absolute; top: -4px; right: -8px; z-index: 2;
+  width: 15px; height: 15px; padding: 0; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 12px; line-height: 1; cursor: pointer;
+  border: 1px solid var(--line-strong); background: var(--paper); color: var(--ink-faint);
+  opacity: .5; transition: opacity .15s, color .15s, border-color .15s;
+}
+.note-marker:hover { opacity: 1; color: var(--ochre); border-color: var(--ochre); }
+/* a cell that already has a note: a small solid ochre dot, always shown */
+.note-marker.on {
+  width: 9px; height: 9px; top: -2px; right: -4px; opacity: 1;
+  border: none; background: var(--ochre); box-shadow: 0 0 0 2px var(--ochre-wash);
+}
+.note-pop {
+  position: absolute; top: calc(100% + 7px); left: 50%; transform: translateX(-50%);
+  z-index: 30; min-width: 150px; max-width: 230px;
+  background: var(--paper); border: 1px solid var(--line-strong); border-radius: 9px;
+  box-shadow: 0 6px 20px rgba(27, 35, 48, .16); padding: 8px 10px;
+  font-family: var(--sans); font-size: 12px; font-weight: 400; color: var(--ink);
+  text-align: left; line-height: 1.4; white-space: normal;
+}
+/* little pointer up to the cell */
+.note-pop::before {
+  content: ""; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+  border: 5px solid transparent; border-bottom-color: var(--line-strong);
+}
+.note-input {
+  width: 190px; max-width: 60vw; font-family: var(--sans); font-size: 12px;
+  padding: 5px 8px; border: 1px solid var(--ochre); border-radius: 7px;
+  background: var(--paper-2); color: var(--ink);
+}
+
 .c-act { display: inline-flex; flex-direction: column; align-items: center; gap: 2px; }
 .c-act-n { font-weight: 600; color: var(--ink); }
 .c-act-t { font-family: var(--sans); font-size: 10px; color: var(--ink-faint); white-space: normal; max-width: 150px; line-height: 1.3; }

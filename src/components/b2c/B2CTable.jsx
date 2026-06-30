@@ -1,6 +1,7 @@
 import { CURRENCY } from '../../lib/b2cEngine.js'
 import { COPY } from './copy.js'
 import AnimatedNumber from './AnimatedNumber.jsx'
+import CellNote from './B2CCellNote.jsx'
 
 const CUR = CURRENCY.replace(/\s*\(.*\)/, '') // "AED"
 
@@ -76,7 +77,7 @@ function BodyCells({ bodyCols, render }) {
 // Pure renderer. Receives the column model + collapse state + the (stateful)
 // component registry from B2CView so the read-out shares the same data and row
 // labels reflect live edits.
-export default function B2CTable({ state, cols, groups, collapsed, toggle, registry }) {
+export default function B2CTable({ state, cols, groups, collapsed, toggle, registry, notes = {}, setNote }) {
   // Flat column list for body/total rows: a collapsed zone becomes ONE empty
   // placeholder column (its vertical header spans both header rows).
   // Subtle alternating zone banding: every column carries its zone's parity
@@ -192,13 +193,20 @@ export default function B2CTable({ state, cols, groups, collapsed, toggle, regis
               </th>
               <BodyCells
                 bodyCols={bodyCols}
-                render={(col) =>
-                  reg.key === 'activities' ? (
-                    <ActivitiesCell activities={col.activities} available={col.available} />
-                  ) : (
-                    <Cell line={col.byKey[reg.key]} available={col.available} />
+                render={(col) => {
+                  if (reg.key === 'activities')
+                    return <ActivitiesCell activities={col.activities} available={col.available} />
+                  const cell = <Cell line={col.byKey[reg.key]} available={col.available} />
+                  // Hover-notes ride only on rendered component value cells (not greyed
+                  // slots or the computed totals/delta rows). Key by stable colId.
+                  if (!col.available || !setNote) return cell
+                  const cellKey = `${col.colId}::${reg.key}`
+                  return (
+                    <CellNote cellKey={cellKey} note={notes[cellKey]} setNote={setNote}>
+                      {cell}
+                    </CellNote>
                   )
-                }
+                }}
               />
             </tr>
           ))}
