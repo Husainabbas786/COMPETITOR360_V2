@@ -22,7 +22,6 @@ export default function App() {
         <h1>Money Map</h1>
         <p className="masthead-tagline">Commercial Benchmark</p>
         <div className="meta-row">
-          <span className="tag proto"><span className="d" style={{ background: 'var(--rust)' }} /> Prototype · live tool</span>
           <ConfidenceTags />
         </div>
       </header>

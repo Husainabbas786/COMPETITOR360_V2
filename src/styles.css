@@ -44,21 +44,20 @@ body {
 .num, .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
 
 /* ---------- header ---------- */
-header.masthead { border-bottom: 1px solid var(--line-strong); padding-bottom: 20px; margin-bottom: 8px; }
-.kicker { display: flex; align-items: center; gap: 10px; font-size: 11.5px; letter-spacing: .22em; text-transform: uppercase; color: var(--ochre); font-weight: 600; }
+header.masthead { border-bottom: 1px solid var(--line-strong); padding-bottom: 24px; margin-bottom: 8px; }
+.kicker { display: flex; align-items: center; gap: 9px; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--ochre); font-weight: 600; }
 .kicker .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--ochre); }
-h1 { font-family: var(--serif); font-weight: 500; font-size: clamp(30px,4.6vw,44px); line-height: 1.04; letter-spacing: -.015em; margin: 12px 0 0; }
+h1 { font-family: var(--serif); font-weight: 500; font-size: clamp(30px,4.6vw,44px); line-height: 1.04; letter-spacing: -.015em; margin: 15px 0 0; }
 h1 em { font-style: italic; color: var(--teal); }
-.masthead-tagline { font-family: var(--sans); font-size: 12.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-faint); font-weight: 500; margin-top: 8px; }
+.masthead-tagline { font-family: var(--sans); font-size: 11.5px; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-faint); font-weight: 500; margin-top: 11px; }
 .sub { font-size: 15.5px; color: var(--ink-soft); max-width: 60ch; margin-top: 16px; }
-.meta-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; align-items: center; }
-.tag { font-size: 11.5px; font-weight: 500; padding: 5px 11px; border-radius: 100px; border: 1px solid var(--line-strong); background: var(--paper-2); color: var(--ink-soft); display: inline-flex; align-items: center; gap: 7px; }
-.tag.proto { border-color: var(--ochre); color: var(--rust); background: var(--ochre-wash); }
+.meta-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; align-items: center; }
+.tag { font-size: 11.5px; font-weight: 500; padding: 5px 11px; border-radius: 100px; border: 1px solid var(--line-strong); background: var(--paper); color: var(--ink-soft); display: inline-flex; align-items: center; gap: 7px; }
 .tag .d { width: 6px; height: 6px; border-radius: 50%; }
 .d.ok { background: var(--ok); } .d.warn { background: var(--warn); } .d.grey { background: var(--grey); }
 
 /* ---------- tabs ---------- */
-.tabs { display: flex; gap: 6px; margin: 22px auto; background: var(--paper-2); border: 1px solid var(--line); border-radius: 14px; padding: 6px; width: fit-content; box-shadow: var(--shadow); }
+.tabs { display: flex; gap: 6px; margin: 22px auto; background: var(--paper); border: 1px solid var(--line-strong); border-radius: 14px; padding: 6px; width: fit-content; box-shadow: var(--shadow); }
 .tab { font-family: var(--sans); font-size: 14px; font-weight: 500; color: var(--ink-soft); background: transparent; border: none; padding: 11px 20px; border-radius: 9px; cursor: pointer; display: flex; align-items: center; gap: 9px; transition: all .25s ease; }
 .tab .n { font-family: var(--serif); font-style: italic; font-size: 15px; opacity: .6; }
 .tab:hover { color: var(--ink); }
@@ -100,9 +99,12 @@ h1 em { font-style: italic; color: var(--teal); }
    ABOVE the sticky table header (which is offset down by --cbar-h). */
 .b2c-controlbar {
   position: sticky; top: 0; z-index: 20;
-  display: flex; flex-wrap: wrap; align-items: center; gap: 12px 26px;
-  min-height: var(--cbar-h); padding: 0 16px; margin: 0 0 14px;
-  background: var(--paper-2); border: 1px solid var(--line-strong);
+  display: flex; flex-wrap: wrap; align-items: center; gap: 14px 26px;
+  /* real interior padding on every side — content must clear the border evenly,
+     never flush. Height is content + padding (no rigid min-height clamp); the
+     ResizeObserver reports it to --cbar-h for the sticky header offset. */
+  padding: 16px 18px; margin: 0 0 14px;
+  background: var(--paper); border: 1px solid var(--line-strong);
   border-radius: 12px; box-shadow: 0 2px 8px rgba(27, 35, 48, .05);
 }
 .cbar-field { display: flex; flex-direction: column; gap: 6px; }
@@ -301,9 +303,15 @@ tr.deltarow td.cell { font-size: 12px; }
    and the label column stick to the viewport's left edge. Narrow screens re-enable
    horizontal scroll below (where the header then sticks within the card). */
 .b2c-grid-wrap {
-  overflow: visible; border: 1px solid var(--line); border-radius: 16px;
-  box-shadow: var(--shadow); background: var(--paper-2);
+  overflow: visible; border: 1px solid var(--line-strong); border-radius: 16px;
+  box-shadow: var(--shadow); background: var(--paper);
 }
+/* Finished top corners: the card is overflow:visible (so the sticky header isn't
+   trapped), which means the opaque header cells must carry the radius themselves —
+   otherwise their square corners poke past the card's rounded edge. :last-child is
+   robust to zone count and collapse. (15px = 16px card radius − 1px border.) */
+table.b2c-grid .zone-row .corner { border-top-left-radius: 15px; }
+table.b2c-grid .zone-row th:last-child { border-top-right-radius: 15px; }
 table.b2c-grid {
   border-collapse: separate; border-spacing: 0; width: 100%; min-width: 760px;
   /* Fixed layout = evenly-weighted zone columns at any visa count (the label
@@ -377,7 +385,7 @@ table.b2c-grid .corner,
 table.b2c-grid .row-label {
   position: sticky; left: 0; z-index: 3; text-align: left;
   /* soft hairline divider — the strong line read as a harsh black bar against the paper palette */
-  background-color: var(--paper-2); border-right: 1px solid var(--line);
+  background-color: var(--paper); border-right: 1px solid var(--line);
   font-weight: 500; color: var(--ink);
   width: 220px; white-space: normal;  /* fixed width; wrap the longer component labels */
 }
@@ -466,8 +474,8 @@ table.b2c-grid .corner {
 .t-num { font-size: 15px; font-weight: 600; color: var(--ink); }
 .t-year1 .grid-cell.us .t-num { color: var(--ink); font-weight: 700; }
 
-.t-section td { text-align: left; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-faint); background: var(--paper-2); padding: 8px 16px; position: sticky; left: 0; }
-.t-year2 td, .t-year2 .row-label { background: var(--paper-2); }
+.t-section td { text-align: left; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-faint); background: var(--paper); padding: 8px 16px; position: sticky; left: 0; }
+.t-year2 td, .t-year2 .row-label { background: var(--paper); }
 .t-year2 .row-label { color: var(--ink-soft); font-weight: 500; font-size: 12.5px; }
 .t-num-soft { font-size: 13px; color: var(--ink-soft); }
 
@@ -477,7 +485,7 @@ table.b2c-grid .corner {
 /* Meydan grand cell matches the rest of the dark row — no green fill (the
    neutral left rule from .grid-cell.us carries the baseline marker). */
 
-.t-delta td, .t-delta .row-label { background: var(--paper-2); border-top: 1px solid var(--line); }
+.t-delta td, .t-delta .row-label { background: var(--paper); border-top: 1px solid var(--line); }
 .t-delta .row-label { color: var(--ink-faint); font-weight: 500; font-size: 12px; }
 .t-delta .grid-cell { font-size: 12.5px; }
 .d-base { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-faint); font-weight: 600; }
@@ -487,7 +495,9 @@ table.b2c-grid .corner {
 .d-arrow { font-size: 9px; margin-right: 3px; vertical-align: middle; }
 
 /* ---- legend ---- */
-.grid-legend { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 16px; font-size: 12px; color: var(--ink-soft); align-items: center; }
+/* quiet figure-caption below the table: inset from the card edges, separated by a
+   soft hairline, with comfortable spacing so "All figures AED" never touches the edge */
+.grid-legend { display: flex; flex-wrap: wrap; gap: 13px 26px; margin-top: 0; padding: 14px 18px; border-top: 1px solid var(--line); font-size: 12px; color: var(--ink-soft); align-items: center; }
 .grid-legend .gl-item { display: inline-flex; align-items: center; gap: 7px; }
 .gl-sw { width: 18px; height: 12px; border-radius: 4px; flex: none; }
 .gl-sw.gl-num { background: var(--ink); }
@@ -543,7 +553,7 @@ table.b2c-grid .corner {
 table.b2c-grid thead th, table.b2c-grid .grid-cell, table.b2c-grid .row-label { transition: background .25s ease, color .25s ease; }
 
 /* ---- insights read-out ---- */
-.insights { margin-top: 26px; padding-top: 20px; border-top: 1px solid var(--line-strong); }
+.insights { margin-top: 30px; padding-top: 22px; border-top: 1px solid var(--line); }
 .insights-eyebrow {
   font-size: 11.5px; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-faint);
   font-weight: 600; display: flex; align-items: center; gap: 10px;
