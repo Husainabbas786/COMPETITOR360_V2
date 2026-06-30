@@ -96,6 +96,16 @@ export default function B2CTable({ state, cols, groups, collapsed, toggle, regis
   const baseYear1 = cols[0].result?.year1 ?? 0
   const baseTwoYear = cols[0].twoYear ?? 0
 
+  // The "2-year total" row is driven by the Licence Term control. At 1yr it shows
+  // the plain Year-1 + Year-2 annual-renewal sum (col.twoYear); at 2/3/5yr it
+  // shows the committed-term total the engine already computes for that term
+  // (col.result.total, keyed by state.years). The vs-Meydan delta below it uses
+  // the SAME basis for every column so the comparison stays apples-to-apples.
+  const committed = state.years >= 2
+  const totalOf = (col) => (committed ? col.result.total : col.twoYear)
+  const baseTotalRow = committed ? cols[0].result?.total ?? 0 : baseTwoYear
+  const totalLabel = committed ? COPY.table.committedTotal(state.years) : COPY.table.twoYearTotal
+
   return (
     <div className="b2c-grid-wrap">
       <table className="b2c-grid">
@@ -216,14 +226,14 @@ export default function B2CTable({ state, cols, groups, collapsed, toggle, regis
             />
           </tr>
 
-          {/* (d) 2-year total (Year-1 + Year-2), then (e) its vs-Meydan delta. */}
+          {/* (d) 2-year / committed total (term-driven), then (e) its vs-Meydan delta. */}
           <tr className="t-grand">
             <th className="row-label" scope="row">
-              {COPY.table.twoYearTotal}
+              {totalLabel}
             </th>
             <BodyCells
               bodyCols={bodyCols}
-              render={(col) => (col.available ? <AnimatedNumber value={col.twoYear} className="g-num" /> : <span className="c-dash">{COPY.cell.dash}</span>)}
+              render={(col) => (col.available ? <AnimatedNumber value={totalOf(col)} className="g-num" /> : <span className="c-dash">{COPY.cell.dash}</span>)}
             />
           </tr>
 
@@ -231,7 +241,7 @@ export default function B2CTable({ state, cols, groups, collapsed, toggle, regis
             <th className="row-label" scope="row">
               {COPY.table.vsBaseline}
             </th>
-            <BodyCells bodyCols={bodyCols} render={(col) => <Delta col={col} getVal={(c) => c.twoYear} base={baseTwoYear} />} />
+            <BodyCells bodyCols={bodyCols} render={(col) => <Delta col={col} getVal={totalOf} base={baseTotalRow} />} />
           </tr>
         </tbody>
       </table>

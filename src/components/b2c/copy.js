@@ -25,6 +25,7 @@ export const COPY = {
     renewalSection: 'Renewal · Year 2',
     year2Label: 'Year 2 cost',
     twoYearTotal: '2-year total',
+    committedTotal: (years) => `Total · ${years} years (committed)`,
     grandTotal: (years) => (years === 1 ? 'Total · Year 1' : `Total · ${years} years`),
     vsBaseline: 'vs Meydan',
     collapseLabel: (zone) => `Collapse ${zone}`,
