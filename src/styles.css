@@ -315,7 +315,7 @@ tr.deltarow td.cell { font-size: 12px; }
 /* Finished top corners: the card is overflow:visible (so the sticky header isn't
    trapped), which means the opaque header cells must carry the radius themselves —
    otherwise their square corners poke past the card's rounded edge. :last-child is
-   robust to zone count and collapse. (15px = 16px card radius − 1px border.) */
+   robust to zone count. (15px = 16px card radius − 1px border.) */
 table.b2c-grid .zone-row .corner { border-top-left-radius: 15px; }
 table.b2c-grid .zone-row th:last-child { border-top-right-radius: 15px; }
 table.b2c-grid {
@@ -524,31 +524,10 @@ table.b2c-grid .corner {
 .count-group .visa-count { font-size: 16px; }
 .count-group-hint { grid-column: 1 / -1; margin: 2px 0 4px; }
 
-/* ---- zone collapse controls ---- */
-/* name + BASELINE tag (stacked) + collapse button must fit inside the fixed
-   column width — keep the "−"/"+" fully visible and aligned across zones. */
+/* ---- zone header layout (name + BASELINE tag) ---- */
 .zone-h-inner { display: inline-flex; align-items: center; justify-content: center; gap: 7px; max-width: 100%; }
 .zone-name-wrap { display: inline-flex; flex-direction: column; align-items: center; gap: 0; line-height: 1.1; min-width: 0; }
 .zone-name { white-space: nowrap; }
-.zone-toggle {
-  flex: none; width: 19px; height: 19px; border-radius: 6px; cursor: pointer;
-  border: 1px solid var(--line-strong); background: var(--paper); color: var(--ink-soft);
-  font-size: 14px; line-height: 1; display: inline-flex; align-items: center; justify-content: center;
-  transition: background .15s, color .15s, border-color .15s;
-}
-.zone-toggle:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-
-.zone-collapsed { width: 40px; background-color: var(--paper) !important; background-image: none !important; vertical-align: middle; padding: 12px 6px; }
-.zone-collapsed.us { background-color: var(--paper) !important; background-image: none !important; border-left: 1px solid var(--line); }
-.zone-collapsed.z-alt { background-image: linear-gradient(var(--zone-band), var(--zone-band)) !important; }
-.zone-collapsed .zone-vert {
-  writing-mode: vertical-rl; transform: rotate(180deg); display: inline-block; margin-top: 10px;
-  font-family: var(--serif); font-weight: 600; font-size: 13px; color: var(--ink-soft); letter-spacing: .02em;
-}
-.zone-collapsed.us .zone-vert { color: var(--ink); font-weight: 700; }
-.collapsed-cell { width: 40px; min-width: 40px; background: var(--paper); opacity: .5; }
-.collapsed-cell.us { border-left: 1px solid var(--line); }
-.collapsed-cell.z-alt { background: var(--zone-band); }
 
 /* ---- unavailable (impossible) package columns: greyed, disabled, no dashes ---- */
 .na-col {

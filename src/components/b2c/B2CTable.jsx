@@ -56,13 +56,10 @@ function Delta({ col, getVal, base }) {
   )
 }
 
-// A body/total cell that respects collapsed columns (thin empty cell) and
-// unavailable packages (greyed/disabled cell, no dashes — the slot is kept).
+// A body/total cell that respects unavailable packages (greyed/disabled cell,
+// no dashes — the slot is kept).
 function BodyCells({ bodyCols, render }) {
   return bodyCols.map((bc, i) => {
-    if (bc.collapsed) {
-      return <td key={i} className={`grid-cell collapsed-cell ${bc.isBaseline ? 'us' : ''} ${bc.shade}`} aria-hidden="true" />
-    }
     if (!bc.col.available) {
       return <td key={i} className={`grid-cell na-col ${bc.shade}`} aria-hidden="true" />
     }
@@ -74,26 +71,24 @@ function BodyCells({ bodyCols, render }) {
   })
 }
 
-// Pure renderer. Receives the column model + collapse state + the (stateful)
-// component registry from B2CView so the read-out shares the same data and row
-// labels reflect live edits.
-export default function B2CTable({ state, cols, groups, collapsed, toggle, registry, notes = {}, setNote }) {
-  // Flat column list for body/total rows: a collapsed zone becomes ONE empty
-  // placeholder column (its vertical header spans both header rows).
+// Pure renderer. Receives the column model + the (stateful) component registry
+// from B2CView so the read-out shares the same data and row labels reflect live
+// edits. Zones are hidden/shown via the Show Zones filter upstream (in
+// buildColumns), so every group that reaches here is a visible one.
+export default function B2CTable({ state, cols, groups, registry, notes = {}, setNote }) {
+  // Flat column list for body/total rows.
   // Subtle alternating zone banding: every column carries its zone's parity
   // (group index) so all package sub-columns within a zone share one shade. The
   // band is purely visual — see `.z-alt` in styles.css.
   const shadeOf = (gi) => (gi % 2 === 1 ? 'z-alt' : '')
   const bodyCols = []
   groups.forEach((g, gi) => {
-    if (collapsed[g.zone]) bodyCols.push({ collapsed: true, zone: g.zone, isBaseline: g.isBaseline, shade: shadeOf(gi) })
-    else for (const c of g.cols) bodyCols.push({ collapsed: false, col: c, shade: shadeOf(gi) })
+    for (const c of g.cols) bodyCols.push({ col: c, shade: shadeOf(gi) })
   })
 
   // Fixed registry rows, minus rows every column treats as a separate noted line
   // (health insurance), minus rows hidden via the edit panel. Hiding is visual
-  // only — totals are computed in the engine and are unaffected. Row set is
-  // otherwise stable across collapse.
+  // only — totals are computed in the engine and are unaffected.
   const avail = cols.filter((c) => c.available)
   const rows = registry.filter((reg) => !reg.hidden && !avail.every((c) => c.byKey[reg.key]?.noted))
 
@@ -125,44 +120,19 @@ export default function B2CTable({ state, cols, groups, collapsed, toggle, regis
             <th className="corner" rowSpan={2}>
               {COPY.table.componentHeader}
             </th>
-            {groups.map((g, gi) =>
-              collapsed[g.zone] ? (
-                <th key={g.zone} rowSpan={2} className={`zone-h zone-collapsed ${g.isBaseline ? 'us' : ''} ${shadeOf(gi)}`}>
-                  <button
-                    type="button"
-                    className="zone-toggle"
-                    onClick={() => toggle(g.zone)}
-                    aria-label={COPY.table.expandLabel(g.zone)}
-                    title={COPY.table.expandLabel(g.zone)}
-                  >
-                    +
-                  </button>
-                  <span className="zone-vert">{g.zone}</span>
-                </th>
-              ) : (
-                <th key={g.zone} colSpan={g.cols.length} className={`zone-h ${g.isBaseline ? 'us' : ''} ${shadeOf(gi)}`}>
-                  <span className="zone-h-inner">
-                    <span className="zone-name-wrap">
-                      <span className="zone-name">{g.zone}</span>
-                      {g.isBaseline && <span className="zone-base">{COPY.table.baselineTag}</span>}
-                    </span>
-                    <button
-                      type="button"
-                      className="zone-toggle"
-                      onClick={() => toggle(g.zone)}
-                      aria-label={COPY.table.collapseLabel(g.zone)}
-                      title={COPY.table.collapseLabel(g.zone)}
-                    >
-                      −
-                    </button>
+            {groups.map((g, gi) => (
+              <th key={g.zone} colSpan={g.cols.length} className={`zone-h ${g.isBaseline ? 'us' : ''} ${shadeOf(gi)}`}>
+                <span className="zone-h-inner">
+                  <span className="zone-name-wrap">
+                    <span className="zone-name">{g.zone}</span>
+                    {g.isBaseline && <span className="zone-base">{COPY.table.baselineTag}</span>}
                   </span>
-                </th>
-              ),
-            )}
+                </span>
+              </th>
+            ))}
           </tr>
           <tr className="pkg-row">
             {groups
-              .filter((g) => !collapsed[g.zone])
               .flatMap((g) => g.cols.map((c) => ({ c, shade: shadeOf(groups.indexOf(g)) })))
               .map(({ c, shade }, i) => (
                 <th key={i} className={`pkg-h ${c.isBaseline ? 'us' : ''} ${c.limited ? 'limited' : ''} ${!c.available ? 'na' : ''} ${shade}`}>

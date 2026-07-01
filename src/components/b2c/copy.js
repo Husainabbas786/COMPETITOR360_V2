@@ -33,8 +33,6 @@ export const COPY = {
     committedTotal: (years) => `Total · ${years} years (committed)`,
     grandTotal: (years) => (years === 1 ? 'Total · Year 1' : `Total · ${years} years`),
     vsBaseline: (zone) => `vs ${zone}`,
-    collapseLabel: (zone) => `Collapse ${zone}`,
-    expandLabel: (zone) => `Expand ${zone}`,
     naName: 'No package',
     naSub: (n) => `not available at ${n} visa${n === 1 ? '' : 's'}`,
   },

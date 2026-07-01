@@ -149,11 +149,11 @@ export function buildGroups(cols) {
 }
 
 // ---- read-out (computed from the data) -------------------------------------
-// Visible (non-collapsed) zones only, one primary (non-limited, available)
-// column per zone. Two-year totals are Y1+Y2 — same definition for all.
-export function buildInsights(groups, collapsed, baseZone = 'Meydan') {
+// One primary (non-limited, available) column per visible zone. Zones are already
+// filtered to the visible set upstream (Show Zones → buildColumns), so groups here
+// are exactly the shown zones. Two-year totals are Y1+Y2 — same definition for all.
+export function buildInsights(groups, baseZone = 'Meydan') {
   const cols = groups
-    .filter((g) => !collapsed[g.zone])
     .map((g) => g.cols.find((c) => c.available && !c.limited) || g.cols.find((c) => c.available))
     .filter(Boolean)
   if (!cols.length) return [COPY.insights.empty]

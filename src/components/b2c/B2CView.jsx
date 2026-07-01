@@ -36,9 +36,7 @@ export default function B2CView({ state, setState }) {
     [engine, state, baseZone, shownZones],
   )
   const groups = useMemo(() => buildGroups(cols), [cols])
-  const [collapsed, setCollapsed] = useState({})
-  const toggle = (zone) => setCollapsed((c) => ({ ...c, [zone]: !c[zone] }))
-  const insights = buildInsights(groups, collapsed, baseZone)
+  const insights = buildInsights(groups, baseZone)
 
   // Edit mode — off by default; when off the view is exactly as before.
   const [editMode, setEditMode] = useState(false)
@@ -82,7 +80,7 @@ export default function B2CView({ state, setState }) {
         setShownZones={setShownZones}
       />
       <div className="b2c-main">
-        <B2CTable state={state} cols={cols} groups={groups} collapsed={collapsed} toggle={toggle} registry={schema.component_registry} notes={notes} setNote={setNote} />
+        <B2CTable state={state} cols={cols} groups={groups} registry={schema.component_registry} notes={notes} setNote={setNote} />
       </div>
 
       <div className="b2c-below">
