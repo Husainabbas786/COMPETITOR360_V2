@@ -118,7 +118,7 @@ export default function B2CControls({
 
       <div className="cbar-field" title={COPY.controls.baseHint}>
         <label>{COPY.controls.baseLabel}</label>
-        <div className="seg wide">
+        <div className="seg wide seg-zones">
           {zones.map((z) => (
             <button key={z} className={baseZone === z ? 'on' : ''} onClick={() => setBaseZone(z)}>
               {z}

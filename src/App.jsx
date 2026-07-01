@@ -18,8 +18,7 @@ export default function App() {
   return (
     <div className="wrap">
       <header className="masthead">
-        <div className="kicker"><span className="dot" /> Competitor 360</div>
-        <h1>Money Map</h1>
+        <h1>Competitor 360</h1>
         <p className="masthead-tagline">Commercial Benchmark</p>
         <div className="meta-row">
           <ConfidenceTags />
