@@ -59,6 +59,7 @@ function Stepper({ label, value, onStep, title }) {
 export default function B2CControls({
   state,
   setState,
+  editEnabled = true,
   editMode,
   setEditMode,
   zones = [],
@@ -168,11 +169,13 @@ export default function B2CControls({
         </div>
       </div>
 
-      <label className={`edit-toggle cbar-edit ${editMode ? 'on' : ''}`}>
-        <input type="checkbox" checked={editMode} onChange={(e) => setEditMode(e.target.checked)} />
-        <span className="tgl-track" />
-        {COPY.edit.toggle}
-      </label>
+      {editEnabled && (
+        <label className={`edit-toggle cbar-edit ${editMode ? 'on' : ''}`}>
+          <input type="checkbox" checked={editMode} onChange={(e) => setEditMode(e.target.checked)} />
+          <span className="tgl-track" />
+          {COPY.edit.toggle}
+        </label>
+      )}
     </div>
   )
 }

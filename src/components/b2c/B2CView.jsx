@@ -15,6 +15,12 @@ const cloneSchema = (s) => JSON.parse(JSON.stringify(s))
 // Stable empty-notes reference so the table doesn't see a new object each render.
 const EMPTY_NOTES = {}
 
+// Feature flag for the Edit-data feature (the drawer, live editing, download/reset).
+// FALSE = shipped/read-only state for the shared link: the "Edit data" toggle is
+// hidden and edit mode can never be entered. Flip to TRUE to restore full editing —
+// no code is removed, everything below stays wired.
+const EDIT_ENABLED = false
+
 // Rebuilt B2C view. The two-column grid holds ONLY the control rail and the
 // table, so the sticky rail releases exactly at the table's end. Everything else
 // (foot-note, read-out, sources & verify) sits full-width below the grid.
@@ -62,7 +68,7 @@ export default function B2CView({ state, setState }) {
 
   // Make room for the fixed drawer so the table stays fully visible while editing.
   useEffect(() => {
-    document.body.classList.toggle('b2c-editing', editMode)
+    document.body.classList.toggle('b2c-editing', EDIT_ENABLED && editMode)
     return () => document.body.classList.remove('b2c-editing')
   }, [editMode])
 
@@ -71,6 +77,7 @@ export default function B2CView({ state, setState }) {
       <B2CControls
         state={state}
         setState={setState}
+        editEnabled={EDIT_ENABLED}
         editMode={editMode}
         setEditMode={setEditMode}
         zones={ZONE_ORDER}
@@ -89,7 +96,7 @@ export default function B2CView({ state, setState }) {
         <SourcesPanel filter="b2c" />
       </div>
 
-      {editMode && (
+      {EDIT_ENABLED && editMode && (
         <B2CEditPanel
           schema={schema}
           onEdit={onEdit}
