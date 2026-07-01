@@ -31,7 +31,7 @@ function ActivitiesCell({ activities, available }) {
     <span className="c-act">
       <span className="c-act-n num">
         {activities.count}
-        {activities.max ? `–${activities.max}` : ''}
+        {activities.max && activities.max !== activities.count ? `–${activities.max}` : ''}
       </span>
       <small className="c-act-t" title={activities.type}>
         {activities.type}
