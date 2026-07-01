@@ -221,11 +221,51 @@ export function createB2CCompute(schema) {
     return { total: licence + card + visaCycle + status, parts: { licence, card, visaCycle, status } }
   }
 
+  // SPC / SHAMS (Sharjah itemised). Their committed-term STRUCTURE differs from both
+  // Meydan and IFZA, so they need their own builder: licence / shared_desk / e_channel
+  // / visa_allocation are ANNUAL (charged every year — y1, then y2 renewal), while
+  // establishment_card / residence / medical / emirates_id are VALIDITY-2 (charged
+  // once per 2-year cycle), and status_change is one-time. The multi-year discount
+  // applies to the licence only: "incremental" = per_year_pct x (years-1); "none" = 0.
+  function sharjahMultiYear(zone, V, years, opts) {
+    const c = zone.components
+    const my = zone.multi_year || {}
+    const cycles = Math.ceil(years / 2)
+    const disc = my.type === 'incremental' ? (my.per_year_pct || 0) * (years - 1) : 0
+
+    // annual item over the term: y1 for the first year, y2 (renewal) for the rest.
+    const annual = (comp) => feeOf(comp, 'y1') + feeOf(comp, 'y2') * (years - 1)
+    // validity-2 item: y1 rate, once per 2-year cycle.
+    const cyclic = (comp) => feeOf(comp, 'y1') * cycles
+
+    const licence = annual(c.licence) * (1 - disc)
+    const desk = annual(c.shared_desk)
+    const echannel = V >= 1 ? annual(c.e_channel) : 0
+    const alloc = annual(c.visa_allocation) * Math.max(0, V - freeAllowance(c.visa_allocation, 'y1'))
+
+    const card = V >= 1 ? cyclic(c.establishment_card) : 0
+    const mCount = opts.counts?.medical ?? V
+    const eCount = opts.counts?.emirates_id ?? V
+    const residence = cyclic(c.residence_visa_fee) * Math.max(0, V - freeAllowance(c.residence_visa_fee, 'y1'))
+    const visaCyclic = residence + cyclic(c.medical) * mCount + cyclic(c.emirates_id) * eCount
+
+    const status = opts.statusChange && V >= 1 ? feeOf(c.status_change, 'y1') : 0
+
+    return {
+      total: licence + desk + echannel + alloc + card + visaCyclic + status,
+      parts: { licence, annualExtras: desk + echannel + alloc, card, visaCyclic, status },
+    }
+  }
+
+  // Route the committed-term (2/3/5yr) builder by multi_year.type so each zone uses
+  // its own structure. Meydan (flat_discount) and IFZA (tiered_discount) keep their
+  // existing functions byte-for-byte; only the Sharjah zones get the new path.
   function itemisedMultiYear(zone, V, years, opts) {
     if (years <= 1) return { total: itemisedYear(zone, V, 'y1', opts).total }
-    return zone.zone === 'IFZA'
-      ? ifzaMultiYear(zone, V, years, opts)
-      : meydanMultiYear(zone, V, years, opts)
+    const type = zone.multi_year?.type
+    if (type === 'tiered_discount') return ifzaMultiYear(zone, V, years, opts)
+    if (type === 'incremental' || type === 'none') return sharjahMultiYear(zone, V, years, opts)
+    return meydanMultiYear(zone, V, years, opts) // flat_discount (Meydan) + default
   }
 
   // ---- BUNDLED ---------------------------------------------------------------
@@ -380,6 +420,15 @@ export function createB2CCompute(schema) {
     check('SHAMS 1 visa Y1 (medical 375 vs SPC 365)', shams1.year1, 15000)
     check('SHAMS 1 visa Y2', shams1.year2, 10315)
     check('SHAMS 1 visa 2-year annual sum (Y1 + Y2)', shams1.year1 + shams1.year2, 25315)
+    // Committed-term (Sharjah structure): licence/desk/e-channel/allocation annual,
+    // card/residence/medical/EID validity-2, status once. SPC 1%-incremental licence
+    // discount; SHAMS no discount (= straight annual buildout).
+    const spc2y = computeCost({ zone: 'SPC', visas: 1, years: 2 })
+    const spc3y = computeCost({ zone: 'SPC', visas: 1, years: 3 })
+    const shams2y = computeCost({ zone: 'SHAMS', visas: 1, years: 2 })
+    check('SPC 1 visa 2yr committed (1% licence discount)', spc2y.total, 25175)
+    check('SPC 1 visa 3yr committed (2% licence discount)', spc3y.total, 38765)
+    check('SHAMS 1 visa 2yr committed (no discount published)', shams2y.total, 25315)
 
     logger.log('— Medical / EID independent counts (Meydan, 1 visa) —')
     const meydanMed2 = computeCost({ zone: 'Meydan', visas: 1, years: 1, medicalCount: 2 })
