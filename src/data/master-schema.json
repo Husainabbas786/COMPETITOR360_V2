@@ -3,7 +3,7 @@
     "title": "Competitor 360 — Master Data (consolidated schema v2)",
     "built": "2026-06-11",
     "baseline": "Meydan",
-    "active_zones": ["Meydan", "IFZA", "RAKEZ", "Ajman"],
+    "active_zones": ["Meydan", "IFZA", "SPC", "SHAMS", "RAKEZ", "Ajman"],
     "parked_zones": ["DWTC"],
     "currency": "AED (VAT-incl)",
     "scope": "B2C only (B2B parked per Jai, Meeting 2)",
@@ -126,6 +126,72 @@
         { "package_id": "ifza_3v", "name": "3 Visa License",    "visas": 3, "max_visas": 3, "licence_y1": 18900, "confidence": "confirmed" },
         { "package_id": "ifza_4v", "name": "4 Visa License+",   "visas": 4, "max_visas": null, "licence_y1": 20900, "confidence": "confirmed", "note": "4 and above" }
       ]
+    },
+
+    {
+      "zone": "SPC",
+      "is_benchmark": false,
+      "model": "itemised",
+      "source_doc": "SPC Free Zone Price List 2026, dated 27 April 2026 (+ internal master sheet V14.2.25)",
+      "shareholders_included": 7,
+      "compute_note": "Itemised like Meydan. Standard Business Licence 6,500 + mandatory co-working desk 375. Investor visa 2,200 (2-year), EID 330 (2-year), medical 365. Establishment card 640 (2-year). E-channel 2,280 first year, 1,840 renewal. Visa allocation 1,600/year. All fees inclusive of VAT; government fees separate per source.",
+      "activities": { "count": 5, "max": 5, "type": "Up to 5 activity clauses (Standard Business Licence)", "confidence": "confirmed", "source": "SPC price list p5 + master sheet" },
+      "multi_year": {
+        "type": "flat_discount",
+        "discount_pct": 0.02,
+        "applies_to": ["licence", "shared_desk"],
+        "terms": [2, 3, 4, 5],
+        "confidence": "assumed",
+        "source": "SPC states 1% incremental per additional year up to 10yr; approximated here as a flat discount on licence+desk. Flagged — exact incremental schedule not modelled.",
+        "note": "Approximation: real structure is 1% incremental per year. Only affects committed 2/3/5yr totals, not annual figures."
+      },
+      "components": {
+        "licence":            { "kind": "flat",                "y1": {"fee":6500,"confidence":"confirmed","source":"SPC master sheet Standard Business Licence"}, "y2": {"fee":6500,"confidence":"confirmed","source":"same"} },
+        "shared_desk":        { "kind": "flat",                "y1": {"fee":375,"confidence":"confirmed","source":"SPC co-working Standard, mandatory with licence"}, "y2": {"fee":375,"confidence":"confirmed","source":"same"} },
+        "establishment_card": { "kind": "per_company_if_visa", "y1": {"fee":640,"confidence":"confirmed","source":"SPC est card 2yr"}, "y2": {"fee":0,"confidence":"confirmed","source":"2-year validity, not re-charged Y2"} },
+        "e_channel":          { "kind": "per_company_if_visa", "y1": {"fee":2280,"confidence":"confirmed","source":"SPC e-channel registration"}, "y2": {"fee":1840,"confidence":"confirmed","source":"SPC e-channel annual renewal"} },
+        "visa_allocation":    { "kind": "per_visa", "free_allowance":0, "y1": {"fee":1600,"confidence":"confirmed","source":"SPC visa allocation 1-50"}, "y2": {"fee":1600,"confidence":"confirmed","source":"annual"} },
+        "residence_visa_fee": { "kind": "per_visa", "free_allowance":0, "y1": {"fee":2200,"confidence":"assumed","source":"SPC investor visa 2yr; owner's-visa modelling choice (vs employee 3,700), flagged"}, "y2": {"fee":0,"confidence":"confirmed","source":"2-year validity"} },
+        "investor_addon":     { "kind": "na" },
+        "medical":            { "kind": "per_visa", "free_allowance":0, "y1": {"fee":365,"confidence":"confirmed","source":"SPC Normal Medical"}, "y2": {"fee":0,"confidence":"confirmed","source":"per issuance, 2yr cycle"} },
+        "emirates_id":        { "kind": "per_visa", "free_allowance":0, "y1": {"fee":330,"confidence":"confirmed","source":"SPC EID typing 2yr"}, "y2": {"fee":0,"confidence":"confirmed","source":"2-year validity"} },
+        "status_change":      { "kind": "situational",         "y1": {"fee":700,"confidence":"assumed","source":"SPC change of status; additive-by-default modelling choice, flagged"}, "y2": {"fee":0,"confidence":"confirmed","source":"one-time"} },
+        "health_insurance":   { "kind": "per_visa", "noted_separate":true, "y1": {"fee":500,"confidence":"assumed","source":"SPC Admin Fee - Health Insurance (assistance only, not premium)"} }
+      },
+      "packages": [ { "package_id":"spc_base","name":"Standard Business Licence","is_base":true,"max_visas":null,"facility":"Co-working desk (4h/mo, mandatory)","note":"Up to 5 activities, 7 shareholders" } ]
+    },
+
+    {
+      "zone": "SHAMS",
+      "is_benchmark": false,
+      "model": "itemised",
+      "source_doc": "SHAMS (Sharjah Media City) Price List, dated 6 Feb 2025 — NOTE: older data, cross-validated against current SPC pricing",
+      "shareholders_included": 7,
+      "compute_note": "Itemised like Meydan, structurally a twin of SPC. Standard Licence 6,500 + mandatory desk 375. Investor visa 2,200 (2-year), EID 330 (2-year), medical 375. Est card 640 (2-year). E-channel 2,280 first year, 1,840 renewal. Allocation 1,600/year. Data is Feb 2025 — flagged as older.",
+      "activities": { "count": 5, "max": 5, "type": "Standard Licence activity clauses", "confidence": "assumed", "source": "SHAMS master price list (Feb 2025)" },
+      "multi_year": {
+        "type": "flat_discount",
+        "discount_pct": 0.02,
+        "applies_to": ["licence", "shared_desk"],
+        "terms": [2, 3, 4, 5],
+        "confidence": "assumed",
+        "source": "Not stated in SHAMS sheet; assumed same as SPC (1% incremental, approximated flat). Flagged.",
+        "note": "Assumed from SPC twin; SHAMS sheet silent on multi-year."
+      },
+      "components": {
+        "licence":            { "kind": "flat",                "y1": {"fee":6500,"confidence":"confirmed","source":"SHAMS Standard Licence"}, "y2": {"fee":6500,"confidence":"confirmed","source":"same"} },
+        "shared_desk":        { "kind": "flat",                "y1": {"fee":375,"confidence":"confirmed","source":"SHAMS shared desk/co-working Standard"}, "y2": {"fee":375,"confidence":"confirmed","source":"same"} },
+        "establishment_card": { "kind": "per_company_if_visa", "y1": {"fee":640,"confidence":"confirmed","source":"SHAMS est card 2yr"}, "y2": {"fee":0,"confidence":"confirmed","source":"2-year validity"} },
+        "e_channel":          { "kind": "per_company_if_visa", "y1": {"fee":2280,"confidence":"confirmed","source":"SHAMS e-channel registration"}, "y2": {"fee":1840,"confidence":"confirmed","source":"SHAMS e-channel annual renewal"} },
+        "visa_allocation":    { "kind": "per_visa", "free_allowance":0, "y1": {"fee":1600,"confidence":"confirmed","source":"SHAMS visa allocation per annum"}, "y2": {"fee":1600,"confidence":"confirmed","source":"annual"} },
+        "residence_visa_fee": { "kind": "per_visa", "free_allowance":0, "y1": {"fee":2200,"confidence":"assumed","source":"SHAMS investor visa 2yr; owner's-visa modelling choice, flagged"}, "y2": {"fee":0,"confidence":"confirmed","source":"2-year validity"} },
+        "investor_addon":     { "kind": "na" },
+        "medical":            { "kind": "per_visa", "free_allowance":0, "y1": {"fee":375,"confidence":"confirmed","source":"SHAMS Sheet2 Medical Normal 375"}, "y2": {"fee":0,"confidence":"confirmed","source":"per issuance, 2yr cycle"} },
+        "emirates_id":        { "kind": "per_visa", "free_allowance":0, "y1": {"fee":330,"confidence":"confirmed","source":"SHAMS EID typing 2yr"}, "y2": {"fee":0,"confidence":"confirmed","source":"2-year validity"} },
+        "status_change":      { "kind": "situational",         "y1": {"fee":700,"confidence":"assumed","source":"SHAMS change of status; additive-by-default choice, flagged"}, "y2": {"fee":0,"confidence":"confirmed","source":"one-time"} },
+        "health_insurance":   { "kind": "per_visa", "noted_separate":true, "y1": {"fee":500,"confidence":"assumed","source":"SHAMS Admin Fee - Health Insurance"} }
+      },
+      "packages": [ { "package_id":"shams_base","name":"Standard Licence","is_base":true,"max_visas":null,"facility":"Co-working desk (4h/mo, mandatory)","note":"Standard Licence, 7 shareholders" } ]
     },
 
     {

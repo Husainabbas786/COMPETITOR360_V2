@@ -100,7 +100,12 @@ function bundledColumn(engine, zone, pkg, years, V, limited = false, isBaseline 
 // One, never the limited Saver), so the base figure is read from the right one.
 function zoneColumns(engine, zone, sel, isBaseline) {
   const { visas: V, years } = sel
-  if (zone === 'Meydan' || zone === 'IFZA') return [itemisedColumn(engine, zone, sel, isBaseline)]
+  // Itemised zones (Meydan, IFZA, SPC, SHAMS, and any future one) route by MODEL,
+  // not by name — so adding an itemised zone to the schema "just works". RAKEZ and
+  // Ajman stay explicit because their bundled column selection is zone-specific.
+  const z = engine.getZone(zone)
+  if (z && (z.model === 'itemised' || z.model === 'itemised_tiered'))
+    return [itemisedColumn(engine, zone, sel, isBaseline)]
 
   if (zone === 'RAKEZ') {
     const rakez = engine.getZone('RAKEZ')
