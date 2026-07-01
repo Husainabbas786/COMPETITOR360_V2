@@ -127,6 +127,22 @@ export default function B2CControls({
         </div>
       </div>
 
+      <div className="cbar-field cbar-status">
+        <label>{COPY.controls.statusLabel}</label>
+        <div className={`status-toggle ${state.statusChange ? 'on' : ''}`} title={COPY.controls.statusHint}>
+          <label className="tgl">
+            <input
+              type="checkbox"
+              checked={state.statusChange}
+              onChange={(e) => setState((s) => ({ ...s, statusChange: e.target.checked }))}
+              aria-label={COPY.controls.statusLabel}
+            />
+            <span className="tgl-track" />
+          </label>
+          <span className="status-text">{COPY.controls.statusSub}</span>
+        </div>
+      </div>
+
       <div className="cbar-field" title={COPY.controls.filterHint}>
         <label>{COPY.controls.filterLabel}</label>
         <div className="zone-filter" role="group" aria-label={COPY.controls.filterLabel}>
@@ -149,22 +165,6 @@ export default function B2CControls({
               </label>
             )
           })}
-        </div>
-      </div>
-
-      <div className="cbar-field cbar-status">
-        <label>{COPY.controls.statusLabel}</label>
-        <div className={`status-toggle ${state.statusChange ? 'on' : ''}`} title={COPY.controls.statusHint}>
-          <label className="tgl">
-            <input
-              type="checkbox"
-              checked={state.statusChange}
-              onChange={(e) => setState((s) => ({ ...s, statusChange: e.target.checked }))}
-              aria-label={COPY.controls.statusLabel}
-            />
-            <span className="tgl-track" />
-          </label>
-          <span className="status-text">{COPY.controls.statusSub}</span>
         </div>
       </div>
 

@@ -101,7 +101,7 @@ h1 em { font-style: italic; color: var(--teal); }
    ABOVE the sticky table header (which is offset down by --cbar-h). */
 .b2c-controlbar {
   position: sticky; top: 0; z-index: 20;
-  display: flex; flex-wrap: wrap; align-items: center; gap: 14px 26px;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 16px 32px;
   /* real interior padding on every side — content must clear the border evenly,
      never flush. Height is content + padding (no rigid min-height clamp); the
      ResizeObserver reports it to --cbar-h for the sticky header offset. */
@@ -114,7 +114,7 @@ h1 em { font-style: italic; color: var(--teal); }
   font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase;
   color: var(--ink-faint); font-weight: 600; line-height: 1;
 }
-.cbar-status { margin-left: auto; }    /* push the status toggle to the right end */
+/* Change of status now sits inline at the end of the first row (after Base Zone). */
 
 /* Compact stepper for the bar (the old rail variant was deliberately oversized). */
 .b2c-controlbar .visa-stepper {
@@ -161,7 +161,8 @@ h1 em { font-style: italic; color: var(--teal); }
 .zfilter.locked { cursor: default; border-color: var(--ink-faint); }
 .zfilter.locked::before { background: var(--ink); }
 /* Edit-data toggle rides at the far right of the bar (after the status field). */
-.b2c-controlbar .cbar-edit { align-self: center; }
+/* Edit-data sits alone at the far-right corner of the (wrapped) second row. */
+.b2c-controlbar .cbar-edit { align-self: center; margin-left: auto; }
 
 @media (max-width: 860px) {
   /* Bar scrolls away with the page; header re-pins at the top (--cbar-h → 0). */
