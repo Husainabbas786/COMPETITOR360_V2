@@ -430,6 +430,13 @@ export function createB2CCompute(schema) {
     check('SPC 1 visa 3yr committed (2% licence discount)', spc3y.total, 38765)
     check('SHAMS 1 visa 2yr committed (no discount published)', shams2y.total, 25315)
 
+    logger.log('— DSBH (itemised Dubai zone; promo is flagged secondary, never the all-in) —')
+    const dsbh0 = computeCost({ zone: 'DSBH', visas: 0, years: 1 })
+    const dsbh1 = computeCost({ zone: 'DSBH', visas: 1, years: 1 })
+    check('DSBH 0 visa base (licence 12,125 + flexi 375)', dsbh0.year1, 12500)
+    check('DSBH 1 visa all-in inside UAE (EID bundled in medical → Included)', dsbh1.year1, 24118)
+    check('DSBH 1 visa Y2 (card 2,200 + alloc 1,850 annual; visa/med/EID validity-2)', dsbh1.year2, 16550)
+
     logger.log('— Medical / EID independent counts (Meydan, 1 visa) —')
     const meydanMed2 = computeCost({ zone: 'Meydan', visas: 1, years: 1, medicalCount: 2 })
     const meydanEid0 = computeCost({ zone: 'Meydan', visas: 1, years: 1, eidCount: 0 })

@@ -3,7 +3,7 @@
     "title": "Competitor 360 — Master Data (consolidated schema v2)",
     "built": "2026-06-11",
     "baseline": "Meydan",
-    "active_zones": ["Meydan", "IFZA", "SPC", "SHAMS", "RAKEZ", "Ajman"],
+    "active_zones": ["Meydan", "IFZA", "SPC", "SHAMS", "RAKEZ", "Ajman", "DSBH"],
     "parked_zones": ["DWTC"],
     "currency": "AED (VAT-incl)",
     "scope": "B2C only (B2B parked per Jai, Meeting 2)",
@@ -246,6 +246,56 @@
         { "package_id": "ajman_10v", "name": "10 Visas","visas": 10, "max_visas": 10, "tier_price_new": 52200, "tier_price_renewal": 42750, "tier_price_installment": null, "confidence": "confirmed", "source": "Annexure" }
       ],
       "open": { "mystery_pdf": "Freelancer/Virtual Office/Physical Office (Al-Jurf) PDF conflicts with ANCFZ (5 shareholders vs unlimited; Dubai medical). Confirm which entity it is — not used in this line." }
+    },
+
+    {
+      "zone": "DSBH",
+      "is_benchmark": false,
+      "model": "itemised",
+      "entity": "Dubai South Business Hub Free Zone (Dubai Aviation City Corporation / DACC; formerly Dubai World Central, DWC)",
+      "source_doc": "DSBH Price List dated 27 Oct 2025 (RTE-coded master) + DSBH Cost Calculator (WIP draft — buggy totals, used for base assumptions only) + Ilyas limited-time promo message (captured 2 Jul 2026)",
+      "shareholders_included": 6,
+      "compute_note": "Itemised like Meydan (near-identical fee ladder) with SPC-style 5-activity licence. Company Formation 12,125 (annual) + flexi 375. Investor/partner visa 4,000. Est card 2,000 new / 2,200 renewal (visa-gated). Allocation 1,850/yr. Medical & Biometrics 2,268 incl-VAT BUNDLES medical + biometrics + EID typing, so emirates_id row = Included. Status change 1,500. DACC licence/visa fees are VAT-exempt; business-centre items (desk, medical) carry 5% VAT — incl-VAT used throughout. e-channel N/A (Dubai zone).",
+      "activities": { "count": 5, "max": 5, "type": "Up to 5 activities included; +2,000 per additional activity above 5", "confidence": "confirmed", "source": "Cost Calculator line 'Business Activities Above 5' (2,000)" },
+      "multi_year": {
+        "type": "none",
+        "terms": [2, 3, 4, 5],
+        "confidence": "missing",
+        "source": "No multi-year discount published. Licence is annual; the only reduction is the limited-time promo (single-year), not a pay-upfront multi-year schedule.",
+        "note": "Committed 2/3/5yr totals = straight undiscounted annual buildout (same treatment as SHAMS). Surface 'no multi-year discount published' if asked."
+      },
+      "components": {
+        "licence":            { "kind": "flat", "y1": {"fee":12125,"confidence":"confirmed","source":"Company Formation: New"}, "y2": {"fee":12125,"confidence":"confirmed","source":"Company Formation: Renew (12,125)"} },
+        "shared_desk":        { "kind": "flat", "y1": {"fee":375,"confidence":"confirmed","source":"Flexi Desk (360 excl / 378 incl; 375 kept so base = 12,500, matching DSBH's own 0-visa bundle)"}, "y2": {"fee":375,"confidence":"confirmed","source":"Flexi Desk: Renew"} },
+        "establishment_card": { "kind": "per_company_if_visa", "y1": {"fee":2000,"confidence":"confirmed","source":"Establishment Card: New"}, "y2": {"fee":2200,"confidence":"assumed","source":"Establishment Card: Renew (2,200). Charged-every-year MIRRORS Meydan's confirmed logic; DSBH's own calculator implied 2-yr validity — Y2 recharge cycle NOT independently confirmed for DSBH."} },
+        "e_channel":          { "kind": "na" },
+        "visa_allocation":    { "kind": "per_visa", "free_allowance":0, "y1": {"fee":1850,"confidence":"confirmed","source":"Additional Visa Allocation"}, "y2": {"fee":1850,"confidence":"assumed","source":"Additional Visa Allocation - Renewal (1,850). Annual recharge mirrors Meydan; DSBH cycle not independently confirmed (see est card note)."} },
+        "residence_visa_fee": { "kind": "per_visa", "free_allowance":0, "y1": {"fee":4000,"confidence":"confirmed","source":"Investor/Partner Visa: New (owner's visa; employee visa = 3,500). Fee already includes EID typing."}, "y2": {"fee":0,"confidence":"assumed","source":"2-yr residence visa not re-charged Y2 (standard UAE; DSBH calculator visa validity=2). Mirrors Meydan."} },
+        "investor_addon":     { "kind": "na", "note": "Investor/partner visa fee (4,000) already in residence_visa_fee; no separate add-on (same as Meydan)." },
+        "medical":            { "kind": "per_visa", "free_allowance":0, "y1": {"fee":2268,"confidence":"confirmed","source":"Medical & Biometrics Assistance 2,160 excl / 2,268 incl-VAT — BUNDLES medical test + biometrics + EID typing"}, "y2": {"fee":0,"confidence":"assumed","source":"per issuance, 2-yr cycle; not re-charged Y2. Mirrors Meydan."} },
+        "emirates_id":        { "kind": "per_visa", "included": true, "free_allowance":0, "y1": {"fee":0,"display":"Included","confidence":"confirmed","source":"EID typing bundled into the Medical & Biometrics line (2,268) AND into the investor visa fee — never a separate DSBH charge."}, "y2": {"fee":0,"confidence":"confirmed"} },
+        "status_change":      { "kind": "situational", "y1": {"fee":1500,"confidence":"confirmed","source":"Change of Status (only if inside UAE)"}, "y2": {"fee":0,"confidence":"confirmed","source":"one-time"} },
+        "health_insurance":   { "kind": "per_visa", "noted_separate":true, "y1": {"fee":null,"confidence":"missing","source":"Employee Protection Insurance 165–395 (by salary/term) is an admin line collected with the visa, NOT the medical insurance premium. Full premium mandatory, paid separately, unpriced."} }
+      },
+      "packages": [
+        { "package_id":"dsbh_base","name":"Business Setup Licence","is_base":true,"max_visas":null,"facility":"Flexi-desk (co-working)","note":"Up to 5 activities, 6 shareholders. À-la-carte: visa count via stepper, costs build from components. Standard (non-promo) pricing — the honest all-in." }
+      ],
+      "promo": {
+        "active": true, "label": "LIMITED", "captured": "2026-07-02", "expires": null,
+        "confidence": "confirmed",
+        "source": "Ilyas message — 'LIMITED TIME OFFER, Dubai South Business Hub Free Zone'. No end date; verify before each share.",
+        "scope_warning": "BUNDLED setup packages covering ONLY licence, AOA, share register, flexi-desk, lease, visa allocation(s) and establishment card. They EXCLUDE the actual residence-visa issuance (~4,000), medical/EID (~2,268) and status change (~1,500). NOT the operating all-in — the itemised ~24,118 (1 visa) is. Never compare a promo price against another zone's all-in.",
+        "packages": [
+          { "package_id":"dsbh_promo_0v","name":"0 Visa Package","visas":0,"max_visas":0,"price_now":11375,"price_was":12500,"confidence":"confirmed" },
+          { "package_id":"dsbh_promo_1v","name":"1 Visa Package","visas":1,"max_visas":1,"price_now":13975,"price_was":16350,"confidence":"confirmed","note":"Standard 16,350 = licence 12,125 + flexi 375 + est card 2,000 + allocation 1,850. Excludes visa issuance/medical/status." },
+          { "package_id":"dsbh_promo_2v","name":"2 Visa Package","visas":2,"max_visas":2,"price_now":15375,"price_was":18200,"confidence":"confirmed" }
+        ]
+      },
+      "derived_checks": {
+        "base_0visa": 12500,
+        "all_in_1visa_inside_uae": 24118,
+        "year2_1visa": "16,550 = licence 12,125 + flexi 375 + est card 2,200 + allocation 1,850. Mirrors Meydan's confirmed annual-recharge logic (card + allocation every year, visa-gated; visa/medical/EID validity-2, not re-charged). If DSBH est card + allocation turn out to be 2-yr validity, Y2 drops to 12,500 (licence + flexi only) — see open_questions."
+      }
     }
   ],
 
