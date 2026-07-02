@@ -237,13 +237,18 @@ export function createB2CCompute(schema) {
     const annual = (comp) => feeOf(comp, 'y1') + feeOf(comp, 'y2') * (years - 1)
     // validity-2 item: y1 rate, once per 2-year cycle.
     const cyclic = (comp) => feeOf(comp, 'y1') * cycles
+    // Recharge cadence read from the data: a y2 fee > 0 means the item renews EVERY
+    // year (annual); y2 = 0 means it's validity-2 (once per 2-yr cycle). This is why
+    // the establishment card differs — DSBH recharges it yearly (y2 2,200), SPC/SHAMS
+    // don't (y2 0) — while residence/medical/EID are validity-2 (y2 0) for all three.
+    const byCadence = (comp) => (feeOf(comp, 'y2') > 0 ? annual(comp) : cyclic(comp))
 
     const licence = annual(c.licence) * (1 - disc)
     const desk = annual(c.shared_desk)
     const echannel = V >= 1 ? annual(c.e_channel) : 0
     const alloc = annual(c.visa_allocation) * Math.max(0, V - freeAllowance(c.visa_allocation, 'y1'))
 
-    const card = V >= 1 ? cyclic(c.establishment_card) : 0
+    const card = V >= 1 ? byCadence(c.establishment_card) : 0
     const mCount = opts.counts?.medical ?? V
     const eCount = opts.counts?.emirates_id ?? V
     const residence = cyclic(c.residence_visa_fee) * Math.max(0, V - freeAllowance(c.residence_visa_fee, 'y1'))
@@ -436,6 +441,28 @@ export function createB2CCompute(schema) {
     check('DSBH 0 visa base (licence 12,125 + flexi 375)', dsbh0.year1, 12500)
     check('DSBH 1 visa all-in inside UAE (EID bundled in medical → Included)', dsbh1.year1, 24118)
     check('DSBH 1 visa Y2 (card 2,200 + alloc 1,850 annual; visa/med/EID validity-2)', dsbh1.year2, 16550)
+    // DSBH LIMITED overlay column = standard all-in − the ONE-TIME promo bundle saving
+    // (price_was − price_now). Renders in the grid as a second column; the engine's
+    // Year-1 figure is what the view model discounts, so we verify the arithmetic here.
+    const dsbhZone = zonesArr.find((z) => z.zone === 'DSBH')
+    const promoPkgs = dsbhZone?.promo?.packages || []
+    const savingOf = (v) => { const p = promoPkgs.find((x) => x.visas === v); return p ? p.price_was - p.price_now : 0 }
+    const stdAllIn = (v) => Math.round(computeCost({ zone: 'DSBH', visas: v, years: 1 }).year1)
+    check('DSBH LIMITED 0 visa all-in (std − promo saving; = advertised at 0v, nothing excluded)', stdAllIn(0) - savingOf(0), 11375)
+    check('DSBH LIMITED 1 visa all-in (std 24,118 − 2,375)', stdAllIn(1) - savingOf(1), 21743)
+    check('DSBH LIMITED 2 visa all-in (std 32,236 − 2,825)', stdAllIn(2) - savingOf(2), 29411)
+    check('DSBH LIMITED Y2 (promo does NOT discount renewal)', Math.round(computeCost({ zone: 'DSBH', visas: 1, years: 1 }).year2), 16550)
+    // Trap guard: for 1+ visas the ADVERTISED bundle price (which hides visa/medical/
+    // status) must NEVER equal a rendered column all-in — standard OR LIMITED. (0-visa
+    // is exempt: with no visa nothing is excluded, so it legitimately equals.)
+    const trapHits = promoPkgs
+      .filter((p) => p.visas >= 1)
+      .filter((p) => p.price_now === stdAllIn(p.visas) || p.price_now === stdAllIn(p.visas) - savingOf(p.visas)).length
+    check('DSBH advertised bundle (v≥1) never equals a column all-in (bundle-trap guard)', trapHits, 0)
+    // DSBH has no multi-year discount (type "none") + recharges its est card yearly,
+    // so the committed 2yr total must equal the straight annual sum (Y1 + Y2).
+    const dsbh2y = computeCost({ zone: 'DSBH', visas: 1, years: 2 })
+    check('DSBH 1 visa 2yr committed (= annual sum; no discount, est card annual)', dsbh2y.total, dsbh1.year1 + dsbh1.year2)
 
     logger.log('— Medical / EID independent counts (Meydan, 1 visa) —')
     const meydanMed2 = computeCost({ zone: 'Meydan', visas: 1, years: 1, medicalCount: 2 })

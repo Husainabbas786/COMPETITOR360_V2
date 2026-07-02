@@ -94,18 +94,68 @@ function bundledColumn(engine, zone, pkg, years, V, limited = false, isBaseline 
   }
 }
 
+// Header tooltip for a promo (LIMITED) column: the ADVERTISED bundle prices, which
+// are NOT the operating all-in — they stop before the visa is issued. They live only
+// here, never as a column figure, so the grid can never run the bundle-trap.
+function advertisedTitle(promo) {
+  const rows = (promo.packages || [])
+    .filter((p) => p.visas >= 1)
+    .map((p) => `${p.visas} visa ${p.price_was.toLocaleString('en-US')} → ${p.price_now.toLocaleString('en-US')}`)
+    .join('  ·  ')
+  return `Advertised bundle — excludes the actual visa issuance, medical/EID and status change, so it is NOT the operating all-in: ${rows}. The column shows the true discounted all-in.`
+}
+
+// A limited-time promo becomes a SECOND overlay column for an itemised zone (the
+// RAKEZ Biz-Saver pattern): the SAME standard component build-up, minus a ONE-TIME
+// bundle discount (price_was − price_now from the promo data), surfaced as an explicit
+// "Limited-time discount" line so the Year-1 all-in nets to the honest discounted
+// figure. It NEVER carries the advertised bundle price (that hides the visa/medical/
+// status costs) — those sit only in the header tooltip. Greys out past the promo's
+// visa range (max 2), exactly like Biz Saver past 1 visa.
+function promoOverlayColumn(base, z, V) {
+  const promo = z.promo
+  const promoTitle = advertisedTitle(promo)
+  const pkg = (promo.packages || []).find((p) => p.visas === V)
+  const shell = {
+    zone: base.zone, isBaseline: false, colId: 'dsbh_promo',
+    pkgName: 'Business Setup (LIMITED)', sub: visaLabel(V),
+    activities: base.activities, limited: true, promoTitle,
+  }
+  if (!pkg || !base.result) return { ...shell, result: null, twoYear: null, byKey: {}, available: false }
+
+  const saving = pkg.price_was - pkg.price_now
+  const result = {
+    ...base.result,
+    year1: base.result.year1 - saving, // promo discounts SETUP (Year-1) only
+    year2: base.result.year2, // renewal is NOT discounted by a setup promo
+    total: base.result.total != null ? base.result.total - saving : base.result.total,
+    multiYear: base.result.multiYear != null ? base.result.multiYear - saving : base.result.multiYear,
+  }
+  return {
+    ...shell,
+    result,
+    twoYear: twoYearOf(result),
+    byKey: { ...base.byKey, promo_discount: { key: 'promo_discount', label: 'Limited-time discount', discount: true, amount: -saving } },
+    available: true,
+  }
+}
+
 // Columns for a single zone at the selected visa count. Most zones yield one
 // column; RAKEZ adds its limited Biz Saver as a second column when one exists at
-// that count. The `isBaseline` flag rides on the zone's PRIMARY column only (Biz
-// One, never the limited Saver), so the base figure is read from the right one.
+// that count, and an itemised zone with an active promo adds a LIMITED overlay
+// column. The `isBaseline` flag rides on the zone's PRIMARY column only, so the
+// base figure is read from the right one.
 function zoneColumns(engine, zone, sel, isBaseline) {
   const { visas: V, years } = sel
   // Itemised zones (Meydan, IFZA, SPC, SHAMS, and any future one) route by MODEL,
   // not by name — so adding an itemised zone to the schema "just works". RAKEZ and
   // Ajman stay explicit because their bundled column selection is zone-specific.
   const z = engine.getZone(zone)
-  if (z && (z.model === 'itemised' || z.model === 'itemised_tiered'))
-    return [itemisedColumn(engine, zone, sel, isBaseline)]
+  if (z && (z.model === 'itemised' || z.model === 'itemised_tiered')) {
+    const base = itemisedColumn(engine, zone, sel, isBaseline)
+    if (z.promo?.active) return [base, promoOverlayColumn(base, z, V)]
+    return [base]
+  }
 
   if (zone === 'RAKEZ') {
     const rakez = engine.getZone('RAKEZ')

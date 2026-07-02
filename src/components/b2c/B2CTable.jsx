@@ -8,6 +8,10 @@ const CUR = CURRENCY.replace(/\s*\(.*\)/, '') // "AED"
 // ---- cell renderers --------------------------------------------------------
 function Cell({ line, available }) {
   if (!available || !line || line.dash) return <span className="c-dash">{COPY.cell.dash}</span>
+  // Limited-time promo discount: a negative one-time reduction on the setup all-in
+  // (only the promo overlay column carries it). Rendered distinct so the Year-1 total
+  // visibly nets down to the discounted figure.
+  if (line.discount) return <AnimatedNumber value={line.amount} className="c-discount" />
   if (line.free) return <span className="c-free">{COPY.cell.free}</span>
   if (line.included) return <span className="c-incl">{COPY.cell.included}</span>
   if (line.allIn) return <AnimatedNumber value={line.amount} className="c-allin" />
@@ -91,6 +95,11 @@ export default function B2CTable({ state, cols, groups, registry, notes = {}, se
   // only — totals are computed in the engine and are unaffected.
   const avail = cols.filter((c) => c.available)
   const rows = registry.filter((reg) => !reg.hidden && !avail.every((c) => c.byKey[reg.key]?.noted))
+  // If a promo (LIMITED) overlay column is in view, append its "Limited-time discount"
+  // line as a synthetic row just before the Year-1 total (dash for every other column),
+  // so the discount is explicit and Year-1 all-in visibly nets to the discounted figure.
+  const hasPromo = avail.some((c) => c.byKey?.promo_discount)
+  const compRows = hasPromo ? [...rows, { key: 'promo_discount', label: COPY.table.promoDiscount }] : rows
 
   // Baseline (Meydan) figures the vs-Meydan rows compare against. The 2-year
   // total is the plain Year-1 + Year-2 sum (col.twoYear) — same definition for
@@ -135,7 +144,7 @@ export default function B2CTable({ state, cols, groups, registry, notes = {}, se
             {groups
               .flatMap((g) => g.cols.map((c) => ({ c, shade: shadeOf(groups.indexOf(g)) })))
               .map(({ c, shade }, i) => (
-                <th key={i} className={`pkg-h ${c.isBaseline ? 'us' : ''} ${c.limited ? 'limited' : ''} ${!c.available ? 'na' : ''} ${shade}`}>
+                <th key={i} className={`pkg-h ${c.isBaseline ? 'us' : ''} ${c.limited ? 'limited' : ''} ${!c.available ? 'na' : ''} ${shade}`} title={c.promoTitle || undefined}>
                   {c.available ? (
                     <>
                       <span className="pkg-name">{c.pkgName}</span>
@@ -156,8 +165,8 @@ export default function B2CTable({ state, cols, groups, registry, notes = {}, se
         </thead>
 
         <tbody>
-          {rows.map((reg) => (
-            <tr key={reg.key} className="comp-row">
+          {compRows.map((reg) => (
+            <tr key={reg.key} className={`comp-row ${reg.key === 'promo_discount' ? 'promo-discount-row' : ''}`}>
               <th className="row-label" scope="row">
                 {reg.label}
               </th>

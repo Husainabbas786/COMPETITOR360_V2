@@ -422,6 +422,10 @@ table.b2c-grid .corner {
 .c-free { font-family: var(--sans); font-size: 12px; font-weight: 600; color: var(--ink-soft); }
 .c-dash { color: var(--line-strong); }
 .c-allin { color: var(--ink); font-weight: 600; }
+/* Limited-time promo discount line — a one-time setup reduction (negative), in the
+   ochre/rust promo accent (NOT green — green stays reserved for "confirmed"). */
+.c-discount { color: var(--rust); font-weight: 600; }
+.promo-discount-row .row-label { color: var(--rust); font-style: italic; }
 /* Assumed-value mark — a discreet amber underline under unconfirmed estimates
    (the financial-model "this figure is an assumption" convention). The number keeps
    its ink colour; only the underline signals it. Amber = var(--warn), matching the

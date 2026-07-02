@@ -26,6 +26,7 @@ export const COPY = {
   table: {
     componentHeader: 'Component',
     baselineTag: 'baseline',
+    promoDiscount: 'Limited-time discount',
     year1Total: 'Year 1 — all-in',
     renewalSection: 'Renewal · Year 2',
     year2Label: 'Year 2 cost',
@@ -97,5 +98,5 @@ export const COPY = {
 
   saverBadge: 'limited',
   note: (base = 'Meydan') =>
-    `${base} is the baseline. Itemised zones (Meydan, IFZA) build from per-component fees; bundled zones (RAKEZ, Ajman) carry the all-in in the package price, so every component reads “Included”. Residence visas are valid ~2 years, so visa-side items are not re-charged in Year 2.`,
+    `${base} is the baseline. Itemised zones (Meydan, IFZA, SPC, SHAMS, DSBH) build from per-component fees; bundled zones (RAKEZ, Ajman) carry the all-in in the package price, so every component reads “Included”. Residence visas are valid ~2 years, so visa-side items are not re-charged in Year 2.`,
 }
