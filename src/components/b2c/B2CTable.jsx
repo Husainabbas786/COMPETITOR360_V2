@@ -2,6 +2,7 @@ import { CURRENCY } from '../../lib/b2cEngine.js'
 import { COPY } from './copy.js'
 import AnimatedNumber from './AnimatedNumber.jsx'
 import CellNote from './B2CCellNote.jsx'
+import PromoInfo from './B2CPromoInfo.jsx'
 
 const CUR = CURRENCY.replace(/\s*\(.*\)/, '') // "AED"
 
@@ -152,6 +153,7 @@ export default function B2CTable({ state, cols, groups, registry, notes = {}, se
                         {c.sub}
                         {c.limited && <em className="pkg-badge">{COPY.saverBadge}</em>}
                       </span>
+                      {c.promo && <PromoInfo promo={c.promo} zone={c.zone} allIn={c.result?.year1} visas={state.visas} />}
                     </>
                   ) : (
                     <>

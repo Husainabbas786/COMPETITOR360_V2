@@ -384,6 +384,45 @@ table.b2c-grid thead th {
 .pkg-h.us .pkg-name { color: var(--ink); font-weight: 600; }
 .pkg-h .pkg-sub { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-faint); margin-top: 4px; }
 .pkg-h .pkg-badge { font-style: normal; font-size: 8.5px; letter-spacing: .08em; background: var(--ochre-wash); color: var(--rust); border: 1px solid var(--ochre); padding: 1px 5px; border-radius: 5px; }
+
+/* Click-to-read ⓘ on a promo (LIMITED) header — the visible/tappable primary
+   affordance (hover tooltip stays as fallback). Ochre/rust to match the badge. */
+/* Own line, centered inside the LIMITED cell — stacked under the badge, never inline
+   to the right (which would push the chip past the rightmost column's border). */
+.promo-info { position: relative; display: flex; justify-content: center; margin-top: 5px; }
+/* Labelled chip — names itself as clickable (a bare icon relies on the viewer
+   knowing to poke it; a word removes the guess). Ochre/rust to match the badge. */
+.promo-i {
+  display: inline-flex; align-items: center; gap: 4px; cursor: pointer; line-height: 1;
+  border: 1px solid var(--ochre); background: var(--ochre-wash); color: var(--rust);
+  border-radius: 999px; padding: 3px 8px 3px 3px;
+  font-family: var(--sans); font-size: 9.5px; font-weight: 600; letter-spacing: .02em;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.promo-i-ico {
+  width: 13px; height: 13px; flex: none; display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 50%; background: var(--ochre); color: var(--paper);
+  font-family: var(--serif); font-style: italic; font-weight: 700; font-size: 9px;
+}
+.promo-i:hover,
+.promo-i[aria-expanded="true"] { background: var(--rust); color: var(--paper); border-color: var(--rust); }
+.promo-i:hover .promo-i-ico,
+.promo-i[aria-expanded="true"] .promo-i-ico { background: var(--paper); color: var(--rust); }
+/* Popover grows leftward/downward from the ⓘ so it never clips at the right edge. */
+.promo-pop {
+  position: absolute; top: calc(100% + 6px); right: 0; z-index: 40;
+  width: 272px; max-width: 78vw; text-align: left; white-space: normal;
+  background: var(--paper); border: 1px solid var(--line-strong); border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(27, 35, 48, .18); padding: 12px 13px 13px;
+  font-family: var(--sans); font-weight: 400; color: var(--ink);
+}
+.promo-pop-x { position: absolute; top: 6px; right: 8px; border: none; background: transparent; cursor: pointer; font-size: 16px; line-height: 1; color: var(--ink-faint); }
+.promo-pop-x:hover { color: var(--ink); }
+.promo-pop-head { display: block; font-size: 12px; font-weight: 700; color: var(--rust); padding-right: 14px; }
+.promo-pop-line { display: block; font-size: 11.5px; color: var(--ink-soft); line-height: 1.5; margin-top: 8px; }
+.promo-pop-rows { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 3px; font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 11.5px; color: var(--ink); }
+.promo-pop-rows b { font-weight: 700; }
+.promo-pop-real { display: block; font-size: 11.5px; color: var(--ink); font-weight: 500; line-height: 1.5; margin-top: 9px; padding-top: 9px; border-top: 1px solid var(--line); }
 .zone-row .corner, .pkg-row { } /* corner spans both rows */
 
 /* ---- sticky left label column ---- */

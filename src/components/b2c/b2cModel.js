@@ -119,7 +119,7 @@ function promoOverlayColumn(base, z, V) {
   const shell = {
     zone: base.zone, isBaseline: false, colId: 'dsbh_promo',
     pkgName: 'Business Setup (LIMITED)', sub: visaLabel(V),
-    activities: base.activities, limited: true, promoTitle,
+    activities: base.activities, limited: true, promoTitle, promo,
   }
   if (!pkg || !base.result) return { ...shell, result: null, twoYear: null, byKey: {}, available: false }
 
