@@ -472,10 +472,17 @@ export function createB2CCompute(schema) {
     check('+1 medical (2×2,000) → 24,600 + 2,000', meydanMed2.year1, 26600)
     check('0 Emirates ID (−750) → 24,600 − 750', meydanEid0.year1, 23850)
 
-    logger.log('— RAKEZ (bundled) —')
-    check('RAKEZ Biz One Y1', rakez1y.total, 14010)
-    check('RAKEZ Biz One 2-year package', rakez2y.termPrice, 26620)
-    check('RAKEZ Biz One annual-renewal sum (2y)', rakez2y.annualRenewalSum, 28020)
+    logger.log('— RAKEZ (bundled; corrected to the official list, 23 Feb 2026) —')
+    check('RAKEZ Biz One Y1', rakez1y.total, 14000)
+    check('RAKEZ Biz One 2-year package', rakez2y.termPrice, 26600)
+    check('RAKEZ Biz One annual-renewal sum (2y)', rakez2y.annualRenewalSum, 28000)
+    // The two 1-visa tiers are the ones the grid renders at the default view, so
+    // they are pinned to the official figures. RAKEZ is bundled and ALL-INCLUSIVE:
+    // standard visa processing is inside these prices. The 3,299 VIP tier is an
+    // optional upgrade and must never be added to an all-in.
+    const rakezSaver1 = computeCost({ zone: 'RAKEZ', packageId: 'rakez_saver1', years: 1 })
+    check('RAKEZ Biz Saver One Y1 (official 12,000)', rakezSaver1.year1, 12000)
+    check('RAKEZ Biz One Visa Y1 (official 14,000)', rakez1y.year1, 14000)
 
     logger.log('— Ajman (bundled) —')
     check('Ajman 1 visa Y1 (new)', ajman1y.year1, 10800)
@@ -484,11 +491,11 @@ export function createB2CCompute(schema) {
 
 
     // ---- Change tracking (mechanism guards) ---------------------------------
-    // This block guards the machine, not the data: it adds NO figures and must
-    // stay green while no value carries a marker. It runs through the SAME
-    // reader the grid uses (resolveChanges), so a mistyped path or a bogus
-    // marker fails here before it can quietly fail to light a cell.
-    logger.log('— Change tracking (mechanism; no markers in the data yet) —')
+    // This block guards the machine, not the data: it asserts NO figure of its
+    // own. It runs through the SAME reader the grid uses (resolveChanges), so a
+    // mistyped path or a bogus marker fails here before it can quietly fail to
+    // light a cell.
+    logger.log('— Change tracking (mechanism guards) —')
     const chg = resolveChanges(schema)
     // Schema still parses and every zone is present — nothing moved in this task.
     check('schema parses — 7 active zones present', zonesArr.length, 7)

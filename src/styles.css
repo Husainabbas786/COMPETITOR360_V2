@@ -22,6 +22,12 @@
   --indigo:#3E5C9A;
   --indigo-wash:#3E5C9A14;
   --indigo-line:#3E5C9A66;
+  /* Dark-row pair: the committed-total row is navy, so the cream-cell wash cannot
+     be used there (it would replace the navy and swallow the white figure). These
+     two carry the same signal on ink: a navy lifted toward indigo, and a light
+     periwinkle that holds contrast against it. */
+  --indigo-ink:#212D43;
+  --indigo-lite:#8FA8DA;
   --ok:#3F8E5B;
   --warn:#C08A2E;
   --grey:#A7A294;
@@ -496,6 +502,21 @@ table.b2c-grid .corner {
 /* the wash must win over the alternating zone band on component rows */
 .comp-row .grid-cell.is-changed.z-alt { background-color: var(--indigo-wash); }
 .comp-row:hover td.is-changed { background-color: var(--indigo-wash); }
+
+/* DARK-ROW VARIANT — the committed-total row (.t-grand) is the one row in the
+   grid with an ink background. The cream wash above is more specific than
+   `.t-grand td`, so without this it would override the navy and leave the row's
+   white figure sitting on near-cream: invisible. Here the navy is KEPT (lifted a
+   touch toward indigo), the figure stays crisp white, and the change is signalled
+   by a brighter periwinkle tick that reads against ink. */
+.t-grand .grid-cell.is-changed {
+  background-color: var(--indigo-ink);
+  box-shadow: inset 3px 0 0 var(--indigo-lite);
+}
+/* the info mark inverts too — an outline dot on ink, not a cream disc */
+.t-grand .chg-i { background: transparent; color: var(--indigo-lite); border-color: var(--indigo-lite); }
+.t-grand .chg-i:hover,
+.t-grand .chg-i.on { background: var(--indigo-lite); color: var(--ink); border-color: var(--indigo-lite); }
 
 /* The "last updated" mark. Deliberately NOT the promo ⓘ: that one is a labelled
    ochre chip in the column HEADER (advertised price); this is a small indigo dot

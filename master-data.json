@@ -54,11 +54,11 @@
           },
           "RAKEZ": {
             "kind": "num",
-            "value": 6010,
-            "numeric": 6010,
-            "display": "6,010",
+            "value": 6000,
+            "numeric": 6000,
+            "display": "6,000",
             "confidence": "confirmed",
-            "note": null
+            "note": "Official RAKEZ package list, 23 Feb 2026 (via SPC)"
           },
           "Ajman": {
             "kind": "num",
@@ -487,14 +487,14 @@
     "base": {
       "Meydan": 12500,
       "IFZA": 12900,
-      "RAKEZ": 6010,
+      "RAKEZ": 6000,
       "Ajman": 4888,
       "DWTC": 12500
     },
     "all_in": {
       "Meydan": 24600,
       "IFZA": 20600,
-      "RAKEZ": 14010,
+      "RAKEZ": 14000,
       "Ajman": 10800,
       "DWTC": 19820
     },
@@ -607,9 +607,9 @@
         },
         "RAKEZ": {
           "kind": "num",
-          "value": 6010,
-          "numeric": 6010,
-          "display": "6,010",
+          "value": 6000,
+          "numeric": 6000,
+          "display": "6,000",
           "confidence": "assumed",
           "note": null
         },
@@ -818,7 +818,7 @@
     "take_home": {
       "Meydan": 3750,
       "IFZA": 5960,
-      "RAKEZ": 3005,
+      "RAKEZ": 3000,
       "Ajman": 3780,
       "DWTC": 2800
     },
@@ -876,57 +876,57 @@
     "rakez_biz_one": {
       "1y": {
         "kind": "num",
-        "value": 14010,
-        "numeric": 14010,
-        "display": "14,010",
+        "value": 14000,
+        "numeric": 14000,
+        "display": "14,000",
         "confidence": "confirmed",
         "note": null
       },
       "2y": {
         "kind": "num",
-        "value": 26620,
-        "numeric": 26620,
-        "display": "26,620",
+        "value": 26600,
+        "numeric": 26600,
+        "display": "26,600",
         "confidence": "confirmed",
         "note": null
       },
       "3y": {
         "kind": "num",
-        "value": 37830,
-        "numeric": 37830,
-        "display": "37,830",
+        "value": 37800,
+        "numeric": 37800,
+        "display": "37,800",
         "confidence": "confirmed",
         "note": null
       },
       "4y": {
         "kind": "num",
-        "value": 50440,
-        "numeric": 50440,
-        "display": "50,440",
+        "value": 50400,
+        "numeric": 50400,
+        "display": "50,400",
         "confidence": "confirmed",
         "note": null
       },
       "5y": {
         "kind": "num",
-        "value": 59560,
-        "numeric": 59560,
-        "display": "59,560",
+        "value": 59500,
+        "numeric": 59500,
+        "display": "59,500",
         "confidence": "confirmed",
         "note": null
       },
       "6y": {
         "kind": "num",
-        "value": 67260,
-        "numeric": 67260,
-        "display": "67,260",
+        "value": 67200,
+        "numeric": 67200,
+        "display": "67,200",
         "confidence": "confirmed",
         "note": null
       },
       "10y": {
         "kind": "num",
-        "value": 105100,
-        "numeric": 105100,
-        "display": "105,100",
+        "value": 105000,
+        "numeric": 105000,
+        "display": "105,000",
         "confidence": "confirmed",
         "note": null
       }
@@ -950,9 +950,9 @@
       },
       "RAKEZ": {
         "kind": "num",
-        "value": 14010,
-        "numeric": 14010,
-        "display": "14,010",
+        "value": 14000,
+        "numeric": 14000,
+        "display": "14,000",
         "confidence": "confirmed",
         "note": null
       },

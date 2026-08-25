@@ -8,6 +8,12 @@ import { createCommissionEngine } from '../src/logic/commission.js'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const master = JSON.parse(readFileSync(join(root, 'master-data.json'), 'utf8'))
+// The B2C grid reads a DIFFERENT file (src/data/master-schema.json). Both are
+// live — this one powers B2B, the confidence legend and Sources & Verify; that
+// one powers the B2C grid. They overlap on RAKEZ/Ajman bundled prices, so they
+// are cross-checked below: a figure corrected in one and not the other is how
+// the tool ends up contradicting itself in front of a client.
+const schema = JSON.parse(readFileSync(join(root, 'src/data/master-schema.json'), 'utf8'))
 const pricing = createPricingEngine(master)
 const commission = createCommissionEngine(master)
 
@@ -56,6 +62,29 @@ for (const y of [2, 3, 5]) {
   const r = pricing.computeAll(s)
   console.log(`  ${y}yr base totals:`, master.meta.zones.map((z) => `${z} ${Math.round(r[z].total)}`).join(' · '))
 }
+
+// 5) Cross-file agreement — master-data.json vs src/data/master-schema.json.
+// Both files are live: this one powers B2B, the confidence legend and Sources &
+// Verify; the schema powers the B2C grid. They overlap on the bundled zones,
+// whose tier price IS the all-in, so those figures are asserted equal here. A
+// price corrected in one file and not the other is how the tool ends up
+// contradicting itself in front of a client. Itemised zones build from
+// components and are not comparable line-for-line, so they are not asserted.
+console.log('— Cross-file: master-data.json vs master-schema.json (bundled zones) —')
+const zoneOf = (name) => schema.zones.find((z) => z.zone === name)
+const pkgOf = (name, id) => (zoneOf(name).packages || []).find((p) => p.package_id === id)
+const rakezBiz0 = pkgOf('RAKEZ', 'rakez_biz0')
+const rakezBiz1 = pkgOf('RAKEZ', 'rakez_biz1')
+const ajman1v = pkgOf('Ajman', 'ajman_1v')
+eq('RAKEZ base (0 visa)', master.b2c.base.RAKEZ, rakezBiz0.tier_price['1y'])
+eq('RAKEZ all-in (1 visa)', master.b2c.all_in.RAKEZ, rakezBiz1.tier_price['1y'])
+eq('RAKEZ B2B commission base', master.b2b.rows.base_amount.RAKEZ.numeric, rakezBiz0.tier_price['1y'])
+eq('RAKEZ Year-2 (renewal = 1yr)', master.multi_year.year_2.RAKEZ.numeric, rakezBiz1.tier_price['1y'])
+for (const term of Object.keys(master.multi_year.rakez_biz_one)) {
+  eq(`RAKEZ Biz One ${term}`, master.multi_year.rakez_biz_one[term].numeric, rakezBiz1.tier_price[term])
+}
+eq('Ajman all-in (1 visa, new)', master.b2c.all_in.Ajman, ajman1v.tier_price_new)
+eq('Ajman Year-2 (renewal)', master.multi_year.year_2.Ajman.numeric, ajman1v.tier_price_renewal)
 
 console.log(fails === 0 ? '\nALL CHECKS PASSED' : `\n${fails} CHECK(S) FAILED`)
 process.exit(fails === 0 ? 0 : 1)

@@ -96,7 +96,7 @@ B2C_ROWS = [
     ("Licence (0-visa, 3 activities)", {
         "Meydan": num(12125, CONFIRMED),
         "IFZA":   num(12900, ASSUMED, "Contact says 11,900 — confirm IFZA 11,900 vs 12,900"),
-        "RAKEZ":  num(6010, CONFIRMED),
+        "RAKEZ":  num(6000, CONFIRMED, "Official RAKEZ package list, 23 Feb 2026 (via SPC)"),
         "Ajman":  num(4888, CONFIRMED),
         "DWTC":   num(12000, ASSUMED),
     }),
@@ -166,8 +166,8 @@ B2C_ROWS = [
 ]
 
 # Expected headline figures (used for manual formula verification)
-EXPECT_BASE  = {"Meydan": 12500, "IFZA": 12900, "RAKEZ": 6010, "Ajman": 4888, "DWTC": 12500}
-EXPECT_ALLIN = {"Meydan": 24600, "IFZA": 20600, "RAKEZ": 14010, "Ajman": 10800, "DWTC": 19820}
+EXPECT_BASE  = {"Meydan": 12500, "IFZA": 12900, "RAKEZ": 6000, "Ajman": 4888, "DWTC": 12500}
+EXPECT_ALLIN = {"Meydan": 24600, "IFZA": 20600, "RAKEZ": 14000, "Ajman": 10800, "DWTC": 19820}
 
 B2C_NOTE = ("BASE = Licence + Registration + Shared Desk (0 visa). "
             "ALL-IN = sum of all components for 1 investor visa, Year 1. "
@@ -196,7 +196,7 @@ B2B = {
     "base_amount": {
         "Meydan": num(12500, ASSUMED),
         "IFZA":   num(14900, CONFIRMED),
-        "RAKEZ":  num(6010, ASSUMED),
+        "RAKEZ":  num(6000, ASSUMED),
         "Ajman":  num(10800, CONFIRMED),
         "DWTC":   num(14000, ASSUMED),
     },
@@ -214,7 +214,7 @@ B2B_ROW_ORDER = [
     ("Base amount (1-visa, AED)", "base_amount"),
     ("Renewal rate", "renewal"),
 ]
-EXPECT_TAKEHOME = {"Meydan": 3750, "IFZA": 5960, "RAKEZ": 3005, "Ajman": 3780, "DWTC": 2800}
+EXPECT_TAKEHOME = {"Meydan": 3750, "IFZA": 5960, "RAKEZ": 3000, "Ajman": 3780, "DWTC": 2800}
 
 # --- B2B UNIFORM TIER SCHEMA ----------------------------------------------
 # One shape for every zone: ordered entry -> top, each tier = rank, label,
@@ -291,15 +291,16 @@ MULTIYEAR_DISCOUNT = {
     "Ajman":  txt("Annual model — no multi-year", CONFIRMED),
     "DWTC":   miss(note="DWTC multi-year unknown"),
 }
-RAKEZ_MY_TABLE = {  # Biz One package, AED cumulative
-    "1y": num(14010, CONFIRMED), "2y": num(26620, CONFIRMED), "3y": num(37830, CONFIRMED),
-    "4y": num(50440, CONFIRMED), "5y": num(59560, CONFIRMED), "6y": num(67260, CONFIRMED),
-    "10y": num(105100, CONFIRMED),
+RAKEZ_MY_TABLE = {  # Biz One Visa package, AED cumulative
+    # Official RAKEZ package list, 23 Feb 2026 (received via SPC, Jul 2026).
+    "1y": num(14000, CONFIRMED), "2y": num(26600, CONFIRMED), "3y": num(37800, CONFIRMED),
+    "4y": num(50400, CONFIRMED), "5y": num(59500, CONFIRMED), "6y": num(67200, CONFIRMED),
+    "10y": num(105000, CONFIRMED),
 }
 YEAR2 = {
     "Meydan": num(14700, ASSUMED, "~14,700 — assumes visa NOT re-charged in Year 2"),
     "IFZA":   num(17100, ASSUMED, "~17,100"),
-    "RAKEZ":  num(14010, CONFIRMED),
+    "RAKEZ":  num(14000, CONFIRMED),
     "Ajman":  num(9900, CONFIRMED),
     "DWTC":   miss(note="DWTC Year-2 unknown"),
 }
@@ -425,7 +426,7 @@ def build_readme():
     r += 1
     ws.cell(row=r, column=1,
             value="Key insight: take-home = rate × base. A lower rate on a bigger base can beat a higher rate "
-                  "on a small one — Meydan 30%×12,500 = 3,750 beats RAKEZ 50%×6,010 = 3,005.").font = \
+                  "on a small one — Meydan 30%×12,500 = 3,750 beats RAKEZ 50%×6,000 = 3,000.").font = \
         font(10, italic=True, color="0F8B8D")
     ws.column_dimensions["A"].width = 22
     ws.column_dimensions["B"].width = 16
@@ -562,7 +563,7 @@ def build_b2b():
     row += 1
     ws.cell(row=row, column=1,
             value="Key: take-home = rate × base. A lower rate on a bigger base can beat a higher rate "
-                  "on a small one — Meydan 30%×12,500 = 3,750 beats RAKEZ 50%×6,010 = 3,005.").font = \
+                  "on a small one — Meydan 30%×12,500 = 3,750 beats RAKEZ 50%×6,000 = 3,000.").font = \
         font(9, italic=True, color="0F8B8D")
 
     ws.column_dimensions["A"].width = 42

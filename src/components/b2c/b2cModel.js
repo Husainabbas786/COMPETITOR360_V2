@@ -145,7 +145,7 @@ function promoOverlayColumn(base, z, V) {
 }
 
 // Columns for a single zone at the selected visa count. Most zones yield one
-// column; RAKEZ adds its limited Biz Saver as a second column when one exists at
+// column; RAKEZ adds its Biz Saver One as a second column when one exists at
 // that count, and an itemised zone with an active promo adds a LIMITED overlay
 // column. The `isBaseline` flag rides on the zone's PRIMARY column only, so the
 // base figure is read from the right one.
@@ -166,7 +166,12 @@ function zoneColumns(engine, zone, sel, isBaseline) {
     const bizPkg = rakez.packages.find((p) => p.package_id.startsWith('rakez_biz') && p.visas === V)
     const saverPkg = rakez.packages.find((p) => p.package_id.startsWith('rakez_saver') && p.visas === V)
     const out = [bundledColumn(engine, 'RAKEZ', bizPkg, years, V, false, isBaseline)]
-    if (saverPkg) out.push(bundledColumn(engine, 'RAKEZ', saverPkg, years, V, true)) // Saver never the baseline
+    // Biz Saver One is a STANDING RAKEZ package (activity-limited: 1 activity,
+    // 1 shareholder), not a limited-time offer — so it renders as a plain second
+    // column with no LIMITED badge. That badge now means one thing only: DSBH's
+    // time-boxed promo. The limitation itself still reads off the Activities row.
+    // Never the baseline (isBaseline stays false).
+    if (saverPkg) out.push(bundledColumn(engine, 'RAKEZ', saverPkg, years, V, false))
     return out
   }
 
