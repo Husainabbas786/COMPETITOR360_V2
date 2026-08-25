@@ -724,6 +724,71 @@ table.b2c-grid thead th, table.b2c-grid .grid-cell, table.b2c-grid .row-label { 
 }
 
 /* ===========================================================================
+   PHONE (<= 640px) — everything below is additive and scoped to this block.
+   No rule outside it is added, edited or reordered, so >=641px is untouched.
+
+   Two things are deliberately NOT done here:
+   (1) the grid wrap already gets overflow-x: auto at <=1100px — that is the
+       existing two-mode design described at the "grid shell" comment above, and
+       it is left exactly as it is;
+   (2) the page scroll model is not touched. Below 1100px the wrap is an overflow
+       container, which makes it the sticky containing scrollport, so the thead
+       pin is already inert on a phone. Restoring it needs a bounded-height card
+       with its own vertical scroll — a different piece of work, and dual-axis
+       sticky is precisely where iOS Safari misbehaves. Out of scope by choice.
+   =========================================================================== */
+@media (max-width: 640px) {
+  /* -- 1. stop the PAGE sliding sideways ----------------------------------
+     The base-zone control is one non-wrapping row of seven pills (438px), which
+     pushed the document to 473px against a 390px viewport — the whole layout
+     swiped, which is what made the phone feel broken. Fixed at the element:
+     let the control wrap. The buttons are already flex: 0 0 auto, so they flow
+     onto a second row as soon as the container permits it. No body/html overflow
+     clamp, no separate scroll track. */
+  .b2c-controlbar .seg.seg-zones { flex-wrap: wrap; max-width: 100%; }
+
+  /* -- 2. frozen columns --------------------------------------------------
+     Retune these two after a real-device pass; nothing else needs to change. */
+  table.b2c-grid { --phone-label-w: 104px; --phone-zone-w: 92px; }
+  table.b2c-grid .corner,
+  table.b2c-grid .row-label { width: var(--phone-label-w); }
+  /* Column widths are set on the FIRST row (table-layout: fixed reads them from
+     there); a zone group spanning two package columns takes double. Groups never
+     span more than two. min-width: 760px on the table is untouched — it is what
+     makes the wrap scroll in the first place. */
+  .zone-row .zone-h[colspan="1"] { width: var(--phone-zone-w); }
+  .zone-row .zone-h[colspan="2"] { width: calc(var(--phone-zone-w) * 2); }
+
+  /* The baseline column pins beside the labels, so "vs the base zone" stays on
+     screen while swiping. `.frz` is applied by B2CTable ONLY when the baseline
+     group is a single column — see the comment there. Both header rows freeze
+     with the body, or they shear apart during a horizontal swipe. */
+  table.b2c-grid .frz {
+    position: sticky; left: var(--phone-label-w);
+    /* Opaque, per the house rule for every sticky cell — the scrolling columns
+       must never show through. The row's own rule supplies the colour on the
+       designed rows (ink on the committed-total row, paper on the totals); only
+       the component rows are transparent by default, so they get it here. */
+    border-right: 1px solid var(--line);
+    box-shadow: 3px 0 5px -4px rgba(27, 35, 48, .22);
+  }
+  .comp-row .grid-cell.frz { background-color: var(--paper); z-index: 2; }
+  .comp-row:hover .grid-cell.frz { background-color: var(--paper); }
+  .t-year1 .frz, .t-year2 .frz, .t-delta .frz { background-color: var(--paper); z-index: 2; }
+  .t-grand .frz { background-color: var(--ink); z-index: 2; }
+  /* A changed baseline cell keeps its indigo wash AND stays opaque: the wash is
+     8% alpha, so it is painted over paper rather than replacing it. */
+  .comp-row .grid-cell.frz.is-changed {
+    background-color: var(--paper);
+    background-image: linear-gradient(var(--indigo-wash), var(--indigo-wash));
+    box-shadow: inset 2px 0 0 var(--indigo), 3px 0 5px -4px rgba(27, 35, 48, .22);
+  }
+  /* Header cells sit above the other header cells but below the corner
+     (existing scale: corner 6 > header 4 > label 3 > body auto). */
+  table.b2c-grid thead th.frz { z-index: 5; background-color: var(--paper); }
+}
+
+/* ===========================================================================
    B2C EDIT PANEL — live figure editing + export (Phase 1)
    =========================================================================== */
 /* "Edit data" toggle (ochre accent to distinguish from the ink in-table toggles) */

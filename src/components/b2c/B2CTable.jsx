@@ -68,14 +68,17 @@ function Delta({ col, getVal, base }) {
 // for this cell: it adds the changed highlight to the <td> and renders the small
 // "last updated" info mark in the cell's top-left corner (the note marker owns the
 // top-right). Cells with no marker are byte-identical to before.
-function BodyCells({ bodyCols, render, mark }) {
+function BodyCells({ bodyCols, render, mark, freezeBase }) {
   return bodyCols.map((bc, i) => {
+    // `frz` freezes the baseline column beside the row labels at phone width only
+    // (see the max-width:640px block in styles.css). It is a no-op everywhere else.
+    const frz = freezeBase && bc.col.isBaseline ? 'frz' : ''
     if (!bc.col.available) {
-      return <td key={i} className={`grid-cell na-col ${bc.shade}`} aria-hidden="true" />
+      return <td key={i} className={`grid-cell na-col ${bc.shade} ${frz}`} aria-hidden="true" />
     }
     const chg = mark ? mark(bc.col) : null
     return (
-      <td key={i} className={`grid-cell ${bc.col.isBaseline ? 'us' : ''} ${bc.shade} ${chg ? 'is-changed' : ''}`}>
+      <td key={i} className={`grid-cell ${bc.col.isBaseline ? 'us' : ''} ${bc.shade} ${chg ? 'is-changed' : ''} ${frz}`}>
         {chg && <ChangeInfo change={chg} />}
         {render(bc.col)}
       </td>
@@ -93,6 +96,15 @@ export default function B2CTable({ state, cols, groups, registry, notes = {}, se
   // (group index) so all package sub-columns within a zone share one shade. The
   // band is purely visual — see `.z-alt` in styles.css.
   const shadeOf = (gi) => (gi % 2 === 1 ? 'z-alt' : '')
+  // Phone-only column freeze. On a narrow screen the label column and the BASELINE
+  // column pin to the left so "vs the base zone" stays readable while swiping across
+  // the others. It is only safe when the baseline zone contributes a SINGLE package
+  // column: a multi-column baseline group (e.g. RAKEZ as base, which adds Biz Saver)
+  // would eat the whole 390px budget, and its colSpan group header cannot be
+  // partially frozen without shearing against the body cells. In that case we fall
+  // back to freezing the labels alone — degraded, but never broken.
+  const baseGroup = groups.find((g) => g.isBaseline)
+  const freezeBase = baseGroup?.cols.length === 1
   // Change marker for one cell — null unless that exact schema leaf carries a
   // marker dated after meta.changes_seen_before. Reads only; no figure is touched.
   const markOf = (rowKey) => (col) => cellChange(changes, col, rowKey, state)
@@ -141,7 +153,7 @@ export default function B2CTable({ state, cols, groups, registry, notes = {}, se
               {COPY.table.componentHeader}
             </th>
             {groups.map((g, gi) => (
-              <th key={g.zone} colSpan={g.cols.length} className={`zone-h ${g.isBaseline ? 'us' : ''} ${shadeOf(gi)}`}>
+              <th key={g.zone} colSpan={g.cols.length} className={`zone-h ${g.isBaseline ? 'us' : ''} ${shadeOf(gi)} ${freezeBase && g.isBaseline ? 'frz' : ''}`}>
                 <span className="zone-h-inner">
                   <span className="zone-name-wrap">
                     <span className="zone-name">{g.zone}</span>
@@ -155,7 +167,7 @@ export default function B2CTable({ state, cols, groups, registry, notes = {}, se
             {groups
               .flatMap((g) => g.cols.map((c) => ({ c, shade: shadeOf(groups.indexOf(g)) })))
               .map(({ c, shade }, i) => (
-                <th key={i} className={`pkg-h ${c.isBaseline ? 'us' : ''} ${c.limited ? 'limited' : ''} ${!c.available ? 'na' : ''} ${shade}`} title={c.promoTitle || undefined}>
+                <th key={i} className={`pkg-h ${c.isBaseline ? 'us' : ''} ${c.limited ? 'limited' : ''} ${!c.available ? 'na' : ''} ${shade} ${freezeBase && c.isBaseline ? 'frz' : ''}`} title={c.promoTitle || undefined}>
                   {c.available ? (
                     <>
                       <span className="pkg-name">{c.pkgName}</span>
@@ -184,6 +196,7 @@ export default function B2CTable({ state, cols, groups, registry, notes = {}, se
               </th>
               <BodyCells
                 bodyCols={bodyCols}
+                freezeBase={freezeBase}
                 mark={reg.key === 'activities' ? null : markOf(reg.key)}
                 render={(col) => {
                   if (reg.key === 'activities')
@@ -210,6 +223,7 @@ export default function B2CTable({ state, cols, groups, registry, notes = {}, se
             </th>
             <BodyCells
               bodyCols={bodyCols}
+              freezeBase={freezeBase}
               render={(col) => (col.available ? <AnimatedNumber value={col.result.year1} className="t-num" /> : <span className="c-dash">{COPY.cell.dash}</span>)}
             />
           </tr>
@@ -218,7 +232,7 @@ export default function B2CTable({ state, cols, groups, registry, notes = {}, se
             <th className="row-label" scope="row">
               {COPY.table.vsBaseline(baseZoneName)}
             </th>
-            <BodyCells bodyCols={bodyCols} render={(col) => <Delta col={col} getVal={(c) => c.result.year1} base={baseYear1} />} />
+            <BodyCells bodyCols={bodyCols} freezeBase={freezeBase} render={(col) => <Delta col={col} getVal={(c) => c.result.year1} base={baseYear1} />} />
           </tr>
 
           {/* (c) Renewal / Year-2. */}
@@ -232,6 +246,7 @@ export default function B2CTable({ state, cols, groups, registry, notes = {}, se
             </th>
             <BodyCells
               bodyCols={bodyCols}
+              freezeBase={freezeBase}
               mark={markOf(TOTAL_ROW_YEAR2)}
               render={(col) => (col.available ? <AnimatedNumber value={col.result.year2} className="t-num-soft" /> : <span className="c-dash">{COPY.cell.dash}</span>)}
             />
@@ -244,6 +259,7 @@ export default function B2CTable({ state, cols, groups, registry, notes = {}, se
             </th>
             <BodyCells
               bodyCols={bodyCols}
+              freezeBase={freezeBase}
               mark={markOf(TOTAL_ROW_TOTAL)}
               render={(col) => (col.available ? <AnimatedNumber value={totalOf(col)} className="g-num" /> : <span className="c-dash">{COPY.cell.dash}</span>)}
             />
@@ -253,7 +269,7 @@ export default function B2CTable({ state, cols, groups, registry, notes = {}, se
             <th className="row-label" scope="row">
               {COPY.table.vsBaseline(baseZoneName)}
             </th>
-            <BodyCells bodyCols={bodyCols} render={(col) => <Delta col={col} getVal={totalOf} base={baseTotalRow} />} />
+            <BodyCells bodyCols={bodyCols} freezeBase={freezeBase} render={(col) => <Delta col={col} getVal={totalOf} base={baseTotalRow} />} />
           </tr>
         </tbody>
       </table>
