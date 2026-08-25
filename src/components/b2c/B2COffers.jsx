@@ -1,23 +1,25 @@
 import { useState } from 'react'
 import { COPY } from './copy.js'
 
-// "Current Offers" band — the marketing view, above the grid and open by default.
+// "Current Offers" band — the marketing view, above the grid.
 //
 // An offer is NOT a price. Nothing here feeds the cost engine; the grid below
 // stays the costed truth. This band answers a different question — "what is
 // everyone advertising right now" — which is why it sits above the table rather
 // than in a footnote nobody scrolls to.
 //
-// Collapsible so it serves both readers: open by default for whoever wants the
-// offer/marketing view, one click away for a commercial officer who wants to go
-// straight to the numbers. The header keeps the count while collapsed, so tucking
-// it away never hides the fact that offers exist.
+// Collapsed by default, because the measurement decided it: open, the band costs
+// ~300px, which on a 13" laptop (1280x800) left ZERO price rows on screen — and
+// even at 1920x1080 only two. The header bar is the discoverable part: "Current
+// Offers (4)" keeps the count visible at all times, so nothing is hidden — the
+// count is the hook, and one click gives the detail. The table is what the tool
+// is for, so the table gets the vertical budget.
 //
 // It is deliberately a SIBLING of the control bar, not part of it: the control bar
 // is sticky and its measured height drives the table's sticky-header offset, so
 // anything added inside it would push the grid header out of position.
 export default function B2COffers({ offers = [], zones = [] }) {
-  const [open, setOpen] = useState(true)
+  const [open, setOpen] = useState(false)
 
   const live = offers.filter((o) => o && o.active)
   if (!live.length) return null
