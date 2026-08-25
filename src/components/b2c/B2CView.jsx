@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import B2CControls from './B2CControls.jsx'
 import B2CTable from './B2CTable.jsx'
+import B2COffers from './B2COffers.jsx'
 import B2CInsights from './B2CInsights.jsx'
 import B2CEditPanel from './B2CEditPanel.jsx'
 import SourcesPanel from '../SourcesPanel.jsx'
@@ -93,6 +94,12 @@ export default function B2CView({ state, setState }) {
         shownZones={shownZones}
         setShownZones={setShownZones}
       />
+      {/* Marketing offers — above the grid so they frame the comparison, and a
+          SIBLING of the sticky control bar (never inside it: the bar's measured
+          height drives the table's sticky-header offset). Reads the stateful
+          schema clone, so an edited/reset schema carries the band with it. */}
+      <B2COffers offers={schema.offers} zones={ZONE_ORDER} />
+
       <div className="b2c-main">
         <B2CTable state={state} cols={cols} groups={groups} registry={schema.component_registry} notes={notes} setNote={setNote} changes={changes} />
       </div>

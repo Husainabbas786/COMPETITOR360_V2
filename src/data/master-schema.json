@@ -361,6 +361,51 @@
     }
   ],
 
+  "_offers_note": [
+    "MARKETING OFFERS — deliberately separate from pricing. An offer is NOT a price: nothing here feeds the cost engine, and no figure below changes any all-in. The grid stays the costed truth; this list is 'what is everyone advertising right now'.",
+    "Each entry: zone · active · headline (the crux, one line) · detail (one short line) · date (when we confirmed it) · source · image (null, or a path to an ad/Instagram screenshot when the submission channel exists).",
+    "Where an offer quotes a figure that also lives in the schema (DSBH promo prices, Ajman installment), the selfcheck asserts the two agree — static offer text quoting live data is exactly how a file starts contradicting itself.",
+    "A zone with no entry renders as an honest gap ('no offer tracked yet'), not a silent omission. v1 is hand-maintained: when an offer changes, edit this list."
+  ],
+  "offers": [
+    {
+      "zone": "IFZA", "active": true,
+      "headline": "1 visa free for life",
+      "detail": "The first residence visa is included at no cost — issuance and renewal both waived. A standing offer, not time-limited.",
+      "date": "2026-08-25",
+      "source": "IFZA Schedule of Fees — residence visa, 1st free for life (components.residence_visa_fee.free_allowance = 1)",
+      "confidence": "confirmed",
+      "image": null
+    },
+    {
+      "zone": "RAKEZ", "active": true,
+      "headline": "Lite Zero — 0-visa licence at AED 4,499",
+      "detail": "Promotional 0-visa coworking licence: 1 activity, General Trading + e-commerce only, 1 shareholder.",
+      "date": "2026-08-25",
+      "source": "Official RAKEZ package list, Coworking sheet (received via SPC, 2026). NOT in this schema — Lite Zero is deliberately kept out of the grid, so this figure cannot be cross-checked against zone data.",
+      "confidence": "confirmed",
+      "image": null
+    },
+    {
+      "zone": "Ajman", "active": true,
+      "headline": "Installment plans available",
+      "detail": "Setup fees payable in stages rather than upfront — 1 visa 12,000 by installment vs 10,800 advance. Not offered at 0 visas.",
+      "date": "2026-08-25",
+      "source": "ANCFZ package sheet — tier_price_installment (see the zone's pricing_note: advance is the headline, installment is higher)",
+      "confidence": "confirmed",
+      "image": null
+    },
+    {
+      "zone": "DSBH", "active": true,
+      "headline": "Limited-time setup offer",
+      "detail": "Bundled setup at 11,375 / 13,975 / 15,375 for 0 / 1 / 2 visas (was 12,500 / 16,350 / 18,200). Excludes visa issuance, medical and status change — see the LIMITED column for the true all-in.",
+      "date": "2026-07-02",
+      "source": "Ilyas message — 'LIMITED TIME OFFER, Dubai South Business Hub Free Zone'. No end date; verify before each share.",
+      "confidence": "confirmed",
+      "image": null
+    }
+  ],
+
   "open_questions": [
     { "owner": "Meydan ops — RESOLVED via cost calculator", "item": "Investor visa validity = 2 yrs. In Year 2 only licence + immigration card recur; visa, allocation, medical, EID are all validity-2 and NOT re-charged. Meydan Year-2 (1 visa) = 14,700.", "impacts": "Meydan Year-2 — now filled" },
     { "owner": "Meydan ops — optional, not a blocker", "item": "Multi-year card charging: shared desk = per-year (confirmed by Husain); establishment card assumed per-year (validity-1). Confirm card eventually if convenient.", "impacts": "Meydan multi-year totals (minor)" },

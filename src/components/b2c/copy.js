@@ -96,6 +96,16 @@ export const COPY = {
     packagesHead: 'Packages & offers',
   },
 
+  // "Current Offers" band — the marketing view above the grid. An offer is not a
+  // price; the wording keeps that separation explicit.
+  offers: {
+    title: 'Current Offers',
+    hide: 'Hide',
+    show: 'Show',
+    confirmed: (date) => `Confirmed ${date}`,
+    untracked: 'No offer tracked yet:',
+  },
+
   saverBadge: 'limited',
   note: (base = 'Meydan') =>
     `${base} is the baseline. Itemised zones (Meydan, IFZA, SPC, SHAMS, DSBH) build from per-component fees; bundled zones (RAKEZ, Ajman) carry the all-in in the package price, so every component reads “Included”. Residence visas are valid ~2 years, so visa-side items are not re-charged in Year 2.`,

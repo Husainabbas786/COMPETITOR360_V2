@@ -538,6 +538,42 @@ export function createB2CCompute(schema) {
     const outOfOrder = chg.changelog.filter((e, i) => i > 0 && String(e.on) > String(chg.changelog[i - 1].on)).length
     check('changelog ordered newest first', outOfOrder, 0)
 
+
+    // ---- Offers band (marketing data; asserts NO price) ---------------------
+    // An offer is not a price: nothing here feeds the engine, and this block adds
+    // no figure of its own. It guards two things — the shape the band renders
+    // from, and the fact that offer TEXT quoting a live figure still agrees with
+    // that figure. Static copy quoting live data is how one file starts
+    // contradicting itself; the count is deliberately NOT pinned, because offers
+    // are meant to be edited as they change.
+    logger.log('— Offers band (an offer is not a price) —')
+    const offers = Array.isArray(schema.offers) ? schema.offers : null
+    check('schema.offers is an array', offers ? 0 : 1, 0)
+    const liveOffers = (offers || []).filter((o) => o && o.active)
+    const badShape = liveOffers.filter((o) => !o.zone || !o.headline || !o.detail || !o.source).length
+    check('every active offer has zone + headline + detail + source', badShape, 0)
+    const unknownZone = liveOffers.filter((o) => !schema.meta.active_zones.includes(o.zone)).length
+    check('every offer names a live zone', unknownZone, 0)
+    // Offer text vs the figures it quotes — schema-to-schema, so it survives an
+    // edit to either side instead of pinning a literal that goes stale.
+    const offerFor = (zone) => liveOffers.find((o) => o.zone === zone)
+    const quotes = (zone, n) => {
+      const o = offerFor(zone)
+      return o ? o.detail.includes(n.toLocaleString('en-US')) : false
+    }
+    const dsbhPromo = getZone('DSBH').promo.packages
+    const dsbhQuoted = dsbhPromo.filter((p) => quotes('DSBH', p.price_now) && quotes('DSBH', p.price_was)).length
+    check('DSBH offer text quotes its promo prices (now + was)', dsbhQuoted, dsbhPromo.length)
+    const ajmanInstall = getPackage(getZone('Ajman'), { packageId: 'ajman_1v' }).tier_price_installment
+    const ajmanAdvance = getPackage(getZone('Ajman'), { packageId: 'ajman_1v' }).tier_price_new
+    // The Ajman card names BOTH figures on purpose: installment is HIGHER than
+    // advance (see the zone's pricing_note), so quoting 12,000 alone next to a
+    // grid showing 10,800 would read as a contradiction.
+    check('Ajman offer quotes the installment price', quotes('Ajman', ajmanInstall) ? 0 : 1, 0)
+    check('Ajman offer also quotes the advance price it is compared against', quotes('Ajman', ajmanAdvance) ? 0 : 1, 0)
+    check('Ajman installment really is dearer than advance', ajmanInstall > ajmanAdvance ? 0 : 1, 0)
+    check('IFZA offer rests on a real free allowance', freeAllowance(getZone('IFZA').components.residence_visa_fee, 'y1'), 1)
+
     const failed = cases.filter((c) => !c.ok)
     logger.log(failed.length === 0 ? '\nALL B2C SANITY CHECKS PASSED' : `\n${failed.length} CHECK(S) FAILED`)
     return { passed: failed.length === 0, cases }
