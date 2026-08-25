@@ -3,6 +3,8 @@ import { COPY } from './copy.js'
 import AnimatedNumber from './AnimatedNumber.jsx'
 import CellNote from './B2CCellNote.jsx'
 import PromoInfo from './B2CPromoInfo.jsx'
+import ChangeInfo from './B2CChangeInfo.jsx'
+import { cellChange, TOTAL_ROW_YEAR2, TOTAL_ROW_TOTAL } from '../../lib/b2cChanges.js'
 
 const CUR = CURRENCY.replace(/\s*\(.*\)/, '') // "AED"
 
@@ -62,14 +64,19 @@ function Delta({ col, getVal, base }) {
 }
 
 // A body/total cell that respects unavailable packages (greyed/disabled cell,
-// no dashes — the slot is kept).
-function BodyCells({ bodyCols, render }) {
+// no dashes — the slot is kept). `mark(col)` optionally returns the change marker
+// for this cell: it adds the changed highlight to the <td> and renders the small
+// "last updated" info mark in the cell's top-left corner (the note marker owns the
+// top-right). Cells with no marker are byte-identical to before.
+function BodyCells({ bodyCols, render, mark }) {
   return bodyCols.map((bc, i) => {
     if (!bc.col.available) {
       return <td key={i} className={`grid-cell na-col ${bc.shade}`} aria-hidden="true" />
     }
+    const chg = mark ? mark(bc.col) : null
     return (
-      <td key={i} className={`grid-cell ${bc.col.isBaseline ? 'us' : ''} ${bc.shade}`}>
+      <td key={i} className={`grid-cell ${bc.col.isBaseline ? 'us' : ''} ${bc.shade} ${chg ? 'is-changed' : ''}`}>
+        {chg && <ChangeInfo change={chg} />}
         {render(bc.col)}
       </td>
     )
@@ -80,12 +87,15 @@ function BodyCells({ bodyCols, render }) {
 // from B2CView so the read-out shares the same data and row labels reflect live
 // edits. Zones are hidden/shown via the Show Zones filter upstream (in
 // buildColumns), so every group that reaches here is a visible one.
-export default function B2CTable({ state, cols, groups, registry, notes = {}, setNote }) {
+export default function B2CTable({ state, cols, groups, registry, notes = {}, setNote, changes = null }) {
   // Flat column list for body/total rows.
   // Subtle alternating zone banding: every column carries its zone's parity
   // (group index) so all package sub-columns within a zone share one shade. The
   // band is purely visual — see `.z-alt` in styles.css.
   const shadeOf = (gi) => (gi % 2 === 1 ? 'z-alt' : '')
+  // Change marker for one cell — null unless that exact schema leaf carries a
+  // marker dated after meta.changes_seen_before. Reads only; no figure is touched.
+  const markOf = (rowKey) => (col) => cellChange(changes, col, rowKey, state)
   const bodyCols = []
   groups.forEach((g, gi) => {
     for (const c of g.cols) bodyCols.push({ col: c, shade: shadeOf(gi) })
@@ -174,6 +184,7 @@ export default function B2CTable({ state, cols, groups, registry, notes = {}, se
               </th>
               <BodyCells
                 bodyCols={bodyCols}
+                mark={reg.key === 'activities' ? null : markOf(reg.key)}
                 render={(col) => {
                   if (reg.key === 'activities')
                     return <ActivitiesCell activities={col.activities} available={col.available} />
@@ -221,6 +232,7 @@ export default function B2CTable({ state, cols, groups, registry, notes = {}, se
             </th>
             <BodyCells
               bodyCols={bodyCols}
+              mark={markOf(TOTAL_ROW_YEAR2)}
               render={(col) => (col.available ? <AnimatedNumber value={col.result.year2} className="t-num-soft" /> : <span className="c-dash">{COPY.cell.dash}</span>)}
             />
           </tr>
@@ -232,6 +244,7 @@ export default function B2CTable({ state, cols, groups, registry, notes = {}, se
             </th>
             <BodyCells
               bodyCols={bodyCols}
+              mark={markOf(TOTAL_ROW_TOTAL)}
               render={(col) => (col.available ? <AnimatedNumber value={totalOf(col)} className="g-num" /> : <span className="c-dash">{COPY.cell.dash}</span>)}
             />
           </tr>

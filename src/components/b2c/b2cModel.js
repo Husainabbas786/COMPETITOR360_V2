@@ -57,6 +57,9 @@ function itemisedColumn(engine, zone, sel, isBaseline) {
   return {
     zone,
     isBaseline,
+    // Zone model rides on the column so the change reader knows which schema leaf
+    // a cell shows (itemised → a component fee; bundled → a tier price).
+    model: 'itemised',
     // Stable per-column id for cell notes — the zone name (one column per itemised
     // zone), deliberately independent of visa count / term / base zone.
     colId: zone,
@@ -74,12 +77,13 @@ function itemisedColumn(engine, zone, sel, isBaseline) {
 function bundledColumn(engine, zone, pkg, years, V, limited = false, isBaseline = false) {
   if (!pkg) {
     // No package at this visa count (e.g. RAKEZ beyond 8 visas) — greyed slot.
-    return { zone, isBaseline: false, pkgName: '—', sub: visaLabel(V), result: null, twoYear: null, byKey: {}, activities: null, limited, available: false }
+    return { zone, isBaseline: false, model: 'bundled', pkgName: '—', sub: visaLabel(V), result: null, twoYear: null, byKey: {}, activities: null, limited, available: false }
   }
   const result = engine.computeCost({ zone, packageId: pkg.package_id, years })
   return {
     zone,
     isBaseline,
+    model: 'bundled',
     // Stable per-column id for cell notes — the package_id (a bundled zone can
     // have two columns, e.g. RAKEZ Biz One + Biz Saver), so each is distinct.
     colId: pkg.package_id,
@@ -117,7 +121,7 @@ function promoOverlayColumn(base, z, V) {
   const promoTitle = advertisedTitle(promo)
   const pkg = (promo.packages || []).find((p) => p.visas === V)
   const shell = {
-    zone: base.zone, isBaseline: false, colId: 'dsbh_promo',
+    zone: base.zone, isBaseline: false, model: base.model, colId: 'dsbh_promo',
     pkgName: 'Business Setup (LIMITED)', sub: visaLabel(V),
     activities: base.activities, limited: true, promoTitle, promo,
   }

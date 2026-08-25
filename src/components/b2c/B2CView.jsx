@@ -7,6 +7,7 @@ import SourcesPanel from '../SourcesPanel.jsx'
 import { COPY } from './copy.js'
 import { buildColumns, buildGroups, buildInsights } from './b2cModel.js'
 import { setIn, downloadSchema } from './b2cEdit.js'
+import { resolveChanges } from '../../lib/b2cChanges.js'
 import { SCHEMA, createB2CCompute, ZONE_ORDER } from '../../lib/b2cEngine.js'
 
 // Deep clone of pure-JSON schema (no functions/dates) — exact and serialisable.
@@ -42,6 +43,12 @@ export default function B2CView({ state, setState }) {
     [engine, state, baseZone, shownZones],
   )
   const groups = useMemo(() => buildGroups(cols), [cols])
+
+  // Change-tracking index (path-keyed, freshness already resolved against
+  // meta.changes_seen_before). Rebuilt with the schema so a live edit — or a
+  // bumped seen-before date — re-lights the grid immediately. With no markers in
+  // the schema the index is empty and every cell renders exactly as before.
+  const changes = useMemo(() => resolveChanges(schema).index, [schema])
   const insights = buildInsights(groups, baseZone)
 
   // Edit mode — off by default; when off the view is exactly as before.
@@ -87,7 +94,7 @@ export default function B2CView({ state, setState }) {
         setShownZones={setShownZones}
       />
       <div className="b2c-main">
-        <B2CTable state={state} cols={cols} groups={groups} registry={schema.component_registry} notes={notes} setNote={setNote} />
+        <B2CTable state={state} cols={cols} groups={groups} registry={schema.component_registry} notes={notes} setNote={setNote} changes={changes} />
       </div>
 
       <div className="b2c-below">

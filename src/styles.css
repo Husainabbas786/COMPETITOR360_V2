@@ -16,6 +16,12 @@
   --ochre:#B0743A;       /* accent / hidden cost */
   --ochre-wash:#B0743A1A;
   --rust:#9C4221;
+  /* CHANGED-VALUE accent — the one primary hue the palette had not spent. Green
+     is "confirmed", amber "assumed", ochre/rust the promo, teal the baseline; a
+     muted indigo reads as "new / just updated" without colliding with any of them. */
+  --indigo:#3E5C9A;
+  --indigo-wash:#3E5C9A14;
+  --indigo-line:#3E5C9A66;
   --ok:#3F8E5B;
   --warn:#C08A2E;
   --grey:#A7A294;
@@ -475,6 +481,44 @@ table.b2c-grid .corner {
   text-decoration-thickness: 2px;
   text-underline-offset: 3px;
 }
+
+/* ---- changed-value highlight + "last updated" mark (change tracking) --------
+   Only a cell whose schema leaf carries a `changed` marker dated AFTER
+   meta.changes_seen_before gets these. A soft indigo wash plus a left-edge tick —
+   enough to catch the eye on a scan, quiet enough not to shout. The tick is drawn
+   with an inset box-shadow so it never disturbs the cell's own borders or the
+   zone banding underneath. */
+.grid-cell.is-changed {
+  position: relative;
+  background-color: var(--indigo-wash);
+  box-shadow: inset 2px 0 0 var(--indigo);
+}
+/* the wash must win over the alternating zone band on component rows */
+.comp-row .grid-cell.is-changed.z-alt { background-color: var(--indigo-wash); }
+.comp-row:hover td.is-changed { background-color: var(--indigo-wash); }
+
+/* The "last updated" mark. Deliberately NOT the promo ⓘ: that one is a labelled
+   ochre chip in the column HEADER (advertised price); this is a small indigo dot
+   inside a BODY CELL. Top-LEFT corner — the note marker owns the top-right. */
+.chg-info { position: absolute; top: 3px; left: 5px; z-index: 2; line-height: 0; }
+.chg-i {
+  width: 13px; height: 13px; padding: 0; border-radius: 50%; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--indigo-line); background: var(--paper); color: var(--indigo);
+  font-family: var(--serif); font-style: italic; font-weight: 700; font-size: 9px; line-height: 1;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.chg-i:hover, .chg-i.on { background: var(--indigo); color: var(--paper); border-color: var(--indigo); }
+.chg-pop {
+  position: absolute; top: calc(100% + 6px); left: 0; z-index: 30;
+  min-width: 132px; white-space: nowrap; text-align: left; line-height: 1.35;
+  background: var(--paper); border: 1px solid var(--indigo-line); border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(27, 35, 48, .16); padding: 7px 10px;
+  font-family: var(--sans); font-weight: 400; color: var(--ink);
+}
+.chg-pop-head { display: block; font-size: 11px; font-weight: 700; color: var(--indigo); letter-spacing: .01em; }
+.chg-pop-was { display: block; font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 11.5px; color: var(--ink-soft); margin-top: 3px; }
+.chg-pop-was b { color: var(--ink); font-weight: 600; }
 
 /* ---- per-cell hover notes (Pass 6) ---------------------------------------
    The wrapper fills the cell so the whole cell is the hover target; the marker

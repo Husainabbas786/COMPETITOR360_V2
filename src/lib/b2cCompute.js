@@ -18,6 +18,8 @@
 // cycle (ceil(years/2) times), never re-charged in the off year.
 // ---------------------------------------------------------------------------
 
+import { resolveChanges, valueAtPath, isIsoDate } from './b2cChanges.js'
+
 export function createB2CCompute(schema) {
   const zonesArr = schema.zones
   const registry = schema.component_registry
@@ -479,6 +481,55 @@ export function createB2CCompute(schema) {
     check('Ajman 1 visa Y1 (new)', ajman1y.year1, 10800)
     check('Ajman 1 visa Y2 renewal', ajman2y.renewal, 9900)
     check('Ajman 1 visa 2-year', ajman2y.total, 20700)
+
+
+    // ---- Change tracking (mechanism guards) ---------------------------------
+    // This block guards the machine, not the data: it adds NO figures and must
+    // stay green while no value carries a marker. It runs through the SAME
+    // reader the grid uses (resolveChanges), so a mistyped path or a bogus
+    // marker fails here before it can quietly fail to light a cell.
+    logger.log('— Change tracking (mechanism; no markers in the data yet) —')
+    const chg = resolveChanges(schema)
+    // Schema still parses and every zone is present — nothing moved in this task.
+    check('schema parses — 7 active zones present', zonesArr.length, 7)
+    // Each zone that publishes derived_checks must still reconcile with the engine.
+    // (Only Meydan and DSBH declare them; the ~38 checks above are the real
+    // all-7-zone invariance guard. `all_in_1visa_bundled_med_eid` is deliberately
+    // not asserted — it has no deterministic engine mapping.)
+    const derivedZones = zonesArr.filter((z) => z.derived_checks)
+    const derivedBroken = derivedZones.filter((z) => {
+      const d = z.derived_checks
+      const y1_0 = Math.round(computeCost({ zone: z.zone, visas: 0, years: 1 }).year1)
+      const y1_1 = Math.round(computeCost({ zone: z.zone, visas: 1, years: 1 }).year1)
+      return (
+        (typeof d.base_0visa === 'number' && d.base_0visa !== y1_0) ||
+        (typeof d.all_in_1visa_inside_uae === 'number' && d.all_in_1visa_inside_uae !== y1_1)
+      )
+    }).length
+    check('derived_checks still reconcile with the engine (zones declaring them)', derivedZones.length, 2)
+    check('derived_checks broken by this task', derivedBroken, 0)
+    // meta plumbing: the audit trail exists, and the clear-the-board date is a date.
+    check('meta.changelog is an array', Array.isArray(schema.meta.changelog) ? 0 : 1, 0)
+    check('meta.changes_seen_before is an ISO date', isIsoDate(schema.meta.changes_seen_before) ? 0 : 1, 0)
+    // Every changelog entry must name a path that actually resolves in its zone —
+    // this is the typo-catcher for Track A (a bad path silently lights nothing).
+    const badPaths = chg.changelog.filter((e) => {
+      const z = zonesArr.find((x) => x.zone === e.zone)
+      return !z || valueAtPath(z, e.path) === undefined
+    }).length
+    check('changelog paths all resolve in their zone', badPaths, 0)
+    // Self-consistency: a marker claiming a value CHANGED must carry a `from` that
+    // differs from the current value (from: null = newly added, always valid).
+    // Vacuous today (no markers) — it guards every value Track A lands.
+    const staleFrom = chg.markers.filter(
+      (m) => typeof m.from === 'number' && typeof m.current === 'number' && m.from === m.current,
+    ).length
+    check('changed.from differs from the current value', staleFrom, 0)
+    // Every marker carries a real ISO date, and the changelog reads newest first.
+    const badDates = chg.markers.filter((m) => !isIsoDate(m.on)).length
+    check('every change marker carries an ISO date', badDates, 0)
+    const outOfOrder = chg.changelog.filter((e, i) => i > 0 && String(e.on) > String(chg.changelog[i - 1].on)).length
+    check('changelog ordered newest first', outOfOrder, 0)
 
     const failed = cases.filter((c) => !c.ok)
     logger.log(failed.length === 0 ? '\nALL B2C SANITY CHECKS PASSED' : `\n${failed.length} CHECK(S) FAILED`)

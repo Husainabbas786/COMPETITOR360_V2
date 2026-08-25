@@ -14,7 +14,17 @@
       "max_visas on a package powers the gray-out: if selected visas > max_visas, that package column greys out.",
       "Every leaf has confidence + source. value:null = to be filled. Do NOT treat assumed cells as final."
     ],
-    "how_to_fill": "Replace null values and update confidence to 'confirmed' when real figures land. See open_questions at the bottom for exactly what is missing and who owns it."
+    "how_to_fill": "Replace null values and update confidence to 'confirmed' when real figures land. See open_questions at the bottom for exactly what is missing and who owns it.",
+
+    "change_tracking": [
+      "A value that has moved carries a marker; the grid highlights that cell and offers a small info mark reading 'Updated {date} · was {from}'. A leaf with NO marker is unchanged — the default state of everything here.",
+      "Two ways to mark, one index. (a) INLINE, beside the existing confidence/source: \"y1\": { \"fee\": 6000, \"confidence\": \"confirmed\", \"changed\": { \"on\": \"2026-07-15\", \"from\": 6010 } }. from = the prior value, or null if the value is newly added. (b) changelog entry — the only way to mark a FLAT number (RAKEZ/Ajman tier_price maps have no object to hang a marker on).",
+      "Path grammar (package_id, never an array index): components.<key>.<y1|y2>.fee · packages.<package_id>.tier_price.<N>y · packages.<package_id>.tier_price_new · packages.<package_id>.tier_price_renewal · promo.packages.<package_id>.price_now",
+      "changes_seen_before clears the board: any marker dated on or before it renders normally (no highlight, no info mark). Bump this one date to reset the grid — never edit the individual markers.",
+      "changelog is the permanent audit trail, newest first. It keeps every change on record even after the highlight is cleared."
+    ],
+    "changes_seen_before": "2026-01-01",
+    "changelog": []
   },
 
   "confidence_legend": {
