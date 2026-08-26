@@ -2,11 +2,9 @@ import { useEffect, useMemo, useState } from 'react'
 import B2CControls from './B2CControls.jsx'
 import B2CTable from './B2CTable.jsx'
 import B2COffers from './B2COffers.jsx'
-import B2CInsights from './B2CInsights.jsx'
 import B2CEditPanel from './B2CEditPanel.jsx'
-import SourcesPanel from '../SourcesPanel.jsx'
 import { COPY } from './copy.js'
-import { buildColumns, buildGroups, buildInsights } from './b2cModel.js'
+import { buildColumns, buildGroups } from './b2cModel.js'
 import { setIn, downloadSchema } from './b2cEdit.js'
 import { resolveChanges } from '../../lib/b2cChanges.js'
 import { SCHEMA, createB2CCompute, ZONE_ORDER } from '../../lib/b2cEngine.js'
@@ -24,12 +22,12 @@ const EMPTY_NOTES = {}
 const EDIT_ENABLED = false
 
 // Rebuilt B2C view. The two-column grid holds ONLY the control rail and the
-// table, so the sticky rail releases exactly at the table's end. Everything else
-// (foot-note, read-out, sources & verify) sits full-width below the grid.
+// table, so the sticky rail releases exactly at the table's end. The foot-note
+// sits full-width below the grid.
 export default function B2CView({ state, setState }) {
   // Editable, in-memory copy of the schema. SCHEMA stays the pristine reference
   // for "Reset". The compute engine is rebuilt whenever the schema state changes,
-  // so the whole table + totals + read-out recompute live from edits.
+  // so the whole table + totals recompute live from edits.
   const [schema, setSchema] = useState(() => cloneSchema(SCHEMA))
   const engine = useMemo(() => createB2CCompute(schema), [schema])
 
@@ -50,7 +48,6 @@ export default function B2CView({ state, setState }) {
   // bumped seen-before date — re-lights the grid immediately. With no markers in
   // the schema the index is empty and every cell renders exactly as before.
   const changes = useMemo(() => resolveChanges(schema).index, [schema])
-  const insights = buildInsights(groups, baseZone)
 
   // Edit mode — off by default; when off the view is exactly as before.
   const [editMode, setEditMode] = useState(false)
@@ -106,8 +103,6 @@ export default function B2CView({ state, setState }) {
 
       <div className="b2c-below">
         <p className="foot-note">{COPY.note(baseZone)}</p>
-        <B2CInsights insights={insights} />
-        <SourcesPanel filter="b2c" />
       </div>
 
       {EDIT_ENABLED && editMode && (

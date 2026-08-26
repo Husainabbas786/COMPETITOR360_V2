@@ -3,7 +3,6 @@ import { commission } from '../../logic/engines.js'
 import CommissionBars from './CommissionBars.jsx'
 import CommissionCards from './CommissionCards.jsx'
 import TierLadders from './TierLadder.jsx'
-import SourcesPanel from '../SourcesPanel.jsx'
 
 const LEVEL_LABELS = { low: 'Low', mid: 'Mid', high: 'High' }
 
@@ -47,9 +46,6 @@ export default function B2BView({ state, setState }) {
         <summary>How each scheme is built — full tier ladders</summary>
         <TierLadders />
       </details>
-
-      <SourcesPanel filter="commission"
-        endline="A higher headline rate can pay less. Take-home = rate × base — and the base differs per zone." />
     </>
   )
 }
